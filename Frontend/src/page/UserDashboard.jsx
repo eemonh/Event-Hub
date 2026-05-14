@@ -1,14 +1,28 @@
+// UserDashboard.jsx
+
 import {
   LayoutDashboard,
   CalendarDays,
   Bookmark,
   LogOut,
   Ticket,
-  Calendar,
   MapPin,
-  ArrowRight,
-  BookmarkCheck,
+  Clock3,
+  Calendar,
 } from "lucide-react";
+
+const stats = [
+  {
+    title: "Total Registered Events",
+    value: "14",
+    icon: Ticket,
+  },
+  {
+    title: "Saved Events",
+    value: "6",
+    icon: Bookmark,
+  },
+];
 
 const upcomingEvents = [
   {
@@ -25,282 +39,273 @@ const upcomingEvents = [
   },
 ];
 
-const recommendedEvents = [
+const recommendations = [
   {
+    image:
+      "https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=1200&auto=format&fit=crop",
+    tag: "UX/UI",
     title: "Future of Web Design Workshop",
     date: "Nov 15, 2024",
     location: "Seattle, WA",
-    tag: "UX/UI",
-    image:
-      "https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=1200&auto=format&fit=crop",
   },
   {
+    image:
+      "https://images.unsplash.com/photo-1515169067868-5387ec356754?q=80&w=1200&auto=format&fit=crop",
+    tag: "Leadership",
     title: "Product Managers Networking Night",
     date: "Dec 05, 2024",
     location: "The Grand Hotel, NY",
-    tag: "Leadership",
-    image:
-      "https://images.unsplash.com/photo-1515169067868-5387ec356754?q=80&w=1200&auto=format&fit=crop",
   },
   {
+    image:
+      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&auto=format&fit=crop",
+    tag: "Startup",
     title: "Founder’s Pitch & Mingle",
     date: "Jan 12, 2025",
     location: "Innovation Hub, Austin",
-    tag: "Startup",
-    image:
-      "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&auto=format&fit=crop",
   },
 ];
 
-export default function UserDashboard() {
+function SideNavbar() {
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex">
-      
-      {/* Sidebar */}
-      <aside className="w-[232px] bg-white border-r border-[#E2E8F0] flex flex-col justify-between p-3">
-        
-        <div>
-          {/* Logo */}
-          <div className="mb-8 px-3">
-            <h1 className="text-[32px] font-bold text-[#630ED4] font-['Poppins']">
-              EventHub
-            </h1>
-          </div>
-
-          {/* Nav */}
-          <nav className="flex flex-col gap-2">
-            
-            <button className="flex items-center gap-3 px-4 py-3 rounded-lg text-[#4A4455] hover:bg-[#F1F5F9] transition">
-              <LayoutDashboard size={18} />
-              <span className="font-semibold text-[16px]">
-                Dashboard
-              </span>
-            </button>
-
-            <button className="flex items-center gap-3 px-4 py-3 rounded-lg text-[#4A4455] hover:bg-[#F1F5F9] transition">
-              <CalendarDays size={18} />
-              <span className="font-semibold text-[16px]">
-                My Events
-              </span>
-            </button>
-
-            <button className="flex items-center gap-3 px-4 py-3 rounded-lg bg-[#EDE5F4] text-[#630ED4]">
-              <Bookmark size={18} />
-              <span className="font-bold text-[16px]">
-                Saved Events
-              </span>
-            </button>
-          </nav>
+    <aside className="w-[232px] border-r border-slate-200 bg-white flex flex-col justify-between p-3">
+      <div>
+        <div className="px-3 py-2">
+          <h1 className="text-[32px] leading-[38px] font-bold text-[#630ED4]">
+            EventHub
+          </h1>
         </div>
 
-        {/* Logout */}
-        <button className="flex items-center justify-center gap-2 bg-[#BA1A1A] hover:bg-red-700 transition text-white rounded-lg py-3">
-          <LogOut size={18} />
-          <span className="font-semibold">Logout</span>
-        </button>
-      </aside>
+        <nav className="mt-6 flex flex-col gap-2">
+          <NavItem icon={LayoutDashboard} label="Dashboard" />
 
-      {/* Main */}
-      <main className="flex-1 flex flex-col">
-        
-        {/* Header */}
-        <header className="h-[73px] bg-white border-b border-[#E2E8F0] flex items-center justify-between px-6">
-          <p className="text-[14px] text-[#64748B]">
-            Dashboard
+          <NavItem icon={CalendarDays} label="My Events" />
+
+          <NavItem
+            icon={Bookmark}
+            label="Saved Events"
+            active
+          />
+        </nav>
+      </div>
+
+      <button className="flex items-center justify-center gap-2 rounded-lg bg-[#BA1A1A] py-3 text-white font-semibold hover:opacity-95 transition">
+        <LogOut size={18} />
+        Logout
+      </button>
+    </aside>
+  );
+}
+
+function NavItem({ icon: Icon, label, active = false }) {
+  return (
+    <button
+      className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-semibold transition
+      ${
+        active
+          ? "bg-[#EDE5F4] text-[#630ED4]"
+          : "text-[#4A4455] hover:bg-slate-100"
+      }`}
+    >
+      <Icon size={18} />
+      {label}
+    </button>
+  );
+}
+
+function TopHeader() {
+  return (
+    <header className="h-[73px] border-b border-slate-200 bg-white px-6 flex items-center justify-between shadow-sm">
+      <p className="text-sm text-slate-500">Dashboard</p>
+
+      <img
+        src="https://i.pravatar.cc/100"
+        alt="avatar"
+        className="h-10 w-10 rounded-full border-2 border-slate-200 object-cover"
+      />
+    </header>
+  );
+}
+
+function StatCard({ title, value, icon: Icon }) {
+  return (
+    <div className="flex items-start gap-4 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#EDE5F4]">
+        <Icon size={20} className="text-[#630ED4]" />
+      </div>
+
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          {title}
+        </p>
+
+        <h3 className="mt-1 text-[32px] leading-none font-bold text-slate-900">
+          {value}
+        </h3>
+      </div>
+    </div>
+  );
+}
+
+function UpcomingEventCard({ event }) {
+  return (
+    <div className="flex items-center justify-between border-t border-slate-200 px-4 py-4">
+      <div className="flex items-center gap-4">
+        <div className="flex h-14 w-14 flex-col items-center justify-center rounded-lg bg-[#EDE5F4] text-[#630ED4]">
+          <span className="text-[10px] font-semibold uppercase">
+            {event.date.split(" ")[0]}
+          </span>
+
+          <span className="text-lg font-bold leading-none">
+            {event.date.split(" ")[1]}
+          </span>
+        </div>
+
+        <div>
+          <h4 className="text-lg font-semibold text-slate-900">
+            {event.title}
+          </h4>
+
+          <div className="mt-1 flex flex-wrap items-center gap-4 text-sm text-slate-500">
+            <span className="flex items-center gap-1">
+              <Clock3 size={14} />
+              {event.time}
+            </span>
+
+            <span className="flex items-center gap-1">
+              <MapPin size={14} />
+              {event.location}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <button className="flex items-center gap-2 rounded-full border border-slate-300 px-4 py-2 text-sm font-medium hover:bg-slate-50">
+        <Ticket size={14} />
+        View Ticket
+      </button>
+    </div>
+  );
+}
+
+function RecommendationCard({ item }) {
+  return (
+    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div className="relative">
+        <img
+          src={item.image}
+          alt={item.title}
+          className="h-48 w-full object-cover"
+        />
+
+        <span className="absolute bottom-3 left-3 rounded bg-white px-2 py-1 text-xs font-semibold text-[#630ED4]">
+          {item.tag}
+        </span>
+
+        <button className="absolute right-3 top-3 rounded-full bg-white/90 p-2">
+          <Bookmark size={14} />
+        </button>
+      </div>
+
+      <div className="p-4">
+        <h3 className="text-[24px] leading-tight font-semibold text-slate-900">
+          {item.title}
+        </h3>
+
+        <div className="mt-4 space-y-2 text-sm text-slate-500">
+          <p className="flex items-center gap-2">
+            <Calendar size={14} />
+            {item.date}
           </p>
 
-          <img
-            src="https://i.pravatar.cc/100"
-            alt="profile"
-            className="w-10 h-10 rounded-full border-2 border-[#E2E8F0]"
-          />
-        </header>
-
-        {/* Content */}
-        <div className="p-8 flex flex-col gap-8">
-          
-          {/* Welcome */}
-          <section>
-            <h2 className="text-[48px] leading-[58px] font-bold text-[#0F172A] font-['Poppins']">
-              Welcome back, Alex!
-            </h2>
-
-            <p className="text-[16px] text-[#64748B] mt-2">
-              You have{" "}
-              <span className="text-[#630ED4] font-medium">
-                2 upcoming events
-              </span>{" "}
-              this month. Get ready to connect and learn.
-            </p>
-          </section>
-
-          {/* Stats */}
-          <section className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-[720px]">
-            
-            <div className="bg-white border border-[#E2E8F080] rounded-lg shadow-sm p-6 flex items-center gap-4">
-              
-              <div className="w-12 h-12 rounded-full bg-[#EDE5F4] flex items-center justify-center">
-                <Ticket
-                  size={20}
-                  className="text-[#630ED4]"
-                />
-              </div>
-
-              <div>
-                <p className="text-[12px] tracking-[0.6px] font-semibold text-[#64748B] uppercase">
-                  Total Registered Events
-                </p>
-
-                <h3 className="text-[32px] leading-[38px] font-bold text-[#0F172A] font-['Poppins']">
-                  14
-                </h3>
-              </div>
-            </div>
-
-            <div className="bg-white border border-[#E2E8F080] rounded-lg shadow-sm p-6 flex items-center gap-4">
-              
-              <div className="w-12 h-12 rounded-full bg-[#EDE5F4] flex items-center justify-center">
-                <BookmarkCheck
-                  size={20}
-                  className="text-[#630ED4]"
-                />
-              </div>
-
-              <div>
-                <p className="text-[12px] tracking-[0.6px] font-semibold text-[#64748B] uppercase">
-                  Saved Events
-                </p>
-
-                <h3 className="text-[32px] leading-[38px] font-bold text-[#0F172A] font-['Poppins']">
-                  6
-                </h3>
-              </div>
-            </div>
-          </section>
-
-          {/* Upcoming Events */}
-          <section className="bg-white rounded-lg border border-[#E2E8F0] shadow-sm overflow-hidden">
-            
-            <div className="flex items-center justify-between px-6 py-5 border-b border-[#E2E8F0]">
-              <h3 className="text-[24px] font-bold text-[#0F172A] font-['Poppins']">
-                Your Upcoming Events
-              </h3>
-
-              <button className="flex items-center gap-1 text-[#630ED4] text-sm font-semibold">
-                View All
-                <ArrowRight size={14} />
-              </button>
-            </div>
-
-            <div className="divide-y divide-[#E2E8F0]">
-              {upcomingEvents.map((event) => (
-                <div
-                  key={event.title}
-                  className="flex items-center justify-between px-6 py-4"
-                >
-                  <div className="flex items-center gap-4">
-                    
-                    <div className="w-[48px] h-[72px] rounded-lg bg-[#EDE5F4] flex flex-col items-center justify-center">
-                      <span className="text-[12px] font-semibold text-[#630ED4] uppercase">
-                        {event.date.split(" ")[0]}
-                      </span>
-
-                      <span className="text-[24px] font-bold text-[#630ED4] leading-none">
-                        {event.date.split(" ")[1]}
-                      </span>
-                    </div>
-
-                    <div>
-                      <h4 className="text-[24px] leading-[32px] font-semibold text-[#0F172A] font-['Poppins']">
-                        {event.title}
-                      </h4>
-
-                      <div className="flex flex-wrap items-center gap-4 mt-1 text-[#64748B] text-sm">
-                        
-                        <div className="flex items-center gap-1">
-                          <Calendar size={14} />
-                          {event.time}
-                        </div>
-
-                        <div className="flex items-center gap-1">
-                          <MapPin size={14} />
-                          {event.location}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <button className="border border-[#D1D5DB] rounded-full px-4 py-2 text-sm font-semibold text-[#0F172A] hover:bg-gray-100 transition flex items-center gap-2">
-                    <Ticket size={14} />
-                    View Ticket
-                  </button>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Recommended */}
-          <section>
-            <h3 className="text-[40px] leading-[48px] font-bold text-[#0F172A] font-['Poppins']">
-              Recommended for You
-            </h3>
-
-            <p className="text-[#64748B] mt-2">
-              Based on your interests in Technology and Design.
-            </p>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-6">
-              
-              {recommendedEvents.map((event) => (
-                <div
-                  key={event.title}
-                  className="bg-white rounded-lg border border-[#E2E8F0] shadow-sm overflow-hidden"
-                >
-                  
-                  <div className="relative">
-                    <img
-                      src={event.image}
-                      alt={event.title}
-                      className="w-full h-[180px] object-cover"
-                    />
-
-                    <button className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white flex items-center justify-center shadow">
-                      <Bookmark size={16} />
-                    </button>
-
-                    <span className="absolute bottom-3 left-3 bg-white text-[#630ED4] text-xs font-semibold px-2 py-1 rounded">
-                      {event.tag}
-                    </span>
-                  </div>
-
-                  <div className="p-4">
-                    <h4 className="text-[28px] leading-[36px] font-semibold text-[#0F172A] font-['Poppins']">
-                      {event.title}
-                    </h4>
-
-                    <div className="flex flex-col gap-2 mt-3 text-sm text-[#64748B]">
-                      
-                      <div className="flex items-center gap-2">
-                        <Calendar size={14} />
-                        {event.date}
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        <MapPin size={14} />
-                        {event.location}
-                      </div>
-                    </div>
-
-                    <button className="w-full h-[44px] mt-5 rounded-lg bg-[#6D28D9] hover:bg-[#5B21B6] transition text-white font-semibold text-sm">
-                      Register Now
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
+          <p className="flex items-center gap-2">
+            <MapPin size={14} />
+            {item.location}
+          </p>
         </div>
-      </main>
+
+        <button className="mt-5 w-full rounded-lg bg-[#630ED4] py-3 text-sm font-semibold text-white hover:opacity-95">
+          Register Now
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default function UserDashboard() {
+  return (
+    <div className="min-h-screen bg-[#F8FAFC] font-sans">
+      <div className="flex">
+        <SideNavbar />
+
+        <main className="flex-1">
+          <TopHeader />
+
+          <div className="p-8">
+            {/* Welcome */}
+            <section>
+              <h1 className="text-5xl font-bold tracking-tight text-slate-900">
+                Welcome back, Alex!
+              </h1>
+
+              <p className="mt-3 text-slate-500">
+                You have{" "}
+                <span className="font-medium text-[#630ED4]">
+                  2 upcoming events
+                </span>{" "}
+                this month. Get ready to connect and learn.
+              </p>
+            </section>
+
+            {/* Stats */}
+            <section className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 max-w-2xl">
+              {stats.map((stat) => (
+                <StatCard key={stat.title} {...stat} />
+              ))}
+            </section>
+
+            {/* Upcoming Events */}
+            <section className="mt-8 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+              <div className="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+                <h2 className="text-[36px] font-bold text-slate-900">
+                  Your Upcoming Events
+                </h2>
+
+                <button className="text-sm font-semibold text-[#630ED4]">
+                  View All →
+                </button>
+              </div>
+
+              {upcomingEvents.map((event) => (
+                <UpcomingEventCard
+                  key={event.title}
+                  event={event}
+                />
+              ))}
+            </section>
+
+            {/* Recommended */}
+            <section className="mt-10">
+              <h2 className="text-4xl font-bold text-slate-900">
+                Recommended for You
+              </h2>
+
+              <p className="mt-2 text-slate-500">
+                Based on your interests in Technology and Design.
+              </p>
+
+              <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-3">
+                {recommendations.map((item) => (
+                  <RecommendationCard
+                    key={item.title}
+                    item={item}
+                  />
+                ))}
+              </div>
+            </section>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
