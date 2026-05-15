@@ -8,7 +8,7 @@ export default function SectionHeading({
 }) {
   return (
     <div className={`flex flex-col items-${center ? "center" : "start"} gap-4 ${className}`}>
-      <h2 className="text-3xl md:text-4xl lg:text-[42px] font-bold leading-[1.05] tracking-[-0.02em] text-text-primary text-center md:text-left">
+      <h2 className={`text-3xl md:text-4xl lg:text-[42px] font-bold leading-[1.05] tracking-[-0.02em] text-text-primary ${center ? 'text-center md:text-center' : 'text-center md:text-left'}`}>
         {title}
       </h2>
 
@@ -21,7 +21,7 @@ export default function SectionHeading({
       )}
 
       {subtitle && (
-        <p className="text-base md:text-lg leading-7 text-text-muted text-center md:text-left max-w-[650px]">
+        <p className={`text-base md:text-lg leading-7 text-text-muted ${center ? 'text-center md:text-center' : 'text-center md:text-left'} max-w-[650px]`}>
           {subtitle}
         </p>
       )}

@@ -1,38 +1,348 @@
+import { useCallback, useEffect, useRef, useState } from "react"
+import {
+  ChevronLeft,
+  ChevronRight,
+  Images,
+  MapPin,
+  X,
+} from "lucide-react"
 import SectionHeading from "../ui/SectionHeading"
 import { galleryItems } from "../../data/galleryItems"
 
 export default function EventGallery() {
-  return (
-    <section className="bg-gray-50 py-24 lg:py-32">
-      <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <SectionHeading
-          title="Event Gallery"
-          subtitle="A glimpse into some of our most memorable experiences."
-        />
+  const [activeItemId, setActiveItemId] = useState(null)
+  const closeButtonRef = useRef(null)
+  const previouslyFocusedElement = useRef(null)
+  const visibleItems = galleryItems
 
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-[200px] md:auto-rows-[250px]">
-          {galleryItems.map((item, index) => (
-            <div
-              key={index}
-              className={`relative overflow-hidden rounded-2xl shadow-md ${item.className}`}
-            >
+  const activeIndex = visibleItems.findIndex((item) => item.id === activeItemId)
+  const activeItem = activeIndex >= 0 ? visibleItems[activeIndex] : null
+
+  const openLightbox = (itemId) => {
+    previouslyFocusedElement.current = document.activeElement
+    setActiveItemId(itemId)
+  }
+
+  const closeLightbox = useCallback(() => {
+    setActiveItemId(null)
+    previouslyFocusedElement.current?.focus?.()
+  }, [])
+
+  const showPreviousItem = useCallback(() => {
+    if (activeIndex < 0) return
+
+    const previousIndex =
+      activeIndex === 0 ? visibleItems.length - 1 : activeIndex - 1
+
+    setActiveItemId(visibleItems[previousIndex].id)
+  }, [activeIndex, visibleItems])
+
+  const showNextItem = useCallback(() => {
+    if (activeIndex < 0) return
+
+    const nextIndex =
+      activeIndex === visibleItems.length - 1 ? 0 : activeIndex + 1
+
+    setActiveItemId(visibleItems[nextIndex].id)
+  }, [activeIndex, visibleItems])
+
+  useEffect(() => {
+    if (!activeItem) return undefined
+
+    const originalOverflow = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    closeButtonRef.current?.focus()
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        closeLightbox()
+      }
+
+      if (event.key === "ArrowLeft") {
+        showPreviousItem()
+      }
+
+      if (event.key === "ArrowRight") {
+        showNextItem()
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+
+    return () => {
+      document.body.style.overflow = originalOverflow
+      window.removeEventListener("keydown", handleKeyDown)
+    }
+  }, [activeItem, closeLightbox, showNextItem, showPreviousItem])
+
+  return (
+    <section className="bg-gray-50 px-4 py-20 sm:px-6 md:py-24 lg:py-28">
+      <div className="mx-auto max-w-7xl">
+        <div className="max-w-2xl mx-auto">
+          <SectionHeading
+            center={true}
+            title="Event Gallery"
+            subtitle="A glimpse into some of our most memorable experiences"
+          />
+        </div>
+
+        
+
+        {visibleItems.length >= 6 ? (
+          <>
+            <StandardGalleryGrid
+              className="lg:hidden"
+              items={visibleItems}
+              onOpen={openLightbox}
+            />
+            <DesktopCollage items={visibleItems} onOpen={openLightbox} />
+          </>
+        ) : (
+          <StandardGalleryGrid
+            items={visibleItems}
+            onOpen={openLightbox}
+          />
+        )}
+      </div>
+
+      {activeItem && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-gray-950/80 px-4 py-6 backdrop-blur-sm sm:px-6"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="event-gallery-lightbox-title"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) {
+              closeLightbox()
+            }
+          }}
+        >
+          <div className="relative flex max-h-[92vh] w-full max-w-6xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl lg:grid lg:grid-cols-[minmax(0,1.55fr)_minmax(320px,0.7fr)]">
+            <div className="relative min-h-[280px] bg-gray-950 sm:min-h-[420px] lg:min-h-[640px]">
               <img
-                src={item.image}
-                alt={item.title}
-                className="w-full h-full object-cover transition duration-500 hover:scale-105"
+                src={activeItem.image}
+                alt={activeItem.alt}
+                className="h-full max-h-[64vh] w-full object-cover lg:max-h-none"
               />
 
-              <div className="absolute inset-0 bg-black/20 hover:bg-black/30 transition" />
+              {visibleItems.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={showPreviousItem}
+                    aria-label="Show previous hosted event"
+                    className="absolute left-4 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-text-primary shadow-lg outline-none transition hover:bg-white focus-visible:ring-4 focus-visible:ring-primary/40"
+                  >
+                    <ChevronLeft className="h-5 w-5" aria-hidden="true" />
+                  </button>
 
-              <div className="absolute bottom-4 left-4">
-                <h3 className="text-white text-lg font-semibold">
-                  {item.title}
+                  <button
+                    type="button"
+                    onClick={showNextItem}
+                    aria-label="Show next hosted event"
+                    className="absolute right-4 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-text-primary shadow-lg outline-none transition hover:bg-white focus-visible:ring-4 focus-visible:ring-primary/40"
+                  >
+                    <ChevronRight className="h-5 w-5" aria-hidden="true" />
+                  </button>
+                </>
+              )}
+            </div>
+
+            <div className="flex min-h-0 flex-col overflow-y-auto p-5 sm:p-7 lg:p-8">
+              <div className="flex items-start justify-between gap-4">
+                <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
+                  {activeItem.category}
+                </span>
+
+                <button
+                  ref={closeButtonRef}
+                  type="button"
+                  onClick={closeLightbox}
+                  aria-label="Close hosted event viewer"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100 text-text-primary outline-none transition hover:bg-gray-200 focus-visible:ring-4 focus-visible:ring-primary/30"
+                >
+                  <X className="h-5 w-5" aria-hidden="true" />
+                </button>
+              </div>
+
+              <div className="mt-8">
+                <p className="text-sm font-semibold text-text-muted">
+                  {activeIndex + 1} / {visibleItems.length}
+                </p>
+
+                <h3
+                  id="event-gallery-lightbox-title"
+                  className="mt-3 text-3xl font-bold leading-tight text-text-primary sm:text-4xl"
+                >
+                  {activeItem.title}
                 </h3>
+
+                <div className="mt-5 flex flex-col gap-3 text-sm font-medium text-text-muted">
+                  <span className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-primary" aria-hidden="true" />
+                    {activeItem.location}
+                  </span>
+                  <span>{activeItem.date}</span>
+                </div>
+
+                {activeItem.summary && (
+                  <p className="mt-6 text-base leading-7 text-text-muted">
+                    {activeItem.summary}
+                  </p>
+                )}
               </div>
             </div>
-          ))}
+          </div>
         </div>
-      </div>
+      )}
     </section>
+  )
+}
+
+const StandardGalleryGrid = ({
+  items,
+  onOpen,
+  className = "",
+}) => {
+  return (
+    <div
+      className={`mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:auto-rows-[230px] lg:grid-cols-3 ${className}`}
+    >
+      {items.map((item, index) => (
+        <GalleryCard
+          key={item.id}
+          item={item}
+          isFeatured={item.featured}
+          onOpen={() => onOpen(item.id)}
+          priority={index + 1}
+        />
+      ))}
+    </div>
+  )
+}
+
+const DesktopCollage = ({ items, onOpen }) => {
+  const collageItems = items.slice(0, 6)
+  const [leftTop, leftBottom, rightTop, rightMiddleLeft, rightMiddleRight, rightBottom] =
+    collageItems
+
+  return (
+    <div className="mt-8 hidden h-[620px] overflow-hidden rounded-[2rem] bg-white p-1.5 shadow-lg ring-1 ring-gray-200 lg:grid lg:grid-cols-2 lg:gap-1.5">
+      <div className="grid min-h-0 grid-rows-[3fr_2fr] gap-1.5">
+        <GalleryCard
+          item={leftTop}
+          onOpen={() => onOpen(leftTop.id)}
+          priority={1}
+          variant="collage"
+        />
+        <GalleryCard
+          item={leftBottom}
+          onOpen={() => onOpen(leftBottom.id)}
+          priority={2}
+          variant="collage"
+        />
+      </div>
+
+      <div className="grid min-h-0 grid-rows-[2fr_1fr_2fr] gap-1.5">
+        <GalleryCard
+          item={rightTop}
+          onOpen={() => onOpen(rightTop.id)}
+          priority={3}
+          variant="collage"
+        />
+
+        <div className="grid min-h-0 grid-cols-2 gap-1.5">
+          <GalleryCard
+            item={rightMiddleLeft}
+            onOpen={() => onOpen(rightMiddleLeft.id)}
+            priority={4}
+            variant="collage"
+          />
+          <GalleryCard
+            item={rightMiddleRight}
+            onOpen={() => onOpen(rightMiddleRight.id)}
+            priority={5}
+            variant="collage"
+          />
+        </div>
+
+        <GalleryCard
+          item={rightBottom}
+          onOpen={() => onOpen(rightBottom.id)}
+          priority={6}
+          variant="collage"
+        />
+      </div>
+    </div>
+  )
+}
+
+const GalleryCard = ({
+  item,
+  isFeatured = false,
+  onOpen,
+  priority,
+  variant = "grid",
+}) => {
+  const isCollage = variant === "collage"
+
+  return (
+    <button
+      type="button"
+      onClick={onOpen}
+      aria-label={`Open ${item.title} hosted event photo`}
+      className={`group relative overflow-hidden bg-gray-900 text-left outline-none transition-all duration-300 focus-visible:ring-4 focus-visible:ring-primary/35 ${
+        isCollage
+          ? "min-h-0 rounded-[1.5rem]"
+          : `min-h-[280px] rounded-[1.75rem] shadow-md hover:-translate-y-1 hover:shadow-xl ${
+              isFeatured ? "sm:col-span-2 lg:col-span-2 lg:row-span-2" : ""
+            }`
+      }`}
+    >
+      <img
+        src={item.image}
+        alt={item.alt}
+        loading={priority <= 2 ? "eager" : "lazy"}
+        className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105 group-focus-visible:scale-105"
+      />
+
+      <div
+        className={`absolute inset-x-0 bottom-0 bg-gradient-to-t from-gray-950/85 via-gray-950/25 to-transparent transition-all duration-300 group-hover:from-gray-950/90 ${
+          isCollage
+            ? "h-[52%] group-hover:h-[58%]"
+            : isFeatured
+              ? "h-[72%] group-hover:h-[78%]"
+              : "h-[64%] group-hover:h-[70%]"
+        }`}
+      />
+
+      <div className={`absolute inset-x-0 bottom-0 z-10 ${isCollage ? "p-5" : "p-5 sm:p-6"}`}>
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          <span className="rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-primary">
+            {item.category}
+          </span>
+          <span className="rounded-full bg-white/15 px-3 py-1 text-xs font-semibold text-white backdrop-blur-sm lg:hidden">
+            {item.date}
+          </span>
+        </div>
+
+        <h3
+          className={`font-bold leading-tight text-white ${
+            isCollage
+              ? "text-xl sm:text-2xl"
+              : isFeatured
+                ? "text-3xl sm:text-4xl"
+                : "text-2xl"
+          }`}
+        >
+          {item.title}
+        </h3>
+
+        <p className="mt-3 flex items-center gap-2 text-sm font-medium leading-5 text-white/85 lg:hidden">
+          <MapPin className="h-4 w-4 shrink-0" aria-hidden="true" />
+          <span>{item.location}</span>
+        </p>
+      </div>
+    </button>
   )
 }

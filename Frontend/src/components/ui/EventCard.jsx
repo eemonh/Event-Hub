@@ -4,10 +4,12 @@ export default function EventCard({
   image,
   title,
   category,
+  format,
   location,
   time,
   date,
   price,
+  recommendationReason,
   variant = "overlay",
   featured = false,
   className = "",
@@ -15,13 +17,13 @@ export default function EventCard({
   if (variant === "stacked") {
     return (
       <div
-        className={`overflow-hidden rounded-2xl border border-border-light bg-white shadow-md ${className}`}
+        className={`overflow-hidden rounded-2xl border border-border-light bg-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${className}`}
       >
         <div
           className={`overflow-hidden ${
             featured
-              ? "h-[300px] md:h-[540px]"
-              : "h-40 md:h-48"
+              ? "h-64 sm:h-80 lg:h-[520px]"
+              : "h-44 sm:h-48 lg:h-[210px]"
           }`}
         >
           <img
@@ -31,10 +33,26 @@ export default function EventCard({
           />
         </div>
 
-        <div className={featured ? "p-6" : "p-5"}>
+        <div className={featured ? "p-5 sm:p-6" : "p-5"}>
+          {(category || format) && (
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              {category && (
+                <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                  {category}
+                </span>
+              )}
+
+              {format && (
+                <span className="rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold text-text-muted">
+                  {format}
+                </span>
+              )}
+            </div>
+          )}
+
           <h3
-            className={`font-bold text-text-primary ${
-              featured ? "text-[32px]" : "text-2xl"
+            className={`font-bold leading-tight text-text-primary ${
+              featured ? "text-2xl sm:text-[32px]" : "text-xl sm:text-2xl"
             }`}
           >
             {title}
@@ -47,7 +65,13 @@ export default function EventCard({
             </div>
           )}
 
-          <div className="mt-5 md:mt-6 flex items-end justify-between">
+          {recommendationReason && (
+            <p className="mt-4 text-sm font-medium leading-5 text-primary">
+              {recommendationReason}
+            </p>
+          )}
+
+          <div className="mt-5 flex items-end justify-between gap-4 md:mt-6">
             {(time || date) && (
               <div className="text-sm leading-5 text-gray-800">
                 {time && <p>{time}</p>}
@@ -57,7 +81,7 @@ export default function EventCard({
 
             {price && (
               <p
-                className={`font-bold text-primary ${
+                className={`shrink-0 font-bold text-primary ${
                   featured ? "text-3xl" : "text-2xl"
                 }`}
               >
