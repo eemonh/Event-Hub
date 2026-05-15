@@ -1,41 +1,5 @@
-import { heroEvents } from "../data/heroEvents"
-
-const EventCard = ({ title, category, image, featured }) => {
-  return (
-    <div
-      className={`
-        relative overflow-hidden rounded-2xl shadow-lg
-        group cursor-pointer w-full md:w-[315px]
-        transition-all duration-300 hover:-translate-y-2
-        ${featured ? "h-[320px] md:-mt-8" : "h-[256px]"}
-      `}
-    >
-      <img
-        src={image}
-        alt={title}
-        className="absolute inset-0 h-full w-full object-cover"
-      />
-
-      <div
-        className={`absolute inset-0 ${
-          featured
-            ? "bg-gradient-to-t from-black/90 to-transparent"
-            : "bg-gradient-to-t from-black/80 to-transparent"
-        }`}
-      />
-
-      <div className="absolute bottom-6 left-6 z-10">
-        <h3 className="text-white text-[24px] font-bold leading-8">
-          {title}
-        </h3>
-
-        <p className="text-white/80 text-sm leading-5 mt-1">
-          {category}
-        </p>
-      </div>
-    </div>
-  )
-}
+import EventCard from "../ui/EventCard"
+import { heroEvents } from "../../data/heroEvents"
 
 const HeroSection = () => {
   return (

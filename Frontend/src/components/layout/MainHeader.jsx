@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { NavLink, Link } from "react-router-dom"
 import { ArrowRight, BriefcaseBusiness, Menu, X } from "lucide-react"
-import { navLinks } from "../data/navigation"
+import { navLinks } from "../../data/navigation"
 
 export default function MainHeader() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -36,8 +36,7 @@ export default function MainHeader() {
             : "bg-white/80"
         }`}
       >
-        <div className="mx-auto flex h-full max-w-[1280px] items-center justify-between px-8">
-          {/* Logo */}
+        <div className="mx-auto flex h-full max-w-[1280px] items-center justify-between px-4 md:px-8">
           <Link to="/" className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center">
               <BriefcaseBusiness size={32} strokeWidth={2.66667} className="text-primary" />
@@ -47,7 +46,6 @@ export default function MainHeader() {
             </span>
           </Link>
 
-          {/* Desktop Nav */}
           <nav aria-label="Main navigation" className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
               <NavLink
@@ -66,7 +64,6 @@ export default function MainHeader() {
             ))}
           </nav>
 
-          {/* Desktop CTA */}
           <Link
             to="/register"
             className="hidden md:flex h-[44px] items-center justify-center gap-2 rounded-lg bg-primary px-5 py-[10px] text-white shadow-sm transition-all hover:bg-primary-hover text-[16px] font-medium leading-6"
@@ -75,7 +72,6 @@ export default function MainHeader() {
             <ArrowRight size={16} strokeWidth={1.33333} />
           </Link>
 
-          {/* Hamburger */}
           <button
             type="button"
             className="md:hidden flex h-11 w-11 items-center justify-center rounded-lg text-text-muted hover:text-text-primary transition-colors"
@@ -89,7 +85,6 @@ export default function MainHeader() {
         </div>
       </header>
 
-      {/* Mobile Overlay */}
       <div
         className={`fixed inset-0 z-40 bg-black/50 transition-opacity duration-300 md:opacity-0 md:pointer-events-none ${
           isMobileOpen ? "opacity-100" : "opacity-0 pointer-events-none"
@@ -98,7 +93,6 @@ export default function MainHeader() {
         aria-hidden="true"
       />
 
-      {/* Mobile Drawer */}
       <aside
         id="mobile-menu"
         role="dialog"

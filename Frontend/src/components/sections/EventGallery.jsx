@@ -1,27 +1,20 @@
-import { galleryItems } from "../data/galleryItems"
+import SectionHeading from "../ui/SectionHeading"
+import { galleryItems } from "../../data/galleryItems"
 
 export default function EventGallery() {
   return (
     <section className="bg-gray-50 py-24 lg:py-32">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-text-primary">
-            Event Gallery
-          </h2>
+        <SectionHeading
+          title="Event Gallery"
+          subtitle="A glimpse into some of our most memorable experiences."
+        />
 
-          <p className="mt-4 text-lg text-text-muted">
-            A glimpse into some of our most memorable experiences.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-[200px] md:auto-rows-[250px]">
+        <div className="mt-12 grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-[200px] md:auto-rows-[250px]">
           {galleryItems.map((item, index) => (
             <div
               key={index}
-              className={`
-                relative overflow-hidden rounded-2xl shadow-md
-                ${item.className}
-              `}
+              className={`relative overflow-hidden rounded-2xl shadow-md ${item.className}`}
             >
               <img
                 src={item.image}

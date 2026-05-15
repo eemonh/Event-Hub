@@ -1,10 +1,10 @@
 import { Routes, Route } from 'react-router-dom'
-import RootLayout from './layouts/RootLayout'
-import HomePage from './page/HomePage'
-import EventsPage from './page/EventsPage'
-import VenuesPage from './page/VenuesPage'
-import ContactPage from './page/ContactPage'
-import RegisterPage from './page/RegisterPage'
+import RootLayout from './components/layout/RootLayout'
+import HomePage from './pages/HomePage'
+import EventsPage from './pages/EventsPage'
+import VenuesPage from './pages/VenuesPage'
+import ContactPage from './pages/ContactPage'
+import RegisterPage from './pages/RegisterPage'
 
 export default function App() {
   return (
