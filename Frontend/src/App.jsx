@@ -5,6 +5,7 @@ import EventsPage from './pages/EventsPage'
 import VenuesPage from './pages/VenuesPage'
 import ContactPage from './pages/ContactPage'
 import RegisterPage from './pages/RegisterPage'
+import LoginPage from './pages/LoginPage'
 
 export default function App() {
   return (
