@@ -15,9 +15,10 @@ export default function App() {
         <Route path="/events" element={<EventsPage />} />
         <Route path="/venues" element={<VenuesPage />} />
         <Route path="/contact" element={<ContactPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/login" element={<LoginPage />} />
       </Route>
+
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/login" element={<LoginPage />} />
     </Routes>
   )
 }
