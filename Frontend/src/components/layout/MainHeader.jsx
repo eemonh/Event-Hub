@@ -30,11 +30,10 @@ export default function MainHeader() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 h-16 md:h-[81px] border-b border-border-light backdrop-blur-[6px] transition-all duration-300 ${
-          isScrolled
+        className={`fixed top-0 left-0 right-0 z-50 h-16 md:h-[81px] border-b border-border-light backdrop-blur-[6px] transition-all duration-300 ${isScrolled
             ? "bg-white/90 shadow-sm"
             : "bg-white/80"
-        }`}
+          }`}
       >
         <div className="mx-auto flex h-full max-w-[1280px] items-center justify-between px-4 md:px-8">
           <Link to="/" className="flex items-center gap-2">
@@ -52,10 +51,9 @@ export default function MainHeader() {
                 key={link.path}
                 to={link.path}
                 className={({ isActive }) =>
-                  `text-[16px] leading-6 transition-colors ${
-                    isActive
-                      ? "font-medium text-text-primary"
-                      : "font-normal text-text-muted hover:text-text-primary"
+                  `text-[16px] leading-6 transition-colors ${isActive
+                    ? "font-medium text-text-primary"
+                    : "font-normal text-text-muted hover:text-text-primary"
                   }`
                 }
               >
@@ -65,10 +63,10 @@ export default function MainHeader() {
           </nav>
 
           <Link
-            to="/register"
+            to="/login"
             className="hidden md:flex h-[44px] items-center justify-center gap-2 rounded-lg bg-primary px-5 py-[10px] text-white shadow-sm transition-all hover:bg-primary-hover text-[16px] font-medium leading-6"
           >
-            <span>Register</span>
+            <span>Sign In</span>
             <ArrowRight size={16} strokeWidth={1.33333} />
           </Link>
 
@@ -86,9 +84,8 @@ export default function MainHeader() {
       </header>
 
       <div
-        className={`fixed inset-0 z-40 bg-black/50 transition-opacity duration-300 md:opacity-0 md:pointer-events-none ${
-          isMobileOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
+        className={`fixed inset-0 z-40 bg-black/50 transition-opacity duration-300 md:opacity-0 md:pointer-events-none ${isMobileOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+          }`}
         onClick={() => setIsMobileOpen(false)}
         aria-hidden="true"
       />
@@ -98,9 +95,8 @@ export default function MainHeader() {
         role="dialog"
         aria-modal="true"
         aria-label="Navigation menu"
-        className={`fixed top-0 right-0 z-50 h-full w-72 bg-white shadow-xl transition-transform duration-300 md:translate-x-full ${
-          isMobileOpen ? "translate-x-0" : "translate-x-full"
-        }`}
+        className={`fixed top-0 right-0 z-50 h-full w-72 bg-white shadow-xl transition-transform duration-300 md:translate-x-full ${isMobileOpen ? "translate-x-0" : "translate-x-full"
+          }`}
       >
         <div className="flex h-full flex-col p-6">
           <div className="flex justify-end">
@@ -121,10 +117,9 @@ export default function MainHeader() {
                 to={link.path}
                 onClick={() => setIsMobileOpen(false)}
                 className={({ isActive }) =>
-                  `flex h-12 items-center rounded-lg px-4 text-[16px] leading-6 transition-colors ${
-                    isActive
-                      ? "font-medium text-text-primary bg-gray-100"
-                      : "font-normal text-text-muted hover:text-text-primary hover:bg-gray-50"
+                  `flex h-12 items-center rounded-lg px-4 text-[16px] leading-6 transition-colors ${isActive
+                    ? "font-medium text-text-primary bg-gray-100"
+                    : "font-normal text-text-muted hover:text-text-primary hover:bg-gray-50"
                   }`
                 }
               >
@@ -135,11 +130,11 @@ export default function MainHeader() {
 
           <div className="mt-auto">
             <Link
-              to="/register"
+              to="/login"
               onClick={() => setIsMobileOpen(false)}
               className="flex h-[44px] items-center justify-center gap-2 rounded-lg bg-primary px-5 py-[10px] text-white shadow-sm transition-all hover:bg-primary-hover text-[16px] font-medium leading-6"
             >
-              <span>Register</span>
+              <span>Sign In</span>
               <ArrowRight size={16} strokeWidth={1.33333} />
             </Link>
           </div>
