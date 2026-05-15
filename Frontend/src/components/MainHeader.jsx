@@ -13,7 +13,7 @@ export default function MainHeader() {
     return () => window.removeEventListener("scroll", onScroll)
   }, [])
 
-  useEffect(() => {
+  useEffect(() => { 
     if (!isMobileOpen) return
     const onKey = (e) => {
       if (e.key === "Escape") setIsMobileOpen(false)

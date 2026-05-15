@@ -6,6 +6,7 @@ import EventsPage from './page/EventsPage'
 import VenuesPage from './page/VenuesPage'
 import ContactPage from './page/ContactPage'
 import RegisterPage from './page/RegisterPage'
+import UserDashboard from './page/UserDashboard'
 
 export default function App() {
   return (
@@ -18,6 +19,7 @@ export default function App() {
           <Route path="/venues" element={<VenuesPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/dashboard" element={<UserDashboard />} />
         </Route>
       </Routes>
     </>
