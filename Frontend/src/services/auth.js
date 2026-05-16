@@ -30,3 +30,27 @@ export async function getMe(token) {
   if (!res.ok) throw new Error(data.message);
   return data;
 }
+
+export async function logout(token) {
+  const res = await fetch(`${API_BASE}/logout`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message);
+  return data;
+}
+
+export async function changePassword(token, currentPassword, newPassword) {
+  const res = await fetch(`${API_BASE}/password`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message);
+  return data;
+}
