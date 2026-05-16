@@ -1,40 +1,32 @@
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-const USERS_KEY = "eventhub_users";
-
-function getStoredUsers() {
-  try {
-    return JSON.parse(localStorage.getItem(USERS_KEY) || "[]");
-  } catch {
-    return [];
-  }
-}
-
-function saveUser(user) {
-  const users = getStoredUsers();
-  users.push(user);
-  localStorage.setItem(USERS_KEY, JSON.stringify(users));
-}
+const API_BASE = "/api/auth";
 
 export async function loginUser(email, password) {
-  await delay(1500);
-  const users = getStoredUsers();
-  const user = users.find((u) => u.email === email && u.password === password);
-  if (!user) {
-    throw new Error("Invalid email or password.");
-  }
-  const token = btoa(`${user.email}:${Date.now()}`);
-  return { user: { id: user.id, name: user.name, email: user.email }, token };
+  const res = await fetch(`${API_BASE}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message);
+  return data;
 }
 
 export async function registerUser(name, email, password) {
-  await delay(1500);
-  const users = getStoredUsers();
-  if (users.find((u) => u.email === email)) {
-    throw new Error("An account with this email already exists.");
-  }
-  const newUser = { id: crypto.randomUUID(), name, email, password };
-  saveUser(newUser);
-  const token = btoa(`${email}:${Date.now()}`);
-  return { user: { id: newUser.id, name, email }, token };
+  const res = await fetch(`${API_BASE}/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, email, password }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message);
+  return data;
+}
+
+export async function getMe(token) {
+  const res = await fetch(`${API_BASE}/me`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message);
+  return data;
 }
