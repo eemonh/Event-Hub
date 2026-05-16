@@ -1,4 +1,5 @@
 import User from "../models/User.js";
+import Token from "../models/Token.js";
 import generateToken from "../utils/generateToken.js";
 
 export async function register(req, res) {
@@ -71,6 +72,54 @@ export async function updateProfile(req, res) {
     res.json({
       user: { id: user._id, name: user.name, email: user.email, role: user.role },
     });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+export async function logout(req, res) {
+  try {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const token = authHeader.split(" ")[1];
+      await Token.create({
+        token,
+        type: "access",
+        user: req.user._id,
+        expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+      });
+    }
+    res.json({ message: "Logged out successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+export async function changePassword(req, res) {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: "Current and new password required" });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({ message: "New password must be at least 8 characters" });
+    }
+
+    const user = await User.findById(req.user._id).select("+password");
+    const isMatch = await user.comparePassword(currentPassword);
+
+    if (!isMatch) {
+      return res.status(400).json({ message: "Current password is incorrect" });
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    await Token.deleteMany({ user: user._id, type: "refresh" });
+
+    res.json({ message: "Password changed successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
