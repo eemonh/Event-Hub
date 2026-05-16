@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react"
 import { ArrowRight } from "lucide-react"
 import { Link } from "react-router-dom"
+import Button from "../ui/Button"
 import EventCard from "../ui/EventCard"
 import SectionHeading from "../ui/SectionHeading"
 import { featuredEvents } from "../../data/featuredEvents"
@@ -121,19 +122,16 @@ const FeaturedEvents = () => {
                 const isActive = selectedFilter === item.value
 
                 return (
-                  <button
+                  <Button
                     key={item.value}
                     type="button"
-                    onClick={() => setSelectedFilter(item.value)}
+                    variant={isActive ? "primary" : "ghost"}
+                    size="sm"
                     aria-pressed={isActive}
-                    className={`rounded-lg px-4 py-2 text-sm font-medium outline-none transition-all focus-visible:ring-2 focus-visible:ring-primary/50 sm:px-6 ${
-                      isActive
-                        ? "bg-primary text-white shadow-sm"
-                        : "text-gray-600 hover:bg-white hover:text-text-primary"
-                    }`}
+                    onClick={() => setSelectedFilter(item.value)}
                   >
                     {item.label}
-                  </button>
+                  </Button>
                 )
               })}
             </div>

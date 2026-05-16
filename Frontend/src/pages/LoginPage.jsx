@@ -5,15 +5,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Mail, Lock, ArrowRight } from "lucide-react";
 import toast from "react-hot-toast";
 
+import { useAuth } from "../context/useAuth";
 import { loginSchema } from "../utils/authSchemas";
 import AuthLayout from "../components/auth/AuthLayout";
 import AuthHeader from "../components/auth/AuthHeader";
-import AuthInput from "../components/auth/AuthInput";
-import AuthButton from "../components/auth/AuthButton";
+import Input from "../components/ui/Input";
+import Button from "../components/ui/Button";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const {
     register,
@@ -30,14 +32,11 @@ export default function LoginPage() {
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      // Mock API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log("Logging in with:", data);
-
+      await login(data.email, data.password);
       toast.success("Successfully logged in!");
-      navigate("/");
+      navigate("/dashboard");
     } catch (err) {
-      toast.error("Invalid email or password.");
+      toast.error(err.message || "Invalid email or password.");
     } finally {
       setIsLoading(false);
     }
@@ -51,7 +50,7 @@ export default function LoginPage() {
       />
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <AuthInput
+        <Input
           label="Email Address"
           name="email"
           type="email"
@@ -62,7 +61,7 @@ export default function LoginPage() {
           disabled={isLoading}
         />
 
-        <AuthInput
+        <Input
           label="Password"
           name="password"
           type="password"
@@ -82,12 +81,15 @@ export default function LoginPage() {
         />
 
         <div className="pt-2">
-          <AuthButton
-            isLoading={isLoading}
+          <Button
+            type="submit"
+            loading={isLoading}
             icon={ArrowRight}
+            fullWidth
+            size="lg"
           >
             Sign In
-          </AuthButton>
+          </Button>
         </div>
       </form>
 

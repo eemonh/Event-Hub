@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import {
   ChevronLeft,
   ChevronRight,
-  Images,
   MapPin,
   X,
 } from "lucide-react"

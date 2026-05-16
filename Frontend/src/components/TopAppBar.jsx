@@ -1,6 +1,17 @@
-import React from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+
+const breadcrumbMap = {
+  '/dashboard': 'Dashboard',
+  '/dashboard/events': 'Events',
+  '/dashboard/organizers': 'Organizers',
+  '/dashboard/profile': 'Profile',
+};
 
 const TopAppBar = () => {
+    const { pathname } = useLocation();
+    const navigate = useNavigate();
+    const currentPage = breadcrumbMap[pathname] || 'Dashboard';
+
     return (
         <header className="box-border flex flex-row justify-between items-center px-3 py-4 w-full h-[73px] bg-white/90 border-b border-slate-200 shadow-sm backdrop-blur-sm sticky top-0 z-10">
 
@@ -8,27 +19,8 @@ const TopAppBar = () => {
             <nav className="flex flex-row items-center h-10 gap-1" aria-label="Breadcrumb">
                 <ol className="flex items-center space-x-1">
                     <li>
-                        <a
-                            href="#"
-                            className="text-slate-600 hover:text-slate-900 font-['Inter'] text-[15px] font-medium transition-colors"
-                        >
-                            Dashboard
-                        </a>
-                    </li>
-
-                    {/* Chevron Separator */}
-                    <li className="flex items-center px-1">
-                        <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
-                    </li>
-
-                    <li>
-                        <span
-                            className="text-slate-900 font-['Inter'] text-[15px] font-semibold"
-                            aria-current="page"
-                        >
-                            Add Event
+                        <span className="text-slate-900 font-['Inter'] text-[15px] font-semibold" aria-current="page">
+                            {currentPage}
                         </span>
                     </li>
                 </ol>
@@ -38,7 +30,7 @@ const TopAppBar = () => {
             <div className="flex flex-row items-center gap-4">
 
                 {/* Create Event Button */}
-                <button className="flex flex-row items-center justify-center px-4 py-2 gap-2 h-10 bg-[#15803D] hover:bg-green-800 text-white rounded-lg transition-colors font-['Inter'] font-medium text-[14px] shadow-sm">
+                <button onClick={() => navigate('/dashboard/events')} className="flex flex-row items-center justify-center px-4 py-2 gap-2 h-10 bg-[#15803D] hover:bg-green-800 text-white rounded-lg transition-colors font-['Inter'] font-medium text-[14px] shadow-sm">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
                     </svg>
@@ -51,7 +43,6 @@ const TopAppBar = () => {
                         src="https://ui-avatars.com/api/?name=User&background=F1F5F9&color=475569"
                         alt="User profile"
                         className="w-full h-full object-cover"
-                    /* Note: Replace the src above with your imported image_072c86.png */
                     />
                 </button>
 

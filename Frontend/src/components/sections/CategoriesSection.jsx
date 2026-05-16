@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import {
   ArrowRight,
   BookOpen,
@@ -15,6 +15,7 @@ import {
 import { Link } from "react-router-dom"
 import SectionHeading from "../ui/SectionHeading"
 import { categories } from "../../data/categories"
+import useCarousel from "../../hooks/useCarousel"
 
 const iconMap = {
   music: <Music2 className="w-6 h-6 text-white" />,
@@ -42,8 +43,6 @@ const CategoriesSection = () => {
   const tabletScrollRef = useRef(null)
   const mobilePageRefs = useRef([])
   const tabletPageRefs = useRef([])
-  const [activeMobilePage, setActiveMobilePage] = useState(0)
-  const [activeTabletPage, setActiveTabletPage] = useState(0)
   const [activeDesktopPage, setActiveDesktopPage] = useState(0)
 
   const mobilePages = useMemo(
@@ -68,90 +67,17 @@ const CategoriesSection = () => {
     return pages
   }, [])
 
-  const updateActiveScrollPage = useCallback((container, pageRefs, setPage) => {
-    if (!container) return
+  const mobileCarousel = useCarousel({
+    items: mobilePages,
+    containerRef: mobileScrollRef,
+    itemRefs: mobilePageRefs,
+  })
 
-    const containerRect = container.getBoundingClientRect()
-    const containerCenter = containerRect.left + containerRect.width / 2
-
-    let nextPage = 0
-    let closestDistance = Infinity
-
-    pageRefs.current.forEach((page, index) => {
-      if (!page) return
-
-      const pageRect = page.getBoundingClientRect()
-      const pageCenter = pageRect.left + pageRect.width / 2
-      const distance = Math.abs(containerCenter - pageCenter)
-
-      if (distance < closestDistance) {
-        closestDistance = distance
-        nextPage = index
-      }
-    })
-
-    setPage((currentPage) => (currentPage === nextPage ? currentPage : nextPage))
-  }, [])
-
-  useEffect(() => {
-    const scrollSetups = [
-      {
-        container: mobileScrollRef.current,
-        pageRefs: mobilePageRefs,
-        setPage: setActiveMobilePage,
-      },
-      {
-        container: tabletScrollRef.current,
-        pageRefs: tabletPageRefs,
-        setPage: setActiveTabletPage,
-      },
-    ]
-
-    const cleanups = scrollSetups.flatMap(({ container, pageRefs, setPage }) => {
-      if (!container) return []
-
-      let animationFrameId = null
-
-      const requestActivePageUpdate = () => {
-        if (animationFrameId) return
-
-        animationFrameId = window.requestAnimationFrame(() => {
-          animationFrameId = null
-          updateActiveScrollPage(container, pageRefs, setPage)
-        })
-      }
-
-      container.addEventListener("scroll", requestActivePageUpdate, {
-        passive: true,
-      })
-      window.addEventListener("resize", requestActivePageUpdate)
-
-      return [
-        () => {
-          container.removeEventListener("scroll", requestActivePageUpdate)
-          window.removeEventListener("resize", requestActivePageUpdate)
-
-          if (animationFrameId) {
-            window.cancelAnimationFrame(animationFrameId)
-          }
-        },
-      ]
-    })
-
-    return () => {
-      cleanups.forEach((cleanup) => cleanup())
-    }
-  }, [updateActiveScrollPage])
-
-  const goToSwipePage = (pageIndex, pageRefs, setPage) => {
-    setPage(pageIndex)
-
-    pageRefs.current[pageIndex]?.scrollIntoView({
-      block: "nearest",
-      inline: "center",
-      behavior: "smooth",
-    })
-  }
+  const tabletCarousel = useCarousel({
+    items: tabletPages,
+    containerRef: tabletScrollRef,
+    itemRefs: tabletPageRefs,
+  })
 
   const goToDesktopPage = (pageIndex) => {
     setActiveDesktopPage(
@@ -169,19 +95,15 @@ const CategoriesSection = () => {
           <PaginationDots
             className="md:hidden"
             pages={mobilePages}
-            activePage={activeMobilePage}
-            onPageChange={(pageIndex) =>
-              goToSwipePage(pageIndex, mobilePageRefs, setActiveMobilePage)
-            }
+            activePage={mobileCarousel.activeIndex}
+            onPageChange={mobileCarousel.scrollTo}
           />
 
           <PaginationDots
             className="hidden md:flex xl:hidden"
             pages={tabletPages}
-            activePage={activeTabletPage}
-            onPageChange={(pageIndex) =>
-              goToSwipePage(pageIndex, tabletPageRefs, setActiveTabletPage)
-            }
+            activePage={tabletCarousel.activeIndex}
+            onPageChange={tabletCarousel.scrollTo}
           />
 
           <PaginationDots

@@ -1,7 +1,7 @@
 import { Outlet, useLocation } from 'react-router-dom'
-import MainHeader from '../components/MainHeader'
+import MainHeader from './MainHeader'
 
-const noHeaderRoutes = ['/', '/dashboard']
+const noHeaderRoutes = ['/events', '/venues', '/contact']
 
 export default function RootLayout() {
   const { pathname } = useLocation()

@@ -17,7 +17,7 @@ export const heroEvents = [
     title: "City Marathon",
     category: "Sports",
     image:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1200&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?q=80&w=1200&auto=format&fit=crop",
     featured: false,
   },
 ]

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { NavLink, Link } from "react-router-dom"
-import { ArrowRight, BriefcaseBusiness, Menu, X } from "lucide-react"
+import { ArrowRight, Briefcase, Menu, X } from "lucide-react"
 import { navLinks } from "../../data/navigation"
 
 export default function MainHeader() {
@@ -38,7 +38,7 @@ export default function MainHeader() {
         <div className="mx-auto flex h-full max-w-[1280px] items-center justify-between px-4 md:px-8">
           <Link to="/" className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center">
-              <BriefcaseBusiness size={32} strokeWidth={2.66667} className="text-primary" />
+              <Briefcase size={32} strokeWidth={2.66667} className="text-primary" />
             </div>
             <span className="text-[20px] font-bold leading-7 tracking-[-0.5px] text-text-primary">
               EventHub

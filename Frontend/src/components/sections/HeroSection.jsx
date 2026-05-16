@@ -1,90 +1,22 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useMemo, useRef } from "react"
 import EventCard from "../ui/EventCard"
 import { heroEvents } from "../../data/heroEvents"
+import useCarousel from "../../hooks/useCarousel"
 
 const HeroSection = () => {
   const initialFeaturedIndex = useMemo(() => {
     const featuredIndex = heroEvents.findIndex((event) => event.featured)
-
     return featuredIndex >= 0 ? featuredIndex : 0
   }, [])
 
   const scrollContainerRef = useRef(null)
   const cardRefs = useRef([])
-  const [activeIndex, setActiveIndex] = useState(initialFeaturedIndex)
-
-  const updateActiveCard = useCallback(() => {
-    const container = scrollContainerRef.current
-
-    if (!container) return
-
-    const containerRect = container.getBoundingClientRect()
-    const containerCenter = containerRect.left + containerRect.width / 2
-
-    let nextActiveIndex = 0
-    let closestDistance = Infinity
-
-    cardRefs.current.forEach((card, index) => {
-      if (!card) return
-
-      const cardRect = card.getBoundingClientRect()
-      const cardCenter = cardRect.left + cardRect.width / 2
-      const distance = Math.abs(containerCenter - cardCenter)
-
-      if (distance < closestDistance) {
-        closestDistance = distance
-        nextActiveIndex = index
-      }
-    })
-
-    setActiveIndex((currentIndex) =>
-      currentIndex === nextActiveIndex ? currentIndex : nextActiveIndex
-    )
-  }, [])
-
-  useEffect(() => {
-    const container = scrollContainerRef.current
-
-    if (!container) return
-
-    const mediaQuery = window.matchMedia("(max-width: 767px)")
-    let animationFrameId = null
-
-    const requestActiveCardUpdate = () => {
-      if (!mediaQuery.matches || animationFrameId) return
-
-      animationFrameId = window.requestAnimationFrame(() => {
-        animationFrameId = null
-        updateActiveCard()
-      })
-    }
-
-    const scrollInitialCardIntoView = () => {
-      if (!mediaQuery.matches) return
-
-      cardRefs.current[initialFeaturedIndex]?.scrollIntoView({
-        block: "nearest",
-        inline: "center",
-      })
-      updateActiveCard()
-    }
-
-    scrollInitialCardIntoView()
-
-    container.addEventListener("scroll", requestActiveCardUpdate, {
-      passive: true,
-    })
-    window.addEventListener("resize", requestActiveCardUpdate)
-
-    return () => {
-      container.removeEventListener("scroll", requestActiveCardUpdate)
-      window.removeEventListener("resize", requestActiveCardUpdate)
-
-      if (animationFrameId) {
-        window.cancelAnimationFrame(animationFrameId)
-      }
-    }
-  }, [initialFeaturedIndex, updateActiveCard])
+  const { activeIndex } = useCarousel({
+    items: heroEvents,
+    containerRef: scrollContainerRef,
+    itemRefs: cardRefs,
+    initialIndex: initialFeaturedIndex,
+  })
 
   return (
     <section className="relative overflow-hidden bg-bg-muted py-16 pb-24 md:py-20 md:pb-32">
@@ -111,9 +43,7 @@ const HeroSection = () => {
           {heroEvents.map((event, index) => (
             <div
               key={index}
-              ref={(card) => {
-                cardRefs.current[index] = card
-              }}
+              ref={(card) => { cardRefs.current[index] = card }}
               className="w-[72vw] max-w-[315px] shrink-0 snap-center"
             >
               <EventCard {...event} featured={index === activeIndex} />

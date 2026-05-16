@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { ChevronDown, Loader2, CheckCircle2 } from "lucide-react"
 import Button from "../ui/Button"
+import Input from "../ui/Input"
 import SectionHeading from "../ui/SectionHeading"
 
 export default function Newsletter() {
@@ -57,27 +58,23 @@ export default function Newsletter() {
                   onSubmit={handleSubmit(onSubmit)}
                   className="w-full max-w-[672px] pt-4 flex flex-col md:flex-row gap-3"
                 >
-                  <div className="flex-1 flex flex-col gap-1">
-                    <input
-                      {...register("email", { 
+                  <div className="flex-1">
+                    <Input
+                      name="email"
+                      type="email"
+                      placeholder="Enter your email"
+                      register={register}
+                      registerOptions={{
                         required: "Email is required",
                         pattern: {
                           value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                          message: "Invalid email address"
-                        }
-                      })}
-                      type="email"
-                      placeholder="Enter your email"
+                          message: "Invalid email address",
+                        },
+                      }}
+                      error={errors.email}
                       disabled={isSubmitting}
-                      className={`h-[50px] px-4 rounded-lg border bg-gray-50 text-base outline-none focus:ring-2 transition-all ${
-                        errors.email 
-                          ? "border-red-500 focus:ring-red-200" 
-                          : "border-gray-200 focus:ring-primary/50"
-                      }`}
+                      fullWidth
                     />
-                    {errors.email && (
-                      <span className="text-red-500 text-xs px-1">{errors.email.message}</span>
-                    )}
                   </div>
 
                   <div className="flex-1 flex flex-col gap-1">

@@ -1,4 +1,7 @@
-Backend/node_modules
-Frontend/package-lock.json
-Backend/.env
-Frontend/package-lock.json
+node_modules/
+.env
+package-lock.json
+dist/
+.opencode/plans/2026-05-16-frontend-optimization-design.md
+.opencode/plans/2026-05-16-frontend-optimization-plan.md
+docs/superpowers/specs/2026-05-16-auth-routes-dashboard-design.md

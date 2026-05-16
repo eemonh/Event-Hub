@@ -1,6 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/useAuth';
 
 const SideNavBar = ({ isOpen = true, onToggle }) => {
+    const navigate = useNavigate();
+    const { logout } = useAuth();
     const [activeItem, setActiveItem] = useState('Dashboard');
 
     const navItems = [
@@ -87,7 +91,10 @@ const SideNavBar = ({ isOpen = true, onToggle }) => {
             </nav>
 
             {/* Logout Button */}
-            <button className={`flex ${isOpen ? 'flex-row justify-center items-center px-4 py-3 gap-2 w-full h-[50px]' : 'p-3 w-auto justify-center'} bg-[#BA1A1A] text-white font-semibold rounded-lg hover:bg-red-800 transition-colors mt-auto`}>
+            <button
+                onClick={() => { logout(); navigate('/'); }}
+                className={`flex ${isOpen ? 'flex-row justify-center items-center px-4 py-3 gap-2 w-full h-[50px]' : 'p-3 w-auto justify-center'} bg-[#BA1A1A] text-white font-semibold rounded-lg hover:bg-red-800 transition-colors mt-auto`}
+            >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>

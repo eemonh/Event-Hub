@@ -5,15 +5,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { User, Mail, Lock, Circle } from "lucide-react";
 import toast from "react-hot-toast";
 
+import { useAuth } from "../context/useAuth";
 import { registerSchema } from "../utils/authSchemas";
 import AuthLayout from "../components/auth/AuthLayout";
 import AuthHeader from "../components/auth/AuthHeader";
-import AuthInput from "../components/auth/AuthInput";
-import AuthButton from "../components/auth/AuthButton";
+import Input from "../components/ui/Input";
+import Button from "../components/ui/Button";
 
 export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { register: registerUser } = useAuth();
 
   const {
     register,
@@ -36,14 +38,11 @@ export default function RegisterPage() {
   const onSubmit = async (data) => {
     setIsLoading(true);
     try {
-      // Mock API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log("Registering with:", data);
-
+      await registerUser(data.name, data.email, data.password);
       toast.success("Account created successfully!");
-      navigate("/login");
+      navigate("/dashboard");
     } catch (err) {
-      toast.error("Registration failed. Please try again.");
+      toast.error(err.message || "Registration failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -57,7 +56,7 @@ export default function RegisterPage() {
       />
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <AuthInput
+        <Input
           label="Name"
           name="name"
           placeholder="Full name"
@@ -67,7 +66,7 @@ export default function RegisterPage() {
           disabled={isLoading}
         />
 
-        <AuthInput
+        <Input
           label="Email Address"
           name="email"
           type="email"
@@ -79,7 +78,7 @@ export default function RegisterPage() {
         />
 
         <div className="flex flex-col gap-2">
-          <AuthInput
+          <Input
             label="Password"
             name="password"
             type="password"
@@ -115,9 +114,14 @@ export default function RegisterPage() {
         </div>
 
         <div className="pt-2">
-          <AuthButton isLoading={isLoading}>
+          <Button
+            type="submit"
+            loading={isLoading}
+            fullWidth
+            size="lg"
+          >
             Sign Up
-          </AuthButton>
+          </Button>
         </div>
       </form>
 

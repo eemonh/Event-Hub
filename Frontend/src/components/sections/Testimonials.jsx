@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useRef } from "react"
 import Card from "../ui/Card"
 import SectionHeading from "../ui/SectionHeading"
+import useCarousel from "../../hooks/useCarousel"
 
 const testimonials = [
   {
@@ -33,38 +34,13 @@ const testimonials = [
 ]
 
 export default function Testimonials() {
-  const [activeIndex, setActiveIndex] = useState(0)
   const scrollContainerRef = useRef(null)
-
-  const handleScroll = useCallback(() => {
-    if (!scrollContainerRef.current) return
-
-    const { scrollLeft, clientWidth } = scrollContainerRef.current
-    const newIndex = Math.round(scrollLeft / clientWidth)
-
-    if (newIndex !== activeIndex) {
-      setActiveIndex(newIndex)
-    }
-  }, [activeIndex])
-
-  useEffect(() => {
-    const container = scrollContainerRef.current
-    if (container) {
-      container.addEventListener("scroll", handleScroll, { passive: true })
-      return () => container.removeEventListener("scroll", handleScroll)
-    }
-  }, [handleScroll])
-
-  const scrollToTestimonial = (index) => {
-    if (!scrollContainerRef.current) return
-
-    const { clientWidth } = scrollContainerRef.current
-    scrollContainerRef.current.scrollTo({
-      left: index * clientWidth,
-      behavior: "smooth",
-    })
-    setActiveIndex(index)
-  }
+  const cardRefs = useRef([])
+  const { activeIndex, scrollTo } = useCarousel({
+    items: testimonials,
+    containerRef: scrollContainerRef,
+    itemRefs: cardRefs,
+  })
 
   return (
     <section className="w-full bg-white py-24">
@@ -79,9 +55,10 @@ export default function Testimonials() {
             ref={scrollContainerRef}
             className="flex w-full snap-x snap-mandatory overflow-x-auto [ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           >
-            {testimonials.map((testimonial) => (
+            {testimonials.map((testimonial, index) => (
               <div
                 key={testimonial.id}
+                ref={(el) => { cardRefs.current[index] = el }}
                 className="w-full shrink-0 snap-center px-4"
               >
                 <Card
@@ -121,7 +98,7 @@ export default function Testimonials() {
             {testimonials.map((_, index) => (
               <button
                 key={index}
-                onClick={() => scrollToTestimonial(index)}
+                onClick={() => scrollTo(index)}
                 aria-label={`Go to testimonial ${index + 1}`}
                 className={`h-3 w-3 rounded-full transition-all duration-300 ${
                   activeIndex === index ? "bg-primary w-6" : "bg-gray-200"

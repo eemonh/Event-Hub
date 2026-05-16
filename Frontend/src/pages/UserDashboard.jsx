@@ -1,7 +1,3 @@
-import React, { useState, useEffect } from "react";
-import SideNavBar from "../components/SideNavBar";
-import TopAppBar from "../components/TopAppBar";
-import useIsDesktop from "../hooks/useIsDesktop";
 import {
   CalendarDays,
   Clock3,
@@ -26,15 +22,15 @@ const stats = [
 
 const upcomingEvents = [
   {
-    month: "Oct",
-    day: "24",
-    title: "Tech Innovators Summit 2024",
+    month: "Jun",
+    day: "12",
+    title: "Tech Innovators Summit 2026",
     time: "9:00 AM - 5:00 PM",
     location: "Moscone Center, SF",
   },
   {
-    month: "Nov",
-    day: "02",
+    month: "Jul",
+    day: "08",
     title: "Design Leadership Conference",
     time: "10:00 AM - 4:00 PM",
     location: "Online Event",
@@ -45,7 +41,7 @@ const recommendedEvents = [
   {
     title: "Future of Web Design Workshop",
     tag: "UX/UI",
-    date: "Nov 15, 2024",
+    date: "Jun 15, 2026",
     location: "Seattle, WA",
     image:
       "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=1200&auto=format&fit=crop",
@@ -53,15 +49,15 @@ const recommendedEvents = [
   {
     title: "Product Managers Networking Night",
     tag: "Leadership",
-    date: "Dec 05, 2024",
+    date: "Jul 05, 2026",
     location: "The Grand Hotel, NY",
     image:
       "https://images.unsplash.com/photo-1511578314322-379afb476865?q=80&w=1200&auto=format&fit=crop",
   },
   {
-    title: "Founder’s Pitch & Mingle",
+    title: "Founder's Pitch & Mingle",
     tag: "Startup",
-    date: "Jan 12, 2025",
+    date: "Aug 12, 2026",
     location: "Innovation Hub, Austin",
     image:
       "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1200&auto=format&fit=crop",
@@ -69,22 +65,8 @@ const recommendedEvents = [
 ];
 
 export default function UserDashboard() {
-  const isDesktop = useIsDesktop();
-  const [sidebarOpen, setSidebarOpen] = useState(isDesktop);
-
-  useEffect(() => {
-    setSidebarOpen(isDesktop);
-  }, [isDesktop]);
-
   return (
-    <div className="min-h-screen bg-slate-50 font-[Inter] text-slate-900">
-      <div className="flex">
-        <SideNavBar isOpen={sidebarOpen} onToggle={() => setSidebarOpen((v) => !v)} />
-
-        <div className="flex-1 flex flex-col">
-          <TopAppBar />
-
-          <main className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
+    <main className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
         {/* HERO */}
         <section className="space-y-2">
           <h1 className="font-[Poppins] text-4xl font-bold tracking-tight text-slate-900 md:text-5xl">
@@ -251,9 +233,6 @@ export default function UserDashboard() {
             ))}
           </div>
         </section>
-      </main>
-        </div>
-      </div>
-    </div>
+    </main>
   );
 }
