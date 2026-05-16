@@ -142,7 +142,7 @@ const SideNavBar = ({ isOpen = true, onToggle }) => {
 
             {/* Logout Button */}
             <button
-                onClick={() => { logout(); navigate('/'); }}
+                onClick={() => { logout(); window.location.href = '/'; }}
                 className={`flex ${isOpen ? 'flex-row justify-center items-center px-4 py-3 gap-2 w-full h-[50px]' : 'p-3 w-auto justify-center'} bg-[#d32f2f] text-white font-semibold rounded-lg hover:bg-[#b71c1c] transition-colors mt-auto`}
             >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
