@@ -1,5 +1,6 @@
+/* eslint-disable react-refresh/only-export-components */
 import { useState, useCallback, createContext, useContext, useEffect } from "react";
-import { loginUser, registerUser } from "../services/auth";
+import { loginUser, registerUser, getMe } from "../services/auth";
 
 const AUTH_KEY = "eventhub_auth";
 const AuthContext = createContext(null);
@@ -38,9 +39,19 @@ export function AuthProvider({ children }) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // TODO: Validate token with backend on mount
-    // e.g. await api.validateToken(token);
-    setIsLoading(false);
+    if (state.token) {
+      getMe(state.token)
+        .then((data) => {
+          setState((prev) => ({ ...prev, user: data.user }));
+        })
+        .catch(() => {
+          setState({ user: null, token: null });
+          saveAuth(null);
+        })
+        .finally(() => setIsLoading(false));
+    } else {
+      setIsLoading(false);
+    }
   }, []);
 
   const login = useCallback(async (email, password) => {
