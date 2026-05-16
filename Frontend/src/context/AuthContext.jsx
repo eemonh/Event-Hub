@@ -1,8 +1,8 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, createContext, useContext, useEffect } from "react";
 import { loginUser, registerUser } from "../services/auth";
-import { AuthContext } from "./authContextValue";
 
 const AUTH_KEY = "eventhub_auth";
+const AuthContext = createContext(null);
 
 function loadAuth() {
   try {
@@ -27,46 +27,52 @@ function saveAuth(data) {
   }
 }
 
-function initializeAuth() {
-  const saved = loadAuth();
-  return {
-    user: saved?.user ?? null,
-    token: saved?.token ?? null,
-  };
-}
-
 export function AuthProvider({ children }) {
-  const [{ user, token }, setAuthState] = useState(initializeAuth);
-  const [isLoading] = useState(false);
+  const [state, setState] = useState(() => {
+    const saved = loadAuth();
+    return {
+      user: saved?.user ?? null,
+      token: saved?.token ?? null,
+    };
+  });
+  const [isLoading, setIsLoading] = useState(true);
 
-  const setUser = useCallback((user) => setAuthState((prev) => ({ ...prev, user })), []);
-  const setToken = useCallback((token) => setAuthState((prev) => ({ ...prev, token })), []);
+  useEffect(() => {
+    // TODO: Validate token with backend on mount
+    // e.g. await api.validateToken(token);
+    setIsLoading(false);
+  }, []);
 
   const login = useCallback(async (email, password) => {
     const result = await loginUser(email, password);
-    setUser(result.user);
-    setToken(result.token);
+    setState({ user: result.user, token: result.token });
     saveAuth(result);
-  }, [setUser, setToken]);
+  }, []);
 
   const register = useCallback(async (name, email, password) => {
     const result = await registerUser(name, email, password);
-    setUser(result.user);
-    setToken(result.token);
+    setState({ user: result.user, token: result.token });
     saveAuth(result);
-  }, [setUser, setToken]);
+  }, []);
 
   const logout = useCallback(() => {
-    setUser(null);
-    setToken(null);
+    setState({ user: null, token: null });
     saveAuth(null);
-  }, [setUser, setToken]);
+  }, []);
 
-  const isAuthenticated = user !== null && token !== null;
+  const isAuthenticated = state.user !== null && state.token !== null;
 
   return (
-    <AuthContext.Provider value={{ user, token, isLoading, isAuthenticated, login, register, logout }}>
+    <AuthContext.Provider value={{ user: state.user, token: state.token, isLoading, isAuthenticated, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
+}
+
+export function useAuth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return ctx;
 }

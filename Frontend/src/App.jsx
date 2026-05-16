@@ -10,8 +10,7 @@ const HomePage = lazy(() => import('./pages/HomePage'))
 const EventsPage = lazy(() => import('./pages/EventsPage'))
 const VenuesPage = lazy(() => import('./pages/VenuesPage'))
 const ContactPage = lazy(() => import('./pages/ContactPage'))
-const RegisterPage = lazy(() => import('./pages/RegisterPage'))
-const LoginPage = lazy(() => import('./pages/LoginPage'))
+const AuthPage = lazy(() => import('./pages/AuthPage'))
 const UserDashboard = lazy(() => import('./pages/UserDashboard'))
 const DashboardEvents = lazy(() => import('./pages/dashboard/EventsPage'))
 const DashboardOrganizers = lazy(() => import('./pages/dashboard/OrganizersPage'))
@@ -30,8 +29,8 @@ export default function App() {
             <Route path="/contact" element={<ContactPage />} />
           </Route>
 
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<AuthPage />} />
+          <Route path="/login" element={<AuthPage />} />
 
           <Route element={<ProtectedRoute />}>
             <Route element={<DashboardLayout />}>

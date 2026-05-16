@@ -1,5 +1,5 @@
 import { User } from "lucide-react";
-import { useAuth } from "../../context/useAuth";
+import { useAuth } from "../../context/AuthContext";
 
 export default function DashboardProfile() {
   const { user } = useAuth();
