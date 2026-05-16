@@ -14,8 +14,122 @@ import {
 } from "lucide-react"
 import { Link } from "react-router-dom"
 import SectionHeading from "../ui/SectionHeading"
-import { categories } from "../../data/categories"
 import useCarousel from "../../hooks/useCarousel"
+
+const categories = [
+  {
+    title: "Music",
+    description:
+      "Immerse yourself in the rhythm of unforgettable music events.",
+    slug: "music",
+    eventCount: 12,
+    nextEvent: "Fri, 8 PM",
+    featuredLabel: "Live sets nearby",
+    bg: "bg-blue-500",
+    iconBg: "bg-white/20",
+    text: "text-white",
+    desc: "text-blue-100",
+    iconName: "music",
+  },
+  {
+    title: "Nightlife",
+    description:
+      "Discover the pulse of the city with our vibrant nightlife events.",
+    slug: "nightlife",
+    eventCount: 8,
+    nextEvent: "This weekend",
+    featuredLabel: "Late-night picks",
+    bg: "bg-yellow-400",
+    iconBg: "bg-white/30",
+    text: "text-yellow-900",
+    desc: "text-yellow-800",
+    iconName: "moon",
+  },
+  {
+    title: "Holidays",
+    description:
+      "Celebrate the joy of the season with unforgettable holiday events.",
+    slug: "holidays",
+    eventCount: 5,
+    nextEvent: "Next Friday",
+    featuredLabel: "Seasonal moments",
+    bg: "bg-orange-400",
+    iconBg: "bg-white/20",
+    text: "text-white",
+    desc: "text-orange-100",
+    iconName: "briefcase",
+  },
+  {
+    title: "Food & Drink",
+    description:
+      "Taste your way through dinners, markets, and chef-led gatherings.",
+    slug: "food-drink",
+    eventCount: 9,
+    nextEvent: "Sat, 6 PM",
+    featuredLabel: "Table-ready plans",
+    bg: "bg-emerald-500",
+    iconBg: "bg-white/20",
+    text: "text-white",
+    desc: "text-emerald-100",
+    iconName: "utensils",
+  },
+  {
+    title: "Networking",
+    description:
+      "Meet founders, teams, and communities building what comes next.",
+    slug: "networking",
+    eventCount: 7,
+    nextEvent: "Wed, 5 PM",
+    featuredLabel: "People to meet",
+    bg: "bg-indigo-500",
+    iconBg: "bg-white/20",
+    text: "text-white",
+    desc: "text-indigo-100",
+    iconName: "users",
+  },
+  {
+    title: "Sports",
+    description:
+      "Find energetic match days, runs, tournaments, and fan experiences.",
+    slug: "sports",
+    eventCount: 6,
+    nextEvent: "Sun, 10 AM",
+    featuredLabel: "Game-day energy",
+    bg: "bg-rose-500",
+    iconBg: "bg-white/20",
+    text: "text-white",
+    desc: "text-rose-100",
+    iconName: "trophy",
+  },
+  {
+    title: "Arts & Culture",
+    description:
+      "Step into exhibitions, performances, and creative nights around town.",
+    slug: "arts-culture",
+    eventCount: 10,
+    nextEvent: "Thu, 7 PM",
+    featuredLabel: "Creative escapes",
+    bg: "bg-fuchsia-500",
+    iconBg: "bg-white/20",
+    text: "text-white",
+    desc: "text-fuchsia-100",
+    iconName: "palette",
+  },
+  {
+    title: "Workshops",
+    description:
+      "Learn something useful with hands-on sessions and guided classes.",
+    slug: "workshops",
+    eventCount: 4,
+    nextEvent: "Tue, 4 PM",
+    featuredLabel: "Hands-on learning",
+    bg: "bg-cyan-600",
+    iconBg: "bg-white/20",
+    text: "text-white",
+    desc: "text-cyan-100",
+    iconName: "bookOpen",
+  },
+]
 
 const iconMap = {
   music: <Music2 className="w-6 h-6 text-white" />,

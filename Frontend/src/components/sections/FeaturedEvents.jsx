@@ -4,7 +4,112 @@ import { Link } from "react-router-dom"
 import Button from "../ui/Button"
 import EventCard from "../ui/EventCard"
 import SectionHeading from "../ui/SectionHeading"
-import { featuredEvents } from "../../data/featuredEvents"
+
+const featuredEvents = [
+  {
+    id: 1,
+    title: "Flavor Fest",
+    category: "Food & Drink",
+    format: "In person",
+    location: "Central Park Pavilion",
+    city: "New York",
+    time: "9:00 AM",
+    date: "Thu, Apr 20",
+    price: "$79",
+    tags: ["food-drink", "tasting", "outdoor", "weekend"],
+    audience: ["foodies", "young-professionals"],
+    popularity: 92,
+    recommendationReason: "Because you viewed chef-led tastings",
+    image:
+      "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1400&auto=format&fit=crop",
+    large: true,
+  },
+  {
+    id: 2,
+    title: "Sips & Bites",
+    category: "Food & Drink",
+    format: "In person",
+    location: "Riverfront Market",
+    city: "New York",
+    time: "12:00 PM",
+    date: "Fri, Feb 15",
+    price: "$79",
+    tags: ["food-drink", "market", "nightlife", "local"],
+    audience: ["foodies", "couples"],
+    popularity: 86,
+    recommendationReason: "Popular near your saved area",
+    image:
+      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1200&auto=format&fit=crop",
+  },
+  {
+    id: 3,
+    title: "Gourmet Gathering",
+    category: "Food & Drink",
+    format: "Online",
+    location: "The Garden Walk",
+    city: "Virtual",
+    time: "3:00 PM",
+    date: "Sat, Feb 16",
+    price: "$79",
+    tags: ["food-drink", "online", "workshop", "community"],
+    audience: ["foodies", "remote-attendees"],
+    popularity: 78,
+    recommendationReason: "Matches your online event history",
+    image:
+      "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=1200&auto=format&fit=crop",
+  },
+  {
+    id: 4,
+    title: "Indie Night Live",
+    category: "Music",
+    format: "In person",
+    location: "Warehouse Stage",
+    city: "New York",
+    time: "8:00 PM",
+    date: "Sat, Apr 22",
+    price: "$49",
+    tags: ["music", "live", "nightlife", "indie"],
+    audience: ["music-fans", "young-professionals"],
+    popularity: 88,
+    recommendationReason: "Because you follow live music nights",
+    image:
+      "https://images.unsplash.com/photo-1506157786151-b8491531f063?q=80&w=1200&auto=format&fit=crop",
+  },
+  {
+    id: 5,
+    title: "Studio Sessions Online",
+    category: "Music",
+    format: "Online",
+    location: "Streaming Room",
+    city: "Virtual",
+    time: "7:00 PM",
+    date: "Wed, Apr 26",
+    price: "$29",
+    tags: ["music", "online", "artist-talk", "workshop"],
+    audience: ["music-fans", "remote-attendees"],
+    popularity: 74,
+    recommendationReason: "A remote pick from your music history",
+    image:
+      "https://images.unsplash.com/photo-1511379938547-c1f69419868d?q=80&w=1200&auto=format&fit=crop",
+  },
+  {
+    id: 6,
+    title: "Founders Table",
+    category: "Networking",
+    format: "In person",
+    location: "Civic Loft",
+    city: "New York",
+    time: "6:00 PM",
+    date: "Thu, Apr 27",
+    price: "$39",
+    tags: ["networking", "founders", "local", "career"],
+    audience: ["founders", "young-professionals"],
+    popularity: 81,
+    recommendationReason: "Trending with professionals nearby",
+    image:
+      "https://images.unsplash.com/photo-1515169067865-5387ec356754?q=80&w=1200&auto=format&fit=crop",
+  },
+]
 
 const filters = [
   { label: "For You", value: "for-you" },

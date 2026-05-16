@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react"
 import { NavLink, Link } from "react-router-dom"
 import { ArrowRight, Briefcase, Menu, X } from "lucide-react"
-import { navLinks } from "../../data/navigation"
+
+const navLinks = [
+  { label: "Home", path: "/" },
+  { label: "Events", path: "/events" },
+  { label: "Venues", path: "/venues" },
+  { label: "Contact Us", path: "/contact" },
+]
 
 export default function MainHeader() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -13,7 +19,7 @@ export default function MainHeader() {
     return () => window.removeEventListener("scroll", onScroll)
   }, [])
 
-  useEffect(() => { 
+  useEffect(() => {
     if (!isMobileOpen) return
     const onKey = (e) => {
       if (e.key === "Escape") setIsMobileOpen(false)

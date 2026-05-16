@@ -4,7 +4,7 @@ import CategoriesSection from '../components/sections/CategoriesSection'
 import FeaturedEvents from '../components/sections/FeaturedEvents'
 import EventGallery from '../components/sections/EventGallery'
 import Testimonials from '../components/sections/Testimonials'
-import Footer from '../components/layout/Footer'
+import Footer from '../layouts/Footer'
 
 const Newsletter = lazy(() => import('../components/sections/Newsletter'))
 

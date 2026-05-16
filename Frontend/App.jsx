@@ -1,20 +1,20 @@
 import { lazy, Suspense } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
-import RootLayout from './components/layout/RootLayout'
-import ProtectedRoute from './components/auth/ProtectedRoute'
-import DashboardLayout from './components/layout/DashboardLayout'
-import PageSkeleton from './components/ui/PageSkeleton'
+import RootLayout from './src/layouts/RootLayout'
+import ProtectedRoute from './src/components/auth/ProtectedRoute'
+import DashboardLayout from './src/layouts/DashboardLayout'
+import PageSkeleton from './src/components/ui/PageSkeleton'
 
-const HomePage = lazy(() => import('./pages/HomePage'))
-const EventsPage = lazy(() => import('./pages/EventsPage'))
-const VenuesPage = lazy(() => import('./pages/VenuesPage'))
-const ContactPage = lazy(() => import('./pages/ContactPage'))
-const AuthPage = lazy(() => import('./pages/AuthPage'))
-const UserDashboard = lazy(() => import('./pages/UserDashboard'))
-const DashboardEvents = lazy(() => import('./pages/dashboard/EventsPage'))
-const DashboardOrganizers = lazy(() => import('./pages/dashboard/OrganizersPage'))
-const DashboardProfile = lazy(() => import('./pages/dashboard/ProfilePage'))
+const HomePage = lazy(() => import('./src/pages/HomePage'))
+const EventsPage = lazy(() => import('./src/pages/EventsPage'))
+const VenuesPage = lazy(() => import('./src/pages/VenuesPage'))
+const ContactPage = lazy(() => import('./src/pages/ContactPage'))
+const AuthPage = lazy(() => import('./src/pages/AuthPage'))
+const UserDashboard = lazy(() => import('./src/pages/UserDashboard'))
+const DashboardEvents = lazy(() => import('./src/pages/dashboard/EventsPage'))
+const DashboardOrganizers = lazy(() => import('./src/pages/dashboard/OrganizersPage'))
+const DashboardProfile = lazy(() => import('./src/pages/dashboard/ProfilePage'))
 
 export default function App() {
   return (

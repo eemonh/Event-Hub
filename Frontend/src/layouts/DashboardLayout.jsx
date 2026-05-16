@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Outlet } from "react-router-dom";
-import SideNavBar from "../SideNavBar";
-import TopAppBar from "../TopAppBar";
-import useIsDesktop from "../../hooks/useIsDesktop";
+import SideNavBar from "./SideNavBar";
+import TopAppBar from "./TopAppBar";
+import useIsDesktop from "../hooks/useIsDesktop";
 
 export default function DashboardLayout() {
   const isDesktop = useIsDesktop();
