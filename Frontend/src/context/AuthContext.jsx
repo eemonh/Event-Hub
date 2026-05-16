@@ -36,22 +36,21 @@ export function AuthProvider({ children }) {
       token: saved?.token ?? null,
     };
   });
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(() => !!loadAuth()?.token);
 
   useEffect(() => {
-    if (state.token) {
-      getMe(state.token)
-        .then((data) => {
-          setState((prev) => ({ ...prev, user: data.user }));
-        })
-        .catch(() => {
-          setState({ user: null, token: null });
-          saveAuth(null);
-        })
-        .finally(() => setIsLoading(false));
-    } else {
-      setIsLoading(false);
-    }
+    if (!state.token) return;
+
+    getMe(state.token)
+      .then((data) => {
+        setState((prev) => ({ ...prev, user: data.user }));
+      })
+      .catch(() => {
+        setState({ user: null, token: null });
+        saveAuth(null);
+      })
+      .finally(() => setIsLoading(false));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const login = useCallback(async (email, password) => {
