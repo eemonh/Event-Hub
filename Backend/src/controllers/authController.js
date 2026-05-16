@@ -1,6 +1,6 @@
 import User from "../models/User.js";
 import Token from "../models/Token.js";
-import generateToken from "../utils/generateToken.js";
+import generateToken, { generateRefreshToken } from "../utils/generateToken.js";
 
 export async function register(req, res) {
   try {
@@ -37,11 +37,19 @@ export async function login(req, res) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    const token = generateToken(user._id);
+    const accessToken = generateToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
 
     res.json({
       user: { id: user._id, name: user.name, email: user.email, role: user.role },
-      token,
+      accessToken,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
