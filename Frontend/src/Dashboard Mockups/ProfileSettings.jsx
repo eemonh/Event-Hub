@@ -1,23 +1,12 @@
-import React from 'react';
-import { Plus, Info } from 'lucide-react';
+import { Info } from 'lucide-react';
+import MockupLayout from './MockupLayout';
 
 export default function ProfileSettings() {
   return (
-    <div className="p-8 max-w-[1400px] w-full mx-auto font-sans text-gray-900">
-      
-      {/* Top Page Action Bar */}
-      <div className="flex justify-between items-center mb-8">
-        <div className="text-sm text-gray-500 font-medium">
-          <span>Dashboard</span>
-          <span className="mx-2">&gt;</span>
-          <span className="text-gray-900 font-semibold">Overview</span>
-        </div>
-        <button className="bg-[#6200ea] hover:bg-[#5200c3] text-white px-5 py-2.5 rounded-lg flex items-center text-sm font-semibold transition-colors shadow-sm">
-          <Plus className="w-4 h-4 mr-2" />
-          Add New User
-        </button>
-      </div>
-
+    <MockupLayout 
+      breadcrumbs={['Dashboard', 'Overview']} 
+      actionLabel="Add New User"
+    >
       {/* Page Title */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Profile Settings</h1>
@@ -115,6 +104,6 @@ export default function ProfileSettings() {
         </div>
 
       </div>
-    </div>
+    </MockupLayout>
   );
-}
+}

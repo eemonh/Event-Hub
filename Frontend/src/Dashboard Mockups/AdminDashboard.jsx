@@ -1,11 +1,9 @@
-import React from 'react';
 import { 
   Calendar, 
   UserPlus, 
   Banknote, 
   TrendingUp, 
   MoreVertical, 
-  Plus, 
   ChevronLeft, 
   ChevronRight, 
   Activity, 
@@ -13,6 +11,7 @@ import {
   Utensils,
   ArrowRight
 } from 'lucide-react';
+import MockupLayout from './MockupLayout';
 
 // --- MOCK DATA ---
 const statsData = [
@@ -86,21 +85,10 @@ const upcomingEvents = [
 
 export default function AdminDashboard() {
   return (
-    <div className="p-8 max-w-[1400px] w-full mx-auto font-sans">
-      
-      {/* Top Page Action Bar */}
-      <div className="flex justify-between items-center mb-8">
-        <div className="text-sm text-gray-500 font-medium">
-          <span>Dashboard</span>
-          <span className="mx-2">&gt;</span>
-          <span className="text-gray-900 font-semibold">Overview</span>
-        </div>
-        <button className="bg-[#6200ea] hover:bg-[#5200c3] text-white px-5 py-2.5 rounded-lg flex items-center text-sm font-semibold transition-colors shadow-sm">
-          <Plus className="w-4 h-4 mr-2" />
-          Create Event
-        </button>
-      </div>
-
+    <MockupLayout 
+      breadcrumbs={['Dashboard', 'Overview']} 
+      actionLabel="Create Event"
+    >
       {/* Header Section */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard Overview</h1>
@@ -230,6 +218,6 @@ export default function AdminDashboard() {
         </div>
         
       </div>
-    </div>
+    </MockupLayout>
   );
 }

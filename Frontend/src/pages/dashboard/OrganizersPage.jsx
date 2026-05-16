@@ -1,6 +1,13 @@
+import { useEffect } from "react";
 import { Users } from "lucide-react";
+import { useBreadcrumbs } from "../../context/BreadcrumbContext";
 
 export default function DashboardOrganizers() {
+  const { setBreadcrumbs } = useBreadcrumbs();
+  useEffect(() => {
+    setBreadcrumbs(["Dashboard", "Organizers"]);
+  }, [setBreadcrumbs]);
+
   return (
     <div className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
       <section className="space-y-2">

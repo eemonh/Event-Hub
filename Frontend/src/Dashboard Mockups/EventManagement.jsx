@@ -1,4 +1,3 @@
-import React from 'react';
 import { 
   Search, 
   ChevronDown, 
@@ -11,6 +10,7 @@ import {
   CheckCircle2,
   Circle
 } from 'lucide-react';
+import MockupLayout from './MockupLayout';
 
 // --- MOCK DATA ---
 const eventsData = [
@@ -127,7 +127,7 @@ const ProgressBar = ({ registered, capacity, status }) => {
 // --- MAIN COMPONENT ---
 export default function EventManagement() {
   return (
-    <div className="p-8 max-w-[1400px] w-full mx-auto font-sans">
+    <MockupLayout breadcrumbs={['Dashboard', 'Event Management']} actionLabel="Create Event">
       
       {/* Header and Controls */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-6 gap-4">
@@ -257,6 +257,6 @@ export default function EventManagement() {
         </div>
         
       </div>
-    </div>
+    </MockupLayout>
   );
 }

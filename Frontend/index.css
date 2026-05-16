@@ -9,3 +9,20 @@
   --color-bg-muted: #F5F5F5;
   --font-family-sans: "Nimbus Sans", "Inter", Arial, sans-serif;
 }
+
+@utility custom-scrollbar {
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #E2E8F0;
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #CBD5E1;
+  }
+}
+

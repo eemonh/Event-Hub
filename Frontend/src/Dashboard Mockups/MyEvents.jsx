@@ -1,5 +1,5 @@
-import React from 'react';
 import { Calendar, Clock, MapPin, Ticket, RotateCcw } from 'lucide-react';
+import MockupLayout from './MockupLayout';
 
 // --- MOCK DATA ---
 const upcomingEvents = [
@@ -110,7 +110,10 @@ const EventCard = ({ event, isPast }) => {
 // --- MAIN PAGE COMPONENT ---
 export default function MyEvents() {
   return (
-    <div className="p-8 max-w-7xl mx-auto w-full">
+    <MockupLayout 
+      breadcrumbs={['Dashboard', 'My Events']} 
+      actionLabel="Explore More"
+    >
       {/* Page Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">My Events</h1>
@@ -120,7 +123,7 @@ export default function MyEvents() {
       {/* Upcoming Events Section */}
       <div className="mb-12">
         <h2 className="text-xl font-semibold text-gray-800 mb-6">Upcoming Events</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {upcomingEvents.map((event) => (
             <EventCard key={event.id} event={event} isPast={false} />
           ))}
@@ -130,12 +133,12 @@ export default function MyEvents() {
       {/* Past Events Section */}
       <div>
         <h2 className="text-xl font-semibold text-gray-800 mb-6">Past Events</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {pastEvents.map((event) => (
             <EventCard key={event.id} event={event} isPast={true} />
           ))}
         </div>
       </div>
-    </div>
+    </MockupLayout>
   );
 }

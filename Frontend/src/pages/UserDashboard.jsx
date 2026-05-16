@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   CalendarDays,
   Clock3,
@@ -6,6 +8,7 @@ import {
   Ticket,
   ChevronRight,
 } from "lucide-react";
+import { useBreadcrumbs } from "../context/BreadcrumbContext";
 
 const stats = [
   {
@@ -65,6 +68,13 @@ const recommendedEvents = [
 ];
 
 export default function UserDashboard() {
+  const navigate = useNavigate();
+  const { setBreadcrumbs, setAction } = useBreadcrumbs();
+  useEffect(() => {
+    setBreadcrumbs(["Dashboard", "Overview"]);
+    setAction({ label: "Create Event", onClick: () => navigate("/dashboard/events") });
+  }, [setBreadcrumbs, setAction, navigate]);
+
   return (
     <main className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
         {/* HERO */}

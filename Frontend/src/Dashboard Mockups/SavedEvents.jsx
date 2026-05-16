@@ -1,5 +1,5 @@
-import React from 'react';
 import { Calendar, MapPin, Bookmark } from 'lucide-react';
+import MockupLayout from './MockupLayout';
 
 // --- MOCK DATA ---
 const savedEvents = [
@@ -96,7 +96,10 @@ const SavedEventCard = ({ event }) => {
 // --- MAIN PAGE COMPONENT ---
 export default function SavedEvents() {
   return (
-    <div className="p-8 max-w-7xl mx-auto w-full">
+    <MockupLayout 
+      breadcrumbs={['Dashboard', 'Saved Events']} 
+      actionLabel="Explore Events"
+    >
       {/* Page Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Saved Events</h1>
@@ -109,6 +112,6 @@ export default function SavedEvents() {
           <SavedEventCard key={event.id} event={event} />
         ))}
       </div>
-    </div>
+    </MockupLayout>
   );
 }

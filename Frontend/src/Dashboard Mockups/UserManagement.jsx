@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Search, Plus, Edit2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState } from 'react';
+import { Search, Edit2, ChevronLeft, ChevronRight } from 'lucide-react';
+import MockupLayout from './MockupLayout';
 
 // --- MOCK DATA ---
 const usersData = [
@@ -17,21 +18,10 @@ export default function UserManagement() {
   const [activeFilter, setActiveFilter] = useState('All');
 
   return (
-    <div className="p-8 max-w-[1400px] w-full mx-auto font-sans">
-      
-      {/* Top Page Action Bar */}
-      <div className="flex justify-between items-center mb-8">
-        <div className="text-sm text-gray-500 font-medium">
-          <span>Dashboard</span>
-          <span className="mx-2">&gt;</span>
-          <span className="text-gray-900 font-semibold">Overview</span>
-        </div>
-        <button className="bg-[#6200ea] hover:bg-[#5200c3] text-white px-5 py-2.5 rounded-lg flex items-center text-sm font-semibold transition-colors shadow-sm">
-          <Plus className="w-4 h-4 mr-2" />
-          Add New User
-        </button>
-      </div>
-
+    <MockupLayout 
+      breadcrumbs={['Dashboard', 'User Management']} 
+      actionLabel="Add New User"
+    >
       {/* Header Section & Filters */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-6 gap-4">
         <div>
@@ -139,6 +129,6 @@ export default function UserManagement() {
         </div>
         
       </div>
-    </div>
+    </MockupLayout>
   );
 }

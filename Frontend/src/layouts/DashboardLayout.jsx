@@ -3,10 +3,12 @@ import { Outlet } from "react-router-dom";
 import SideNavBar from "./SideNavBar";
 import TopAppBar from "./TopAppBar";
 import useIsDesktop from "../hooks/useIsDesktop";
+import { BreadcrumbProvider, useBreadcrumbs } from "../context/BreadcrumbContext";
 
-export default function DashboardLayout() {
+function DashboardContent() {
   const isDesktop = useIsDesktop();
   const [sidebarOpen, setSidebarOpen] = useState(isDesktop);
+  const { breadcrumbs, action } = useBreadcrumbs();
 
   const prevIsDesktop = useRef(isDesktop);
   useEffect(() => {
@@ -17,14 +19,22 @@ export default function DashboardLayout() {
   }, [isDesktop]);
 
   return (
-    <div className="flex min-h-screen bg-slate-50 font-[Inter] text-slate-900">
+    <div className="flex h-screen overflow-hidden bg-[#f8fafc] font-[Inter] text-slate-900">
       <SideNavBar isOpen={sidebarOpen} onToggle={() => setSidebarOpen((v) => !v)} />
       <div className="flex flex-1 flex-col">
-        <TopAppBar />
-        <main className="flex-1">
+        <TopAppBar breadcrumbs={breadcrumbs} actionLabel={action.label} onAction={action.onClick} />
+        <main className="flex-1 overflow-y-auto">
           <Outlet />
         </main>
       </div>
     </div>
+  );
+}
+
+export default function DashboardLayout() {
+  return (
+    <BreadcrumbProvider>
+      <DashboardContent />
+    </BreadcrumbProvider>
   );
 }
