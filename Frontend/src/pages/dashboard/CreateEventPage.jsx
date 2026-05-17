@@ -31,7 +31,7 @@ export default function CreateEventPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.type || !formData.startDate || !formData.venue || !formData.category) {
+    if (!formData.name || !formData.type || !formData.startDate || !formData.venue || !formData.category || !formData.description) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -168,7 +168,7 @@ export default function CreateEventPage() {
             </div>
             <div>
               <label className="block text-xs font-bold text-gray-500 mb-2">Event Description</label>
-              <textarea name="description" value={formData.description} onChange={handleChange} rows="4" placeholder="Provide details about your event..."
+              <textarea name="description" value={formData.description} onChange={handleChange} rows="4" placeholder="Provide details about your event..." required
                 className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/30 text-gray-900 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-gray-400 transition-all resize-y"></textarea>
             </div>
           </form>

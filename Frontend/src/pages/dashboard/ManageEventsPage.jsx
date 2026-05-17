@@ -7,7 +7,7 @@ import { useBreadcrumbs } from "../../context/BreadcrumbContext";
 import { getAllEvents, deleteEvent } from "../../services/events";
 
 const StatusBadge = ({ status }) => {
-  const styles = { published: "bg-emerald-50 text-emerald-700 border-emerald-100", draft: "bg-gray-100 text-gray-600 border-gray-200", cancelled: "bg-red-50 text-red-700 border-red-100" };
+  const styles = { published: "bg-emerald-50 text-emerald-700 border-emerald-100", draft: "bg-gray-100 text-gray-600 border-gray-200", cancelled: "bg-red-50 text-red-700 border-red-100", completed: "bg-blue-50 text-blue-700 border-blue-100" };
   return (
     <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${styles[status] || styles.draft}`}>
       {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -77,6 +77,8 @@ export default function ManageEventsPage() {
               ) : (
                 events.map((event) => {
                   const Icon = icons[Math.abs(event.type?.length || 0) % 4];
+                  const isPast = new Date(event.endDate || event.startDate) < new Date();
+                  const displayStatus = event.status === "published" && isPast ? "completed" : event.status;
                   return (
                     <tr key={event._id || event.id} className="hover:bg-gray-50/50 transition-colors">
                       <td className="px-6 py-5">
@@ -95,7 +97,7 @@ export default function ManageEventsPage() {
                       </td>
                       <td className="px-6 py-5 text-sm text-gray-600 font-medium">{event.venue}</td>
                       <td className="px-6 py-5 text-sm text-gray-600 font-medium">{event.category}</td>
-                      <td className="px-6 py-5"><StatusBadge status={event.status} /></td>
+                      <td className="px-6 py-5"><StatusBadge status={displayStatus} /></td>
                       <td className="px-6 py-5 text-center">
                         <div className="flex items-center justify-center gap-2">
                           <button onClick={() => toast.success(`View event: ${event.name}`)} className="p-1.5 rounded-md text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors" title="View"><Eye className="w-4 h-4" /></button>
