@@ -7,6 +7,17 @@ async function request(url, options = {}) {
   return data;
 }
 
+export async function createUser(token, { name, email, password, role }) {
+  return request(`${API_BASE}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ name, email, password, role }),
+  });
+}
+
 export async function getUsers(token) {
   return request(`${API_BASE}`, {
     headers: { Authorization: `Bearer ${token}` },

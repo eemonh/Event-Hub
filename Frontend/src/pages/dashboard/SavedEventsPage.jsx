@@ -4,15 +4,17 @@ import { Calendar, MapPin, Bookmark, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
 import { useBreadcrumbs } from "../../context/BreadcrumbContext";
-import { getSavedEvents, removeBookmark } from "../../services/events";
+import { getSavedEvents, removeBookmark, getMyEvents } from "../../services/events";
+import EventDetailModal from "../../components/events/EventDetailModal";
 
-const SavedEventCard = ({ event, onRemove }) => {
+const SavedEventCard = ({ event, onRemove, onClick, isOwner, isRegistered }) => {
   return (
-    <div className="flex flex-col bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200">
+    <div onClick={onClick} className="flex flex-col bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer">
       <div className="relative h-48 w-full bg-gray-100">
         <img
           src={event.coverImage || "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800"}
           alt={event.title || event.name}
+          onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800"; }}
           className="w-full h-full object-cover"
         />
         <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
@@ -22,7 +24,7 @@ const SavedEventCard = ({ event, onRemove }) => {
       <div className="p-6 flex flex-col flex-grow">
         <div className="flex justify-between items-start mb-4 gap-4">
           <h3 className="text-xl font-bold text-gray-900 leading-tight">{event.title || event.name}</h3>
-          <button onClick={() => onRemove(event._id || event.id)} className="text-violet-700 hover:text-violet-800 transition-colors flex-shrink-0 mt-1" title="Remove bookmark">
+          <button onClick={(e) => { e.stopPropagation(); onRemove(event._id || event.id); }} className="text-violet-700 hover:text-violet-800 transition-colors flex-shrink-0 mt-1" title="Remove bookmark">
             <Bookmark className="w-5 h-5" fill="currentColor" />
           </button>
         </div>
@@ -36,20 +38,26 @@ const SavedEventCard = ({ event, onRemove }) => {
             {event.venue || event.location}
           </div>
         </div>
-        <button className="w-full py-3 px-4 rounded-xl text-sm font-bold transition-colors bg-violet-700 hover:bg-violet-800 text-white shadow-sm">
-          Register Now
-        </button>
+        {isOwner ? (
+          <span className="flex w-full items-center justify-center gap-2 rounded-xl bg-slate-100 px-4 py-3 text-sm font-medium text-slate-500"><Bookmark size={14} />You are the organizer</span>
+        ) : isRegistered ? (
+          <span className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-100 px-4 py-3 text-sm font-medium text-emerald-700"><Bookmark size={14} />Registered</span>
+        ) : (
+          <button className="w-full py-3 px-4 rounded-xl text-sm font-bold transition-colors bg-violet-700 hover:bg-violet-800 text-white shadow-sm">Register Now</button>
+        )}
       </div>
     </div>
   );
 };
 
 export default function SavedEventsPage() {
-  const { token } = useAuth();
+  const { user, token } = useAuth();
   const navigate = useNavigate();
   const { setBreadcrumbs, setAction } = useBreadcrumbs();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [registeredIds, setRegisteredIds] = useState(new Set());
+  const [selectedEventId, setSelectedEventId] = useState(null);
 
   const fetchSaved = async () => {
     try {
@@ -62,7 +70,15 @@ export default function SavedEventsPage() {
     }
   };
 
-  useEffect(() => { fetchSaved(); }, [token]);
+  const fetchRegistered = async () => {
+    if (!token) return;
+    try {
+      const data = await getMyEvents(token);
+      setRegisteredIds(new Set((data.events || []).map((e) => e._id || e.id)));
+    } catch {}
+  };
+
+  useEffect(() => { fetchSaved(); fetchRegistered(); }, [token]);
   useEffect(() => {
     setBreadcrumbs(["Dashboard", "Events", "Saved"]);
     setAction({ label: "Explore Events", onClick: () => navigate("/events") });
@@ -107,10 +123,16 @@ export default function SavedEventsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {events.map((event) => (
-            <SavedEventCard key={event._id || event.id} event={event} onRemove={handleRemove} />
+            <SavedEventCard key={event._id || event.id} event={event} onRemove={handleRemove} onClick={() => setSelectedEventId(event._id || event.id)} isOwner={(event.organizer?.toString()) === user?.id} isRegistered={registeredIds.has(event._id || event.id)} />
           ))}
         </div>
       )}
+
+      <EventDetailModal
+        eventId={selectedEventId}
+        isOpen={!!selectedEventId}
+        onClose={() => setSelectedEventId(null)}
+      />
     </main>
   );
 }

@@ -42,7 +42,7 @@ export default function AdminPage() {
   const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
-    setBreadcrumbs(["Dashboard", "Admin"]);
+    setBreadcrumbs(["Dashboard"]);
     setAction({ label: "Create Event", onClick: () => navigate("/dashboard/events/create") });
   }, [setBreadcrumbs, setAction, navigate]);
 
@@ -174,7 +174,7 @@ export default function AdminPage() {
       <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
         <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center">
           <h2 className="text-lg font-bold text-gray-900">Upcoming Events</h2>
-          <button className="text-[#6200ea] hover:text-[#5200c3] text-sm font-semibold flex items-center transition-colors">
+          <button onClick={() => navigate("/dashboard/events")} className="cursor-pointer text-[#6200ea] hover:text-[#5200c3] text-sm font-semibold flex items-center transition-colors">
             View All
             <ArrowRight className="w-4 h-4 ml-1.5" />
           </button>
@@ -235,24 +235,6 @@ export default function AdminPage() {
               )}
             </tbody>
           </table>
-        </div>
-
-        <div className="px-6 py-4 border-t border-gray-100 flex justify-between items-center text-sm text-gray-500">
-          <div>
-            Showing{" "}
-            <span className="font-semibold text-gray-700">1</span> to{" "}
-            <span className="font-semibold text-gray-700">{Math.min(recentEvents.length, 5) || 0}</span> of{" "}
-            <span className="font-semibold text-gray-700">{events.length}</span> entries
-          </div>
-          <div className="flex items-center space-x-2">
-            <button className="p-1 rounded-md text-gray-400 hover:text-gray-700 hover:bg-gray-100 disabled:opacity-50 transition-colors">
-              <ChevronLeft className="w-4 h-4" />
-            </button>
-            <button className="px-2.5 py-1 rounded-md bg-gray-100 text-gray-900 font-semibold text-xs">1</button>
-            <button className="p-1 rounded-md text-gray-400 hover:text-gray-700 hover:bg-gray-100 disabled:opacity-50 transition-colors">
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
         </div>
       </div>
     </main>

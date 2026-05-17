@@ -1,5 +1,22 @@
 import User from "../models/User.js";
 
+export async function createUser(req, res) {
+  try {
+    const { name, email, password, role } = req.body;
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "Name, email, and password are required" });
+    }
+    const existing = await User.findOne({ email });
+    if (existing) {
+      return res.status(400).json({ message: "Email already in use" });
+    }
+    const user = await User.create({ name, email, password, role: role || "user" });
+    res.status(201).json({ user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 export async function listUsers(req, res) {
   try {
     const users = await User.find().select("-password").sort({ createdAt: -1 });
@@ -9,19 +26,10 @@ export async function listUsers(req, res) {
   }
 }
 
-export async function listOrganizers(req, res) {
-  try {
-    const organizers = await User.find({ role: "organizer" }).select("-password").sort({ name: 1 });
-    res.json({ users: organizers.map((u) => ({ id: u._id, name: u.name, email: u.email, role: u.role, avatar: u.avatar, bio: u.bio, interests: u.interests, createdAt: u.createdAt })) });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-}
-
 export async function updateUserRole(req, res) {
   try {
     const { role } = req.body;
-    if (!["admin", "user", "organizer"].includes(role)) {
+    if (!["admin", "user"].includes(role)) {
       return res.status(400).json({ message: "Invalid role" });
     }
     const user = await User.findByIdAndUpdate(req.params.id, { role }, { new: true }).select("-password");

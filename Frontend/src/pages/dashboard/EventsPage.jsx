@@ -1,31 +1,44 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { CalendarDays, MapPin, Search, Bookmark, Loader2, Ticket } from "lucide-react";
+import { ChevronLeft, ChevronRight, CalendarDays, MapPin, Search, Bookmark, Loader2, Ticket } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
 import { useBreadcrumbs } from "../../context/BreadcrumbContext";
-import { getEvents, registerForEvent, bookmarkEvent, removeBookmark, getSavedEvents } from "../../services/events";
+import { getEvents, registerForEvent, bookmarkEvent, removeBookmark, getSavedEvents, getMyEvents } from "../../services/events";
+import EventDetailModal from "../../components/events/EventDetailModal";
 
 const CATEGORIES = ["All", "Technology", "Design", "Business", "Startup", "Music", "Arts", "Health", "Sports", "Education", "Food & Drink", "Networking", "Other"];
 
 export default function DashboardEvents() {
-  const { token } = useAuth();
+  const { user, token } = useAuth();
   const navigate = useNavigate();
   const { setBreadcrumbs, setAction } = useBreadcrumbs();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState("");
   const [search, setSearch] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [savedIds, setSavedIds] = useState(new Set());
+  const [registeredIds, setRegisteredIds] = useState(new Set());
+  const [selectedEventId, setSelectedEventId] = useState(null);
 
   useEffect(() => { setBreadcrumbs(["Dashboard", "Events"]); setAction({ label: "Create Event", onClick: () => navigate("/dashboard/events/create") }); }, [setBreadcrumbs, setAction, navigate]);
 
-  const fetchEvents = async () => {
+  const fetchEvents = async (page = currentPage) => {
+    setLoading(true);
     try {
-      const data = await getEvents(token, { category, search });
+      const data = await getEvents(token, { category, search, page, limit: 20 });
       setEvents(data.events || []);
+      setTotalPages(data.pages || 1);
+      setCurrentPage(data.page || 1);
     } catch (err) { toast.error(err.message); }
     finally { setLoading(false); }
+  };
+
+  const goToPage = (page) => {
+    if (page < 1 || page > totalPages) return;
+    fetchEvents(page);
   };
 
   const fetchSaved = async () => {
@@ -36,20 +49,35 @@ export default function DashboardEvents() {
     } catch {}
   };
 
-  useEffect(() => { fetchEvents(); fetchSaved(); }, [token, category]);
+  const fetchRegistered = async () => {
+    if (!token) return;
+    try {
+      const data = await getMyEvents(token);
+      setRegisteredIds(new Set((data.events || []).map((e) => e._id || e.id)));
+    } catch {}
+  };
+
+  useEffect(() => { setCurrentPage(1); fetchEvents(1); fetchSaved(); fetchRegistered(); }, [token, category]);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    setLoading(true);
-    fetchEvents();
+    setCurrentPage(1);
+    fetchEvents(1);
   };
 
-  const handleRegister = async (eventId) => {
+  const handleRegister = async (eventId, e) => {
+    e.stopPropagation();
     try { await registerForEvent(token, eventId); toast.success("Registered successfully!"); }
     catch (err) { toast.error(err.message); }
   };
 
-  const handleBookmark = async (eventId) => {
+  const isOwner = (event) => {
+    const ownerId = event.organizer?._id ?? event.organizer;
+    return ownerId?.toString() === user?.id;
+  };
+
+  const handleBookmark = async (eventId, e) => {
+    e.stopPropagation();
     try {
       if (savedIds.has(eventId)) {
         await removeBookmark(token, eventId);
@@ -108,11 +136,11 @@ export default function DashboardEvents() {
             const isSaved = savedIds.has(eventId);
             const startDate = new Date(event.startDate);
             return (
-              <div key={eventId} className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+              <div key={eventId} onClick={() => setSelectedEventId(eventId)} className="cursor-pointer overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md">
                 <div className="relative h-48 overflow-hidden">
-                  <img src={event.coverImage || "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=1200&auto=format&fit=crop"} alt={event.name} className="h-full w-full object-cover" />
+                   <img src={event.coverImage || "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=1200&auto=format&fit=crop"} alt={event.name} onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=1200&auto=format&fit=crop"; }} className="h-full w-full object-cover" />
                   <div className="absolute left-3 top-3 rounded-md bg-white/90 px-2 py-1 text-xs font-semibold text-violet-700 shadow">{event.category}</div>
-                  <button onClick={() => handleBookmark(eventId)} className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow hover:bg-gray-50 transition-colors">
+                  <button onClick={(e) => handleBookmark(eventId, e)} className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow hover:bg-gray-50 transition-colors">
                     <Bookmark size={16} className={isSaved ? "text-violet-700 fill-violet-700" : "text-slate-500"} />
                   </button>
                 </div>
@@ -128,9 +156,15 @@ export default function DashboardEvents() {
                   </div>
                   <div className="flex items-center justify-between pt-2">
                     <span className="text-sm font-semibold text-slate-700">{event.price === 0 ? "Free" : `$${event.price}`}</span>
-                    <button onClick={() => handleRegister(eventId)} className="inline-flex items-center gap-1.5 rounded-lg bg-violet-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-violet-800">
-                      <Ticket size={14} />Register
-                    </button>
+                    {isOwner(event) ? (
+                      <span className="inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-4 py-2 text-sm font-medium text-slate-500"><Ticket size={14} />You are the organizer</span>
+                    ) : registeredIds.has(eventId) ? (
+                      <span className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-100 px-4 py-2 text-sm font-medium text-emerald-700"><Ticket size={14} />Registered</span>
+                    ) : (
+                      <button onClick={(e) => handleRegister(eventId, e)} className="inline-flex items-center gap-1.5 rounded-lg bg-violet-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-violet-800">
+                        <Ticket size={14} />Register
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -138,6 +172,34 @@ export default function DashboardEvents() {
           })}
         </div>
       )}
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-4 pt-4">
+          <button
+            onClick={() => goToPage(currentPage - 1)}
+            disabled={currentPage <= 1}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <ChevronLeft size={16} /> Previous
+          </button>
+          <span className="text-sm text-slate-500">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() => goToPage(currentPage + 1)}
+            disabled={currentPage >= totalPages}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            Next <ChevronRight size={16} />
+          </button>
+        </div>
+      )}
+
+      <EventDetailModal
+        eventId={selectedEventId}
+        isOpen={!!selectedEventId}
+        onClose={() => setSelectedEventId(null)}
+      />
     </main>
   );
 }

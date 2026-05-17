@@ -14,7 +14,7 @@ export default function ProtectedRoute({ allowedRoles }) {
   }
 
   if (allowedRoles && user && !allowedRoles.includes(user.role)) {
-    const redirectTo = user.role === "admin" ? "/dashboard/admin" : "/dashboard";
+    const redirectTo = "/dashboard";
     return <Navigate to={redirectTo} replace />;
   }
 

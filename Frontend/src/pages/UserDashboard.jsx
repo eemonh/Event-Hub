@@ -1,12 +1,45 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  CalendarDays, Clock3, MapPin, Bookmark, Ticket, ChevronRight, Loader2,
+  CalendarDays, Clock3, MapPin, Bookmark, Ticket, ChevronRight, Loader2, XCircle, Clock,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { useBreadcrumbs } from "../context/BreadcrumbContext";
-import { getMyEvents, getRecommendedEvents } from "../services/events";
+import { getMyEvents, getRecommendedEvents, getSavedEvents, cancelRegistration } from "../services/events";
+import EventDetailModal from "../components/events/EventDetailModal";
+
+function CountdownBadge({ targetDate }) {
+  const [remaining, setRemaining] = useState(null);
+
+  useEffect(() => {
+    const tick = () => {
+      const diff = new Date(targetDate).getTime() - Date.now();
+      if (diff <= 0) { setRemaining(null); return; }
+      setRemaining({
+        days: Math.floor(diff / 86400000),
+        hours: Math.floor((diff % 86400000) / 3600000),
+      });
+    };
+    tick();
+    const interval = setInterval(tick, 60000);
+    return () => clearInterval(interval);
+  }, [targetDate]);
+
+  if (!remaining) return null;
+
+  const colorClass =
+    remaining.days < 1 ? "bg-red-100 text-red-700" :
+    remaining.days < 7 ? "bg-amber-100 text-amber-700" :
+    "bg-emerald-100 text-emerald-700";
+
+  return (
+    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold ${colorClass}`}>
+      <Clock size={12} />
+      {remaining.days > 0 ? `${remaining.days}d ` : ""}{remaining.hours}h left
+    </span>
+  );
+}
 
 export default function UserDashboard() {
   const { user, token } = useAuth();
@@ -14,24 +47,29 @@ export default function UserDashboard() {
   const { setBreadcrumbs, setAction } = useBreadcrumbs();
   const [myEvents, setMyEvents] = useState([]);
   const [recommended, setRecommended] = useState([]);
+  const [savedEvents, setSavedEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedEventId, setSelectedEventId] = useState(null);
 
   useEffect(() => {
     setBreadcrumbs(["Dashboard", "Overview"]);
     setAction({ label: "Create Event", onClick: () => navigate("/dashboard/events/create") });
   }, [setBreadcrumbs, setAction, navigate]);
 
+  const fetchMyEvents = () => getMyEvents(token).then((d) => { setMyEvents(d.events || []); }).catch((err) => toast.error(err.message));
+
   useEffect(() => {
     if (!token) return;
     let cancelled = false;
     Promise.all([
-      getMyEvents(token),
+      fetchMyEvents(),
       getRecommendedEvents(token),
+      getSavedEvents(token),
     ])
-      .then(([myData, recData]) => {
+      .then(([, recData, savedData]) => {
         if (cancelled) return;
-        setMyEvents(myData.events || []);
         setRecommended(recData.events || []);
+        setSavedEvents(savedData.events || []);
       })
       .catch((err) => {
         if (!cancelled) toast.error(err.message);
@@ -51,6 +89,17 @@ export default function UserDashboard() {
     const d = new Date(e.startDate);
     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
   }).length;
+
+  const handleCancel = async (eventId) => {
+    if (!confirm("Are you sure you want to cancel your registration?")) return;
+    try {
+      await cancelRegistration(token, eventId);
+      toast.success("Registration cancelled");
+      fetchMyEvents();
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
 
   if (loading) {
     return (
@@ -93,7 +142,7 @@ export default function UserDashboard() {
           </div>
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">Saved Events</p>
-            <h3 className="font-[Poppins] text-4xl font-bold text-slate-900">{recommended.length}</h3>
+            <h3 className="font-[Poppins] text-4xl font-bold text-slate-900">{savedEvents.length}</h3>
           </div>
         </div>
       </section>
@@ -101,7 +150,7 @@ export default function UserDashboard() {
       <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/70 px-6 py-5">
           <h2 className="font-[Poppins] text-3xl font-semibold">Your Upcoming Events</h2>
-          <button onClick={() => navigate("/dashboard/events/my")} className="flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-violet-700">
+          <button onClick={() => navigate("/dashboard/events/my")} className="cursor-pointer flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-violet-700">
             View All <ChevronRight size={14} />
           </button>
         </div>
@@ -118,24 +167,39 @@ export default function UserDashboard() {
               const startDate = new Date(event.startDate);
               const month = startDate.toLocaleString("en-US", { month: "short" });
               const day = startDate.getDate();
+              const ownerId = event.organizer?._id ?? event.organizer;
+              const isOwner = ownerId?.toString() === user?.id;
               return (
-                <div key={event._id || event.id} className={`flex flex-col gap-5 px-6 py-6 lg:flex-row lg:items-center lg:justify-between ${index !== Math.min(upcomingEvents.length, 3) - 1 ? "border-b border-slate-100" : ""}`}>
+                <div key={event._id || event.id} onClick={() => setSelectedEventId(event._id || event.id)} className={`cursor-pointer flex flex-col gap-4 px-6 py-5 lg:flex-row lg:items-center lg:justify-between ${index !== Math.min(upcomingEvents.length, 3) - 1 ? "border-b border-slate-100" : ""}`}>
                   <div className="flex items-start gap-4">
                     <div className="flex h-16 w-16 flex-col items-center justify-center rounded-lg bg-violet-100">
                       <span className="text-xs font-semibold uppercase tracking-wide text-violet-700">{month}</span>
                       <span className="font-[Poppins] text-xl font-semibold text-violet-700">{day}</span>
                     </div>
-                    <div className="space-y-1">
-                      <h3 className="text-2xl font-semibold text-slate-900">{event.title || event.name}</h3>
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-2xl font-semibold text-slate-900">{event.title || event.name}</h3>
+                        <CountdownBadge targetDate={event.startDate} />
+                      </div>
                       <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">
                         <span className="flex items-center gap-1"><Clock3 size={14} />{event.startTime || "All day"}</span>
                         <span className="flex items-center gap-1"><MapPin size={14} />{event.venue || event.location}</span>
                       </div>
                     </div>
                   </div>
-                  <button className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-5 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
-                    <Ticket size={15} />View Ticket
-                  </button>
+                  {!isOwner && (
+                    <div className="flex items-center gap-2 lg:shrink-0">
+                      <button className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-5 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
+                        <Ticket size={15} />View Ticket
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleCancel(event._id || event.id); }}
+                        className="inline-flex items-center gap-1.5 rounded-full border border-red-200 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50"
+                      >
+                        <XCircle size={15} />Cancel
+                      </button>
+                    </div>
+                  )}
                 </div>
               );
             })
@@ -155,9 +219,9 @@ export default function UserDashboard() {
             {recommended.slice(0, 6).map((event) => {
               const startDate = new Date(event.startDate);
               return (
-                <div key={event._id || event.id} className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+                <div key={event._id || event.id} onClick={() => setSelectedEventId(event._id || event.id)} className="cursor-pointer overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md">
                   <div className="relative h-52 overflow-hidden">
-                    <img src={event.coverImage || "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=1200&auto=format&fit=crop"} alt={event.name} className="h-full w-full object-cover" />
+                    <img src={event.coverImage || "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=1200&auto=format&fit=crop"} alt={event.name} onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=1200&auto=format&fit=crop"; }} className="h-full w-full object-cover" />
                     <div className="absolute left-3 top-3 rounded-md bg-white px-2 py-1 text-xs font-semibold text-violet-700 shadow">{event.category}</div>
                   </div>
                   <div className="space-y-4 p-4">
@@ -166,7 +230,11 @@ export default function UserDashboard() {
                       <div className="flex items-center gap-2"><CalendarDays size={14} />{startDate.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" })}</div>
                       <div className="flex items-center gap-2"><MapPin size={14} />{event.venue}</div>
                     </div>
-                    <button className="w-full rounded-xl bg-violet-700 py-3 text-sm font-semibold text-white transition hover:bg-violet-800">Register Now</button>
+                    {(() => { const ownerId = event.organizer?._id ?? event.organizer; const isOwner = ownerId?.toString() === user?.id; return isOwner ? (
+                      <span className="flex w-full items-center justify-center gap-2 rounded-xl bg-slate-100 py-3 text-sm font-medium text-slate-500"><Ticket size={14} />You are the organizer</span>
+                    ) : (
+                      <button className="w-full rounded-xl bg-violet-700 py-3 text-sm font-semibold text-white transition hover:bg-violet-800">Register Now</button>
+                    ); })()}
                   </div>
                 </div>
               );
@@ -174,6 +242,12 @@ export default function UserDashboard() {
           </div>
         )}
       </section>
+
+      <EventDetailModal
+        eventId={selectedEventId}
+        isOpen={!!selectedEventId}
+        onClose={() => setSelectedEventId(null)}
+      />
     </main>
   );
 }

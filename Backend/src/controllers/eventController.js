@@ -41,6 +41,8 @@ export async function getEvent(req, res) {
 export async function createEvent(req, res) {
   try {
     const eventData = { ...req.body, organizer: req.user._id };
+    console.log("[createEvent] Received body:", JSON.stringify(req.body, null, 2));
+    console.log("[createEvent] eventData.coverImage:", eventData.coverImage);
     const event = await Event.create(eventData);
     res.status(201).json({ event: event.toJSON() });
   } catch (error) {

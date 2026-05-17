@@ -6,3 +6,8 @@ dist/
 .opencode/plans/2026-05-16-frontend-optimization-plan.md
 docs/superpowers/specs/2026-05-16-auth-routes-dashboard-design.md
 docs/superpowers/specs/2026-05-16-unified-authpage-design.md
+docs
+.superpowers
+.kilo
+.opencode
+.gitignore

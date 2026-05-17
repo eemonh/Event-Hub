@@ -1,11 +1,12 @@
 import { lazy, Suspense } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import RootLayout from './src/layouts/RootLayout'
 import ProtectedRoute from './src/components/auth/ProtectedRoute'
 import DashboardLayout from './src/layouts/DashboardLayout'
 import PageSkeleton from './src/components/ui/PageSkeleton'
 import ErrorBoundary from './src/components/ui/ErrorBoundary'
+import { useAuth } from './src/context/AuthContext'
 
 const HomePage = lazy(() => import('./src/pages/HomePage'))
 const EventsPage = lazy(() => import('./src/pages/EventsPage'))
@@ -23,6 +24,7 @@ const ManageEventsPage = lazy(() => import('./src/pages/dashboard/ManageEventsPa
 const CreateEventPage = lazy(() => import('./src/pages/dashboard/CreateEventPage'))
 const UsersPage = lazy(() => import('./src/pages/dashboard/UsersPage'))
 const ProfileSettingsPage = lazy(() => import('./src/pages/dashboard/ProfileSettingsPage'))
+const TicketsPage = lazy(() => import('./src/pages/dashboard/TicketsPage'))
 
 // Demo routes — START
 const DemoAdminDashboard = lazy(() => import('./src/Dashboard Mockups/AdminDashboard'))
@@ -32,6 +34,11 @@ const DemoCreateEvent = lazy(() => import('./src/Dashboard Mockups/CreateEvent')
 const DemoMyEvents = lazy(() => import('./src/Dashboard Mockups/MyEvents'))
 const DemoSavedEvents = lazy(() => import('./src/Dashboard Mockups/SavedEvents'))
 const DemoProfileSettings = lazy(() => import('./src/Dashboard Mockups/ProfileSettings'))
+function ConditionalDashboard() {
+  const { user } = useAuth();
+  return user?.role === "admin" ? <AdminPage /> : <UserDashboard />;
+}
+
 // Demo routes — END
 
 export default function App() {
@@ -53,19 +60,20 @@ export default function App() {
 
           <Route element={<ProtectedRoute />}>
             <Route element={<DashboardLayout />}>
-              <Route path="/dashboard" element={<UserDashboard />} />
+              <Route path="/dashboard" element={<ConditionalDashboard />} />
               <Route path="/dashboard/events" element={<DashboardEvents />} />
               <Route path="/dashboard/profile" element={<DashboardProfile />} />
               <Route path="/dashboard/events/my" element={<MyEventsPage />} />
               <Route path="/dashboard/events/saved" element={<SavedEventsPage />} />
               <Route path="/dashboard/profile/settings" element={<ProfileSettingsPage />} />
+              <Route path="/dashboard/tickets" element={<TicketsPage />} />
+
+              <Route path="/dashboard/admin" element={<Navigate to="/dashboard" replace />} />
 
               <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-                <Route path="/dashboard/admin" element={<AdminPage />} />
                 <Route path="/dashboard/events/manage" element={<ManageEventsPage />} />
                 <Route path="/dashboard/events/create" element={<CreateEventPage />} />
                 <Route path="/dashboard/users" element={<UsersPage />} />
-
               </Route>
             </Route>
           </Route>

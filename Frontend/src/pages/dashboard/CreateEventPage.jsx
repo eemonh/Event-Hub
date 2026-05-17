@@ -36,15 +36,17 @@ export default function CreateEventPage() {
       return;
     }
     setIsSubmitting(true);
+    const payload = {
+      name: formData.name, type: formData.type, category: formData.category,
+      startDate: formData.startDate, endDate: formData.endDate || formData.startDate,
+      startTime: formData.startTime, endTime: formData.endTime,
+      venue: formData.venue, coverImage: formData.coverImage, description: formData.description,
+      capacity: parseInt(formData.capacity) || 100, price: parseFloat(formData.price) || 0,
+      status: formData.status,
+    };
+    console.log("[CreateEvent] Payload:", JSON.stringify(payload, null, 2));
     try {
-      await createEvent(token, {
-        name: formData.name, type: formData.type, category: formData.category,
-        startDate: formData.startDate, endDate: formData.endDate || formData.startDate,
-        startTime: formData.startTime, endTime: formData.endTime,
-        venue: formData.venue, coverImage: formData.coverImage, description: formData.description,
-        capacity: parseInt(formData.capacity) || 100, price: parseFloat(formData.price) || 0,
-        status: formData.status,
-      });
+      await createEvent(token, payload);
       toast.success("Event created successfully!");
       navigate("/dashboard/events/manage");
     } catch (err) {
@@ -56,11 +58,11 @@ export default function CreateEventPage() {
 
   return (
     <main className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
-      <div className="mb-2">
+      <div className="mb-2 text-center">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Create New Event</h1>
         <p className="text-gray-500 text-sm">Fill in the details below to create a new event.</p>
       </div>
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 w-full max-w-[700px]">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-200 w-full max-w-[700px] mx-auto">
         <div className="p-8">
           <form id="event-form" onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -163,7 +165,7 @@ export default function CreateEventPage() {
             </div>
             <div>
               <label className="block text-xs font-bold text-gray-500 mb-2">Cover Image URL</label>
-              <input type="url" name="coverImage" value={formData.coverImage} onChange={handleChange} placeholder="https://example.com/image.jpg"
+              <input type="text" name="coverImage" value={formData.coverImage} onChange={handleChange} placeholder="https://example.com/image.jpg"
                 className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/30 text-gray-900 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-gray-400 transition-all" />
             </div>
             <div>

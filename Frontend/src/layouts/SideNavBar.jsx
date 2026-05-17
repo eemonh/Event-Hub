@@ -5,12 +5,11 @@ import {
     CalendarDays,
     Shield,
     Users,
-    User,
     CalendarCheck,
     Bookmark,
     PlusCircle,
     ListTodo,
-    Settings,
+    Ticket,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -23,13 +22,9 @@ const SideNavBar = ({ isOpen = true, onToggle }) => {
     const sections = [
         {
             label: "OVERVIEW",
-            items: isAdmin
-                ? [
-                    { name: "Admin Dashboard", path: "/dashboard/admin", icon: Shield },
-                ]
-                : [
-                    { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
-                ],
+            items: [
+                { name: "Dashboard", path: "/dashboard", icon: isAdmin ? Shield : LayoutDashboard },
+            ],
         },
         {
             label: "EVENTS",
@@ -39,6 +34,7 @@ const SideNavBar = ({ isOpen = true, onToggle }) => {
                     ? []
                     : [
                         { name: "My Events", path: "/dashboard/events/my", icon: CalendarCheck },
+                        { name: "Tickets", path: "/dashboard/tickets", icon: Ticket },
                         { name: "Saved Events", path: "/dashboard/events/saved", icon: Bookmark },
                     ]),
                 ...(isAdmin
@@ -59,13 +55,6 @@ const SideNavBar = ({ isOpen = true, onToggle }) => {
                 },
             ]
             : []),
-        {
-            label: "ACCOUNT",
-            items: [
-                { name: "Profile", path: "/dashboard/profile", icon: User },
-                { name: "Settings", path: "/dashboard/profile/settings", icon: Settings },
-            ],
-        },
     ];
 
     return (

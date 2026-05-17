@@ -5,14 +5,16 @@ import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
 import { useBreadcrumbs } from "../../context/BreadcrumbContext";
 import { getMyEvents, cancelRegistration } from "../../services/events";
+import EventDetailModal from "../../components/events/EventDetailModal";
 
-const EventCard = ({ event, isPast, onCancel }) => {
+const EventCard = ({ event, isPast, onCancel, onClick }) => {
   return (
-    <div className="flex flex-col bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200">
+    <div onClick={onClick} className="flex flex-col bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer">
       <div className="h-48 w-full overflow-hidden bg-gray-100">
         <img
           src={event.coverImage || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=800"}
           alt={event.title || event.name}
+          onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=800"; }}
           className={`w-full h-full object-cover ${isPast ? "grayscale opacity-80" : ""}`}
         />
       </div>
@@ -52,7 +54,7 @@ const EventCard = ({ event, isPast, onCancel }) => {
               <Ticket className="w-4 h-4 mr-2" />
               View Ticket
             </button>
-            <button onClick={() => onCancel(event._id || event.id)} className="py-2.5 px-4 rounded-lg text-sm font-semibold bg-red-50 text-red-600 hover:bg-red-100 transition-colors">
+            <button onClick={(e) => { e.stopPropagation(); onCancel(event._id || event.id); }} className="py-2.5 px-4 rounded-lg text-sm font-semibold bg-red-50 text-red-600 hover:bg-red-100 transition-colors">
               Cancel
             </button>
           </div>
@@ -68,6 +70,7 @@ export default function MyEventsPage() {
   const { setBreadcrumbs, setAction } = useBreadcrumbs();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedEventId, setSelectedEventId] = useState(null);
 
   const fetchEvents = async () => {
     try {
@@ -134,7 +137,7 @@ export default function MyEventsPage() {
               <h2 className="text-xl font-semibold text-gray-800 mb-6">Upcoming Events</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {upcoming.map((event) => (
-                  <EventCard key={event._id || event.id} event={event} isPast={false} onCancel={handleCancel} />
+                  <EventCard key={event._id || event.id} event={event} isPast={false} onCancel={handleCancel} onClick={() => setSelectedEventId(event._id || event.id)} />
                 ))}
               </div>
             </div>
@@ -144,13 +147,19 @@ export default function MyEventsPage() {
               <h2 className="text-xl font-semibold text-gray-800 mb-6">Past Events</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {past.map((event) => (
-                  <EventCard key={event._id || event.id} event={event} isPast={true} />
+                  <EventCard key={event._id || event.id} event={event} isPast={true} onClick={() => setSelectedEventId(event._id || event.id)} />
                 ))}
               </div>
             </div>
           )}
         </>
       )}
+
+      <EventDetailModal
+        eventId={selectedEventId}
+        isOpen={!!selectedEventId}
+        onClose={() => setSelectedEventId(null)}
+      />
     </main>
   );
 }
