@@ -54,3 +54,17 @@ export async function changePassword(token, currentPassword, newPassword) {
   if (!res.ok) throw new Error(data.message);
   return data;
 }
+
+export async function updateProfile(token, data) {
+  const res = await fetch(`${API_BASE}/profile`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+  const result = await res.json();
+  if (!res.ok) throw new Error(result.message);
+  return result;
+}

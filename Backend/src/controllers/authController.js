@@ -91,7 +91,7 @@ export async function getMe(req, res) {
   try {
     const user = req.user;
     res.json({
-      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+      user: { id: user._id, name: user.name, email: user.email, role: user.role, avatar: user.avatar, interests: user.interests },
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -100,16 +100,17 @@ export async function getMe(req, res) {
 
 export async function updateProfile(req, res) {
   try {
-    const { name, avatar } = req.body;
+    const { name, avatar, interests } = req.body;
     const user = req.user;
 
     if (name) user.name = name;
     if (avatar !== undefined) user.avatar = avatar;
+    if (interests !== undefined) user.interests = interests;
 
     await user.save();
 
     res.json({
-      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+      user: { id: user._id, name: user.name, email: user.email, role: user.role, avatar: user.avatar, interests: user.interests },
     });
   } catch (error) {
     res.status(500).json({ message: error.message });

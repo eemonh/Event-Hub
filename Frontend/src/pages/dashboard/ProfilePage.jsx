@@ -81,6 +81,23 @@ export default function DashboardProfile() {
               <span className="text-slate-500">User ID</span>
               <span className="font-medium text-slate-900 text-xs">{user?.id || "N/A"}</span>
             </div>
+            <div className="border-t border-slate-100 pt-3">
+              <h4 className="text-sm font-semibold text-slate-900 mb-2">Interests</h4>
+              {user?.interests?.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {user.interests.map((interest, i) => (
+                    <span
+                      key={i}
+                      className="rounded-full bg-purple-50 px-3 py-1 text-xs font-medium text-purple-700"
+                    >
+                      {interest}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-400">No interests added yet</p>
+              )}
+            </div>
           </div>
         </div>
 

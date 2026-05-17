@@ -11,6 +11,9 @@ import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js";
 import refreshRoutes from "./routes/refresh.js";
 import authRoutes from "./routes/auth.js";
+import eventRoutes from "./routes/events.js";
+import userRoutes from "./routes/users.js";
+import User from "./models/User.js";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -25,6 +28,8 @@ app.use((req, res, next) => {
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/events", eventRoutes);
+app.use("/api/users", userRoutes);
 app.use("/api/refresh", refreshRoutes);
 
 app.get("/api/health", (req, res) => {
@@ -40,8 +45,40 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500).json({ message: err.message || "Internal server error" });
 });
 
+async function ensureAdminAccount() {
+  const adminEmail = process.env.ADMIN_EMAIL?.toLowerCase();
+  const adminPassword = process.env.ADMIN_PASSWORD;
+  const adminName = process.env.ADMIN_NAME || "Administrator";
+
+  if (!adminEmail || !adminPassword) {
+    return;
+  }
+
+  const adminExists = await User.exists({ role: "admin" });
+  if (adminExists) {
+    return;
+  }
+
+  const existingUser = await User.findOne({ email: adminEmail });
+  if (existingUser) {
+    existingUser.role = "admin";
+    await existingUser.save();
+    console.log(`Promoted existing user ${adminEmail} to admin.`);
+    return;
+  }
+
+  await User.create({
+    name: adminName,
+    email: adminEmail,
+    password: adminPassword,
+    role: "admin",
+  });
+  console.log(`Created default admin account: ${adminEmail}`);
+}
+
 async function start() {
   await connectDB();
+  await ensureAdminAccount();
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
   });
