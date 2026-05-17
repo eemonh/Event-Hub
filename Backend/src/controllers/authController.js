@@ -4,14 +4,31 @@ import generateToken, { generateRefreshToken } from "../utils/generateToken.js";
 
 export async function register(req, res) {
   try {
+    console.log("Register called with:", { name: req.body.name, email: req.body.email });
     const { name, email, password } = req.body;
 
-    const existingUser = await User.findOne({ email });
+    if (!name || name.trim().length < 2) {
+      return res.status(400).json({ message: "Name must be at least 2 characters" });
+    }
+
+    if (!email || !email.includes("@")) {
+      return res.status(400).json({ message: "Please provide a valid email address" });
+    }
+
+    if (!password || password.length < 8) {
+      return res.status(400).json({ message: "Password must be at least 8 characters" });
+    }
+
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      return res.status(400).json({ message: "Password must contain at least one special character" });
+    }
+
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
     if (existingUser) {
       return res.status(400).json({ message: "An account with this email already exists" });
     }
 
-    const user = await User.create({ name, email, password, role: "user" });
+    const user = await User.create({ name, email: email.toLowerCase(), password, role: "user" });
     const token = generateToken(user._id);
 
     res.status(201).json({
@@ -19,7 +36,16 @@ export async function register(req, res) {
       token,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Register error:", error.message);
+    console.error("Stack:", error.stack);
+    if (error.name === "ValidationError") {
+      const messages = Object.values(error.errors).map(e => e.message);
+      return res.status(400).json({ message: messages.join(", ") });
+    }
+    if (error.message.includes("secret is not configured")) {
+      return res.status(500).json({ message: "Server configuration error. Please contact admin." });
+    }
+    res.status(500).json({ message: "Something went wrong. Please try again." });
   }
 }
 
@@ -27,7 +53,11 @@ export async function login(req, res) {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email }).select("+password");
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required" });
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase() }).select("+password");
     if (!user) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
@@ -37,7 +67,7 @@ export async function login(req, res) {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    const accessToken = generateToken(user._id);
+    const token = generateToken(user._id);
     const refreshToken = generateRefreshToken(user._id);
 
     res.cookie("refreshToken", refreshToken, {
@@ -49,10 +79,11 @@ export async function login(req, res) {
 
     res.json({
       user: { id: user._id, name: user.name, email: user.email, role: user.role },
-      accessToken,
+      token,
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error("Login error:", error);
+    res.status(500).json({ message: "Something went wrong. Please try again." });
   }
 }
 
