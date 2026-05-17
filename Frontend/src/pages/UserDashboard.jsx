@@ -18,7 +18,7 @@ export default function UserDashboard() {
 
   useEffect(() => {
     setBreadcrumbs(["Dashboard", "Overview"]);
-    setAction({ label: "Create Event", onClick: () => navigate("/dashboard/events") });
+    setAction({ label: "Create Event", onClick: () => navigate("/dashboard/events/create") });
   }, [setBreadcrumbs, setAction, navigate]);
 
   useEffect(() => {

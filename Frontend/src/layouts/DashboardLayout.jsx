@@ -22,7 +22,7 @@ function DashboardContent() {
     <div className="flex h-screen overflow-hidden bg-[#f8fafc] font-[Inter] text-slate-900">
       <SideNavBar isOpen={sidebarOpen} onToggle={() => setSidebarOpen((v) => !v)} />
       <div className="flex flex-1 flex-col">
-        <TopAppBar breadcrumbs={breadcrumbs} actionLabel={action.label} onAction={action.onClick} />
+        <TopAppBar breadcrumbs={breadcrumbs} actionLabel={action?.label ?? ''} onAction={action?.onClick ?? null} />
         <main className="flex-1 overflow-y-auto">
           <Outlet />
         </main>

@@ -11,14 +11,14 @@ const CATEGORIES = ["All", "Technology", "Design", "Business", "Startup", "Music
 export default function DashboardEvents() {
   const { token } = useAuth();
   const navigate = useNavigate();
-  const { setBreadcrumbs } = useBreadcrumbs();
+  const { setBreadcrumbs, setAction } = useBreadcrumbs();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState("");
   const [search, setSearch] = useState("");
   const [savedIds, setSavedIds] = useState(new Set());
 
-  useEffect(() => { setBreadcrumbs(["Dashboard", "Events"]); }, [setBreadcrumbs]);
+  useEffect(() => { setBreadcrumbs(["Dashboard", "Events"]); setAction({ label: "Create Event", onClick: () => navigate("/dashboard/events/create") }); }, [setBreadcrumbs, setAction, navigate]);
 
   const fetchEvents = async () => {
     try {

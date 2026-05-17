@@ -98,6 +98,12 @@ export async function removeBookmark(token, id) {
   });
 }
 
+export async function getAdminStats(token) {
+  return request(`${API_BASE}/admin/stats`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
 export async function getAllEvents(token, query = {}) {
   const params = new URLSearchParams();
   if (query.page) params.set("page", query.page);

@@ -206,6 +206,16 @@ export async function removeBookmark(req, res) {
   }
 }
 
+export async function getAdminStats(req, res) {
+  try {
+    const totalEvents = await Event.countDocuments();
+    const totalRegistrations = await Registration.countDocuments();
+    res.json({ totalEvents, totalRegistrations });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
 export async function getAllEvents(req, res) {
   try {
     const { page = 1, limit = 20 } = req.query;

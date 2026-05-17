@@ -5,7 +5,6 @@ import {
     CalendarDays,
     Shield,
     Users,
-    UserCog,
     User,
     CalendarCheck,
     Bookmark,
@@ -56,7 +55,6 @@ const SideNavBar = ({ isOpen = true, onToggle }) => {
                     label: "PEOPLE",
                     items: [
                         { name: "Users", path: "/dashboard/users", icon: Users },
-                        { name: "Organizers", path: "/dashboard/organizers", icon: UserCog },
                     ],
                 },
             ]

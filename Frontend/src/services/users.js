@@ -13,12 +13,6 @@ export async function getUsers(token) {
   });
 }
 
-export async function getOrganizers(token) {
-  return request(`${API_BASE}/organizers`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-}
-
 export async function updateUserRole(token, id, role) {
   return request(`${API_BASE}/${id}/role`, {
     method: "PUT",
@@ -38,4 +32,5 @@ export async function deleteUser(token, id) {
 }
 
 export const getAllUsers = getUsers;
-export const getAllOrganizers = getOrganizers;
+
+

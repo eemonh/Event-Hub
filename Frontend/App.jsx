@@ -14,7 +14,7 @@ const ContactPage = lazy(() => import('./src/pages/ContactPage'))
 const AuthPage = lazy(() => import('./src/pages/AuthPage'))
 const UserDashboard = lazy(() => import('./src/pages/UserDashboard'))
 const DashboardEvents = lazy(() => import('./src/pages/dashboard/EventsPage'))
-const DashboardOrganizers = lazy(() => import('./src/pages/dashboard/OrganizersPage'))
+
 const DashboardProfile = lazy(() => import('./src/pages/dashboard/ProfilePage'))
 const AdminPage = lazy(() => import('./src/pages/dashboard/AdminPage'))
 const MyEventsPage = lazy(() => import('./src/pages/dashboard/MyEventsPage'))
@@ -65,7 +65,7 @@ export default function App() {
                 <Route path="/dashboard/events/manage" element={<ManageEventsPage />} />
                 <Route path="/dashboard/events/create" element={<CreateEventPage />} />
                 <Route path="/dashboard/users" element={<UsersPage />} />
-                <Route path="/dashboard/organizers" element={<DashboardOrganizers />} />
+
               </Route>
             </Route>
           </Route>

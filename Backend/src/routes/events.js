@@ -16,6 +16,7 @@ import {
   bookmarkEvent,
   removeBookmark,
   getAllEvents,
+  getAdminStats,
 } from "../controllers/eventController.js";
 
 const router = Router();
@@ -24,6 +25,7 @@ router.get("/", asyncHandler(listEvents));
 router.get("/my", authenticate, asyncHandler(getMyEvents));
 router.get("/saved", authenticate, asyncHandler(getSavedEvents));
 router.get("/recommended", authenticate, asyncHandler(getRecommendedEvents));
+router.get("/admin/stats", authenticate, authorize("admin"), asyncHandler(getAdminStats));
 router.get("/all", authenticate, authorize("admin"), asyncHandler(getAllEvents));
 router.get("/:id", asyncHandler(getEvent));
 router.post("/", authenticate, authorize("admin"), asyncHandler(createEvent));

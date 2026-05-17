@@ -7,13 +7,14 @@ import { getAllUsers } from "../../services/users";
 
 export default function UsersPage() {
   const { token } = useAuth();
-  const { setBreadcrumbs } = useBreadcrumbs();
+  const { setBreadcrumbs, setAction } = useBreadcrumbs();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setBreadcrumbs(["Dashboard", "Admin", "Users"]);
-  }, [setBreadcrumbs]);
+    setAction(null);
+  }, [setBreadcrumbs, setAction]);
 
   useEffect(() => {
     if (!token) return;
