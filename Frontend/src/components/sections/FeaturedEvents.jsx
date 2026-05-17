@@ -42,23 +42,6 @@ const featuredEvents = [
       "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1200&auto=format&fit=crop",
   },
   {
-    id: 3,
-    title: "Gourmet Gathering",
-    category: "Food & Drink",
-    format: "Online",
-    location: "The Garden Walk",
-    city: "Virtual",
-    time: "3:00 PM",
-    date: "Sat, Feb 16",
-    price: "$79",
-    tags: ["food-drink", "online", "workshop", "community"],
-    audience: ["foodies", "remote-attendees"],
-    popularity: 78,
-    recommendationReason: "Matches your online event history",
-    image:
-      "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=1200&auto=format&fit=crop",
-  },
-  {
     id: 4,
     title: "Indie Night Live",
     category: "Music",
@@ -214,7 +197,7 @@ const FeaturedEvents = () => {
   )
 
   const primaryEvent = rankedEvents[0]
-  const supportingEvents = rankedEvents.slice(1, 4)
+  const supportingEvents = rankedEvents.slice(1, 3)
   const activeFilter = filters.find((filter) => filter.value === selectedFilter)
 
   return (
@@ -251,7 +234,7 @@ const FeaturedEvents = () => {
           </p>
         </div>
 
-        <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-[2fr_1fr] lg:gap-6">
+        <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-[2fr_1fr] lg:gap-6 items-start">
           {primaryEvent && (
             <EventCard {...primaryEvent} variant="stacked" featured />
           )}

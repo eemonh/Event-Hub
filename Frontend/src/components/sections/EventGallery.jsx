@@ -6,11 +6,12 @@ import {
   X,
 } from "lucide-react"
 import SectionHeading from "../ui/SectionHeading"
+import { getEvents } from "../../services/events"
 
 const cloudinaryFetchBase =
   "https://res.cloudinary.com/demo/image/fetch/f_auto,q_auto,w_1400"
 
-const galleryItems = [
+const FALLBACK_GALLERY_ITEMS = [
   {
     id: "indie-night-live",
     title: "Indie Night Live",
@@ -92,10 +93,36 @@ const galleryItems = [
 ]
 
 export default function EventGallery() {
+  const [galleryItems, setGalleryItems] = useState(FALLBACK_GALLERY_ITEMS)
   const [activeItemId, setActiveItemId] = useState(null)
   const closeButtonRef = useRef(null)
   const previouslyFocusedElement = useRef(null)
   const visibleItems = galleryItems
+
+  useEffect(() => {
+    async function fetchGalleryEvents() {
+      try {
+        const data = await getEvents(null, { limit: 6 })
+        if (data.events && data.events.length > 0) {
+          const mapped = data.events.map((event, index) => ({
+            id: event._id || event.id,
+            title: event.name,
+            category: event.category,
+            location: event.venue,
+            date: new Date(event.startDate).toLocaleDateString("en-US", { month: "long", year: "numeric" }),
+            image: event.coverImage,
+            alt: `${event.name} event cover image`,
+            featured: index === 0,
+            summary: event.description || "",
+          }))
+          setGalleryItems(mapped)
+        }
+      } catch {
+        /* keep fallback data */
+      }
+    }
+    fetchGalleryEvents()
+  }, [])
 
   const activeIndex = visibleItems.findIndex((item) => item.id === activeItemId)
   const activeItem = activeIndex >= 0 ? visibleItems[activeIndex] : null

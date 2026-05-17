@@ -12,6 +12,7 @@ export default function EventCard({
   recommendationReason,
   variant = "overlay",
   featured = false,
+  large = false,
   className = "",
 }) {
   if (variant === "stacked") {
@@ -21,10 +22,12 @@ export default function EventCard({
       >
         <div
           className={`overflow-hidden ${
-            featured
-              ? "h-64 sm:h-80 lg:h-[520px]"
-              : "h-44 sm:h-48 lg:h-[210px]"
-          }`}
+              featured && large
+                ? "h-64 sm:h-80 lg:h-[520px]"
+                : featured
+                  ? "h-56 sm:h-72 lg:h-[380px]"
+                  : "h-36 sm:h-40 lg:h-[155px]"
+            }`}
         >
           <img
             src={image}
@@ -33,9 +36,9 @@ export default function EventCard({
           />
         </div>
 
-        <div className={featured ? "p-5 sm:p-6" : "p-5"}>
+        <div className={featured ? "p-4 sm:p-5" : "p-5"}>
           {(category || format) && (
-            <div className="mb-3 flex flex-wrap items-center gap-2">
+            <div className="mb-2 flex flex-wrap items-center gap-2">
               {category && (
                 <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
                   {category}
@@ -59,19 +62,19 @@ export default function EventCard({
           </h3>
 
           {location && (
-            <div className="mt-1 md:mt-2 flex items-center gap-1 text-sm text-text-muted">
+            <div className="mt-1 flex items-center gap-1 text-sm text-text-muted">
               <MapPin size={16} />
               {location}
             </div>
           )}
 
           {recommendationReason && (
-            <p className="mt-4 text-sm font-medium leading-5 text-primary">
+            <p className="mt-2 text-sm font-medium leading-5 text-primary">
               {recommendationReason}
             </p>
           )}
 
-          <div className="mt-5 flex items-end justify-between gap-4 md:mt-6">
+          <div className="mt-3 flex items-end justify-between gap-4">
             {(time || date) && (
               <div className="text-sm leading-5 text-gray-800">
                 {time && <p>{time}</p>}

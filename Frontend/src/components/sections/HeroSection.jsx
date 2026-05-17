@@ -7,14 +7,14 @@ const heroEvents = [
     title: "Tech Meetup",
     category: "Networking",
     image:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1200&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1576085898323-218337e3e43c?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     featured: false,
   },
   {
     title: "Summer Festival",
     category: "Music & Arts",
     image:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1200&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1631179234473-f48fedffed9a?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     featured: true,
   },
   {

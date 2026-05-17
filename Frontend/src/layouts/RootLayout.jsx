@@ -1,16 +1,11 @@
-import { Outlet, useLocation } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
 import MainHeader from './MainHeader'
 
-const noHeaderRoutes = ['/events', '/venues', '/contact']
-
 export default function RootLayout() {
-  const { pathname } = useLocation()
-  const showHeader = !noHeaderRoutes.includes(pathname)
-
   return (
     <>
-      {showHeader && <MainHeader />}
-      <main className={showHeader ? 'pt-16 md:pt-[81px]' : undefined}>
+      <MainHeader />
+      <main className="pt-16 md:pt-[81px]">
         <Outlet />
       </main>
     </>

@@ -25,21 +25,10 @@ const CreateEventPage = lazy(() => import('./src/pages/dashboard/CreateEventPage
 const UsersPage = lazy(() => import('./src/pages/dashboard/UsersPage'))
 const ProfileSettingsPage = lazy(() => import('./src/pages/dashboard/ProfileSettingsPage'))
 const TicketsPage = lazy(() => import('./src/pages/dashboard/TicketsPage'))
-
-// Demo routes — START
-const DemoAdminDashboard = lazy(() => import('./src/Dashboard Mockups/AdminDashboard'))
-const DemoUserManagement = lazy(() => import('./src/Dashboard Mockups/UserManagement'))
-const DemoEventManagement = lazy(() => import('./src/Dashboard Mockups/EventManagement'))
-const DemoCreateEvent = lazy(() => import('./src/Dashboard Mockups/CreateEvent'))
-const DemoMyEvents = lazy(() => import('./src/Dashboard Mockups/MyEvents'))
-const DemoSavedEvents = lazy(() => import('./src/Dashboard Mockups/SavedEvents'))
-const DemoProfileSettings = lazy(() => import('./src/Dashboard Mockups/ProfileSettings'))
 function ConditionalDashboard() {
   const { user } = useAuth();
   return user?.role === "admin" ? <AdminPage /> : <UserDashboard />;
 }
-
-// Demo routes — END
 
 export default function App() {
   return (
@@ -77,16 +66,6 @@ export default function App() {
               </Route>
             </Route>
           </Route>
-
-          {/* Demo routes — START */}
-          <Route path="/demo/admin-dashboard" element={<DemoAdminDashboard />} />
-          <Route path="/demo/user-management" element={<DemoUserManagement />} />
-          <Route path="/demo/event-management" element={<DemoEventManagement />} />
-          <Route path="/demo/create-event" element={<DemoCreateEvent />} />
-          <Route path="/demo/my-events" element={<DemoMyEvents />} />
-          <Route path="/demo/saved-events" element={<DemoSavedEvents />} />
-          <Route path="/demo/profile-settings" element={<DemoProfileSettings />} />
-          {/* Demo routes — END */}
         </Routes>
         </ErrorBoundary>
       </Suspense>
