@@ -110,7 +110,7 @@ export default function EventDetailModal({ eventId, isOpen, onClose }) {
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
       {loading ? (
         <div className="flex items-center justify-center py-24">
-          <Loader2 className="h-8 w-8 animate-spin text-violet-700" />
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       ) : event ? (
         <div>
@@ -129,7 +129,7 @@ export default function EventDetailModal({ eventId, isOpen, onClose }) {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
             <div className="absolute bottom-4 left-6 right-20">
-              <span className="inline-block rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-violet-700 shadow backdrop-blur-sm">
+              <span className="inline-block rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-primary shadow backdrop-blur-sm">
                 {event.category}
               </span>
               <h2 className="mt-3 text-2xl font-bold text-white sm:text-3xl lg:text-4xl">
@@ -141,7 +141,7 @@ export default function EventDetailModal({ eventId, isOpen, onClose }) {
           <div className="space-y-6 p-6 sm:p-8">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <div className="flex items-center gap-3 rounded-lg bg-slate-50 p-3">
-                <CalendarDays size={18} className="shrink-0 text-violet-700" />
+                <CalendarDays size={18} className="shrink-0 text-primary" />
                 <div className="text-sm">
                   <p className="font-medium text-slate-900">Date</p>
                   <p className="text-slate-500">
@@ -155,7 +155,7 @@ export default function EventDetailModal({ eventId, isOpen, onClose }) {
 
               {(event.startTime || event.endTime) && (
                 <div className="flex items-center gap-3 rounded-lg bg-slate-50 p-3">
-                  <Clock size={18} className="shrink-0 text-violet-700" />
+                  <Clock size={18} className="shrink-0 text-primary" />
                   <div className="text-sm">
                     <p className="font-medium text-slate-900">Time</p>
                     <p className="text-slate-500">
@@ -167,7 +167,7 @@ export default function EventDetailModal({ eventId, isOpen, onClose }) {
               )}
 
               <div className="flex items-center gap-3 rounded-lg bg-slate-50 p-3">
-                <MapPin size={18} className="shrink-0 text-violet-700" />
+                <MapPin size={18} className="shrink-0 text-primary" />
                 <div className="text-sm">
                   <p className="font-medium text-slate-900">Venue</p>
                   <p className="text-slate-500">{event.venue}</p>
@@ -175,7 +175,7 @@ export default function EventDetailModal({ eventId, isOpen, onClose }) {
               </div>
 
               <div className="flex items-center gap-3 rounded-lg bg-slate-50 p-3">
-                <DollarSign size={18} className="shrink-0 text-violet-700" />
+                <DollarSign size={18} className="shrink-0 text-primary" />
                 <div className="text-sm">
                   <p className="font-medium text-slate-900">Price</p>
                   <p className="text-slate-500">
@@ -188,7 +188,7 @@ export default function EventDetailModal({ eventId, isOpen, onClose }) {
 
               {event.type && (
                 <div className="flex items-center gap-3 rounded-lg bg-slate-50 p-3">
-                  <Tag size={18} className="shrink-0 text-violet-700" />
+                  <Tag size={18} className="shrink-0 text-primary" />
                   <div className="text-sm">
                     <p className="font-medium text-slate-900">Type</p>
                     <p className="text-slate-500 capitalize">{event.type}</p>
@@ -197,7 +197,7 @@ export default function EventDetailModal({ eventId, isOpen, onClose }) {
               )}
 
               <div className="flex items-center gap-3 rounded-lg bg-slate-50 p-3">
-                <Users size={18} className="shrink-0 text-violet-700" />
+                <Users size={18} className="shrink-0 text-primary" />
                 <div className="text-sm">
                   <p className="font-medium text-slate-900">Capacity</p>
                   <p className="text-slate-500">
@@ -220,8 +220,8 @@ export default function EventDetailModal({ eventId, isOpen, onClose }) {
 
             {event.organizer && (
               <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-100">
-                  <User size={18} className="text-violet-700" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                  <User size={18} className="text-primary" />
                 </div>
                 <div className="text-sm">
                   <p className="font-medium text-slate-900">
@@ -246,7 +246,7 @@ export default function EventDetailModal({ eventId, isOpen, onClose }) {
                 <button
                   onClick={handleRegister}
                   disabled={actionLoading === "register"}
-                  className="inline-flex items-center gap-2 rounded-lg bg-violet-700 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-violet-800 disabled:opacity-60"
+                  className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-primary-hover disabled:opacity-60"
                 >
                   {actionLoading === "register" ? (
                     <Loader2 size={16} className="animate-spin" />
@@ -262,7 +262,7 @@ export default function EventDetailModal({ eventId, isOpen, onClose }) {
                 disabled={actionLoading === "bookmark"}
                 className={`inline-flex items-center gap-2 rounded-lg border px-5 py-2.5 text-sm font-semibold transition disabled:opacity-60 ${
                   isSaved
-                    ? "border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-100"
+                    ? "border-primary/20 bg-primary/5 text-primary hover:bg-primary/10"
                     : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
                 }`}
               >
@@ -271,7 +271,7 @@ export default function EventDetailModal({ eventId, isOpen, onClose }) {
                 ) : (
                   <Bookmark
                     size={16}
-                    className={isSaved ? "fill-violet-700" : ""}
+                    className={isSaved ? "fill-primary" : ""}
                   />
                 )}
                 {isSaved ? "Saved" : "Save"}

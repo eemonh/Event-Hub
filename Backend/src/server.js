@@ -13,6 +13,7 @@ import refreshRoutes from "./routes/refresh.js";
 import authRoutes from "./routes/auth.js";
 import eventRoutes from "./routes/events.js";
 import userRoutes from "./routes/users.js";
+import contactRoutes from "./routes/contact.js";
 import User from "./models/User.js";
 
 const app = express();
@@ -31,6 +32,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/refresh", refreshRoutes);
+app.use("/api/contact", contactRoutes);
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok" });

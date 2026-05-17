@@ -1,7 +1,277 @@
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { submitContact } from "../services/contact";
+import toast from "react-hot-toast";
+import { Send, Loader2 } from "lucide-react";
+
 export default function ContactPage() {
+  const [openFaq, setOpenFaq] = useState(0);
+
+  const contactSchema = z.object({
+    name: z.string().min(2, "Name must be at least 2 characters"),
+    email: z.string().email("Please enter a valid email address"),
+    subject: z.string().min(3, "Subject must be at least 3 characters"),
+    message: z.string().min(10, "Message must be at least 10 characters"),
+  });
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(contactSchema),
+    defaultValues: { name: "", email: "", subject: "", message: "" },
+  });
+
+  const onSubmit = async (data) => {
+    try {
+      await submitContact(data);
+      toast.success("Message sent successfully!");
+      reset();
+    } catch (err) {
+      toast.error(err.message || "Something went wrong. Please try again.");
+    }
+  };
+
+  const faqs = [
+    {
+      question: "How quickly do you respond to support requests?",
+      answer: "We aim to respond to all inquiries within 24 hours during normal business days. For urgent matters regarding an ongoing event, please use our emergency contact line provided in your organizer dashboard."
+    },
+    {
+      question: "Can I update my event details after publishing?",
+      answer: "Yes, you can edit most event details at any time from your dashboard. Changes will reflect instantly on the public event page."
+    },
+    {
+      question: "Do you offer custom enterprise solutions?",
+      answer: "Absolutely. We offer tailored packages for large-scale organizations, including dedicated support, custom integrations, and volume pricing."
+    }
+  ];
+
+  const toggleFaq = (index) => {
+    setOpenFaq(openFaq === index ? null : index);
+  };
+
   return (
-    <div className="flex h-[calc(100vh-81px)] items-center justify-center">
-      <h1 className="text-4xl font-bold text-text-primary">Contact Us</h1>
+    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans px-4 py-10 sm:py-16 sm:px-6 lg:px-8">
+      {/* Header Section */}
+      <div className="max-w-3xl mx-auto text-center mb-16">
+        <h1 className="text-4xl sm:text-5xl font-extrabold text-[#7C3AED] tracking-tight mb-4">
+          Get in Touch
+        </h1>
+        <p className="text-base text-slate-500 font-medium">
+          We'd love to hear from you. Please fill out this form or use our contact details below.
+        </p>
+      </div>
+
+      {/* Main Grid Layout */}
+      <div className="max-w-6xl mx-auto grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-[2fr_1fr] lg:gap-6 mb-24">
+        
+        {/* Contact Form Card */}
+        <div className="bg-white p-8 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100">
+          <h2 className="text-xl font-bold text-slate-900 mb-6">Send us a Message</h2>
+          
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold text-slate-500 mb-2">Name</label>
+                <input
+                  type="text"
+                  placeholder="Your Name"
+                  {...register("name")}
+                  className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7C3AED] focus:border-transparent transition-all ${
+                    errors.name ? "border-red-400 ring-1 ring-red-400" : "border-slate-200"
+                  }`}
+                />
+                {errors.name && (
+                  <p className="mt-1.5 text-sm text-red-500 font-medium">{errors.name.message}</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-500 mb-2">Email</label>
+                <input
+                  type="email"
+                  placeholder="your@email.com"
+                  {...register("email")}
+                  className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7C3AED] focus:border-transparent transition-all ${
+                    errors.email ? "border-red-400 ring-1 ring-red-400" : "border-slate-200"
+                  }`}
+                />
+                {errors.email && (
+                  <p className="mt-1.5 text-sm text-red-500 font-medium">{errors.email.message}</p>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-500 mb-2">Subject</label>
+              <input
+                type="text"
+                placeholder="How can we help?"
+                {...register("subject")}
+                className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7C3AED] focus:border-transparent transition-all ${
+                  errors.subject ? "border-red-400 ring-1 ring-red-400" : "border-slate-200"
+                }`}
+              />
+              {errors.subject && (
+                <p className="mt-1.5 text-sm text-red-500 font-medium">{errors.subject.message}</p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-500 mb-2">Message</label>
+              <textarea
+                rows="5"
+                placeholder="Your message here..."
+                {...register("message")}
+                className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7C3AED] focus:border-transparent transition-all resize-none ${
+                  errors.message ? "border-red-400 ring-1 ring-red-400" : "border-slate-200"
+                }`}
+              ></textarea>
+              {errors.message && (
+                <p className="mt-1.5 text-sm text-red-500 font-medium">{errors.message.message}</p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="inline-flex items-center justify-center bg-[#7C3AED] hover:bg-[#6D28D9] disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-3.5 px-6 rounded-xl transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7C3AED] w-full sm:w-auto"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                <>
+                  Send Message
+                  <Send className="w-4 h-4 ml-2" />
+                </>
+              )}
+            </button>
+          </form>
+        </div>
+
+        {/* Right Side Column (Info + Map) */}
+        <div className="flex flex-col gap-5 lg:gap-6">
+          {/* Contact Information */}
+          <div className="bg-white p-8 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100">
+            <h2 className="text-xl font-bold text-slate-900 mb-6">Contact Information</h2>
+            
+            <div className="space-y-6">
+              {/* Email */}
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 p-3 bg-[#F5F3FF] rounded-xl text-[#7C3AED]">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900">Email</h3>
+                  <p className="text-sm text-slate-500 mt-0.5">support@eventhub.com</p>
+                </div>
+              </div>
+
+              {/* Phone */}
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 p-3 bg-[#F5F3FF] rounded-xl text-[#7C3AED]">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900">Phone</h3>
+                  <p className="text-sm text-slate-500 mt-0.5">+1 (555) 123-4567</p>
+                </div>
+              </div>
+
+              {/* Office */}
+              <div className="flex items-start space-x-4">
+                <div className="flex-shrink-0 p-3 bg-[#F5F3FF] rounded-xl text-[#7C3AED]">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900">Office</h3>
+                  <p className="text-sm text-slate-500 mt-0.5 leading-relaxed">
+                    123 Event Street<br />Suite 400<br />San Francisco, CA 94105
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Map Mockup Card */}
+          <div className="bg-white p-8 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100">
+            <h2 className="text-xl font-bold text-slate-900 mb-6">Our Location</h2>
+            <div className="relative overflow-hidden rounded-xl bg-[#E8ECEF] h-[200px]">
+              <svg className="w-full h-full text-white opacity-90" stroke="currentColor" strokeWidth="4" fill="none">
+                <line x1="-20" y1="40" x2="400" y2="280" />
+                <line x1="100" y1="-20" x2="300" y2="300" />
+                <line x1="250" y1="-20" x2="50" y2="300" />
+                <line x1="-20" y1="180" x2="400" y2="80" />
+                <circle cx="180" cy="110" r="6" fill="#7C3AED" stroke="#FFF" strokeWidth="2" />
+                <circle cx="100" cy="160" r="4" fill="#A78BFA" stroke="#FFF" strokeWidth="1.5" />
+                <circle cx="280" cy="90" r="5" fill="#A78BFA" stroke="#FFF" strokeWidth="1.5" />
+              </svg>
+              <button className="absolute bottom-3 left-3 bg-white hover:bg-slate-50 text-slate-800 text-xs font-bold px-4 py-2 rounded-lg shadow-sm border border-slate-200/80 transition-colors">
+                View on Maps
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      {/* FAQ Section */}
+      <div className="max-w-3xl mx-auto">
+        <h2 className="text-3xl font-extrabold text-center text-slate-900 mb-10">
+          Frequently Asked Questions
+        </h2>
+        
+        <div className="space-y-4">
+          {faqs.map((faq, index) => {
+            const isOpen = openFaq === index;
+            return (
+              <div 
+                key={index} 
+                className="bg-white border border-slate-100 rounded-xl shadow-[0_2px_12px_rgba(0,0,0,0.015)] overflow-hidden transition-all duration-200"
+              >
+                <button
+                  onClick={() => toggleFaq(index)}
+                  className="w-full flex items-center justify-between text-left p-6 font-bold text-slate-800 hover:text-slate-900 focus:outline-none transition-colors"
+                >
+                  <span className="pr-4">{faq.question}</span>
+                  <svg 
+                    className={`w-5 h-5 text-slate-400 flex-shrink-0 transform transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                
+                <div 
+                  className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                    isOpen ? 'max-h-40 border-t border-slate-50' : 'max-h-0'
+                  }`}
+                >
+                  <p className="p-6 text-slate-500 leading-relaxed text-sm bg-white">
+                    {faq.answer}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
-  )
+  );
 }
