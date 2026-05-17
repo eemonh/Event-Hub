@@ -22,6 +22,8 @@ export default function AdminPage() {
   const [users, setUsers] = useState([]);
   const [organizers, setOrganizers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     setBreadcrumbs(["Dashboard", "Admin"]);
@@ -30,23 +32,37 @@ export default function AdminPage() {
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const [eventsRes, usersRes, organizersRes] = await Promise.all([
-          getAllEvents(token),
-          getUsers(token),
-          getOrganizers(token),
-        ]);
-        setEvents(eventsRes.events || []);
-        setUsers(usersRes.users || []);
-        setOrganizers(organizersRes.users || []);
-      } catch (err) {
-        toast.error(err.message || "Failed to load admin data");
-      } finally {
-        setLoading(false);
+      setLoading(true);
+      setError(null);
+
+      const results = await Promise.allSettled([
+        getAllEvents(token).then((r) => r.events || []),
+        getUsers(token).then((r) => r.users || []),
+        getOrganizers(token).then((r) => r.users || []),
+      ]);
+
+      const [eventsRes, usersRes, organizersRes] = results;
+
+      if (eventsRes.status === "fulfilled") setEvents(eventsRes.value);
+      else console.error("Failed to fetch events:", eventsRes.reason);
+
+      if (usersRes.status === "fulfilled") setUsers(usersRes.value);
+      else console.error("Failed to fetch users:", usersRes.reason);
+
+      if (organizersRes.status === "fulfilled") setOrganizers(organizersRes.value);
+      else console.error("Failed to fetch organizers:", organizersRes.reason);
+
+      const failures = results.filter((r) => r.status === "rejected");
+      if (failures.length > 0) {
+        const msg = `Failed to load ${failures.length} of 3 data sources`;
+        setError(msg);
+        toast.error(msg);
       }
+
+      setLoading(false);
     };
     fetchData();
-  }, [token]);
+  }, [token, retryCount]);
 
   const liveEvents = events.filter((e) => e.status === "published");
   const recentEvents = [...events]
@@ -77,6 +93,20 @@ export default function AdminPage() {
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
         <p className="text-gray-500 text-sm">Overview and management of the Event Hub platform.</p>
       </div>
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-xl px-5 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-red-600 font-medium text-sm">{error}</span>
+          </div>
+          <button
+            onClick={() => setRetryCount((c) => c + 1)}
+            className="px-4 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-semibold transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((card) => {

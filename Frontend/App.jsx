@@ -5,6 +5,7 @@ import RootLayout from './src/layouts/RootLayout'
 import ProtectedRoute from './src/components/auth/ProtectedRoute'
 import DashboardLayout from './src/layouts/DashboardLayout'
 import PageSkeleton from './src/components/ui/PageSkeleton'
+import ErrorBoundary from './src/components/ui/ErrorBoundary'
 
 const HomePage = lazy(() => import('./src/pages/HomePage'))
 const EventsPage = lazy(() => import('./src/pages/EventsPage'))
@@ -38,6 +39,7 @@ export default function App() {
     <>
       <Toaster position="top-center" reverseOrder={false} />
       <Suspense fallback={<PageSkeleton />}>
+        <ErrorBoundary>
         <Routes>
           <Route element={<RootLayout />}>
             <Route path="/" element={<HomePage />} />
@@ -78,6 +80,7 @@ export default function App() {
           <Route path="/demo/profile-settings" element={<DemoProfileSettings />} />
           {/* Demo routes — END */}
         </Routes>
+        </ErrorBoundary>
       </Suspense>
     </>
   )

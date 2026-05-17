@@ -54,16 +54,18 @@ async function ensureAdminAccount() {
     return;
   }
 
-  const adminExists = await User.exists({ role: "admin" });
-  if (adminExists) {
+  const existingUser = await User.findOne({ email: adminEmail }).select("+password");
+  if (existingUser) {
+    existingUser.role = "admin";
+    existingUser.password = adminPassword;
+    await existingUser.save();
+    console.log(`Ensured admin account exists for ${adminEmail}.`);
     return;
   }
 
-  const existingUser = await User.findOne({ email: adminEmail });
-  if (existingUser) {
-    existingUser.role = "admin";
-    await existingUser.save();
-    console.log(`Promoted existing user ${adminEmail} to admin.`);
+  const adminExists = await User.exists({ role: "admin" });
+  if (adminExists) {
+    console.log("Admin account already exists. No changes made.");
     return;
   }
 

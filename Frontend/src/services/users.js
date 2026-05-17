@@ -1,8 +1,5 @@
 const API_BASE = "/api/users";
 
-export const getAllUsers = getUsers;
-export const getAllOrganizers = getOrganizers;
-
 async function request(url, options = {}) {
   const res = await fetch(url, options);
   const data = await res.json();
@@ -39,3 +36,6 @@ export async function deleteUser(token, id) {
     headers: { Authorization: `Bearer ${token}` },
   });
 }
+
+export const getAllUsers = getUsers;
+export const getAllOrganizers = getOrganizers;
