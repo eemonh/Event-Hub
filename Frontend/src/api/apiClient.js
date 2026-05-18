@@ -1,4 +1,4 @@
-const API_BASE = "/api";
+const API_BASE = "https://event-hub-90p3.onrender.com/api";
 
 let getToken = () => null;
 let onRefreshFailed = () => {};
