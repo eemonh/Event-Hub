@@ -1,4 +1,4 @@
-const API_BASE = "https://event-hub-90p3.onrender.com/api";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "/api";
 
 let getToken = () => null;
 let onRefreshFailed = () => {};
@@ -69,7 +69,7 @@ export async function apiClient(endpoint, options = {}) {
   try {
     data = text ? JSON.parse(text) : {};
   } catch {
-    throw new Error(`Invalid JSON response: ${text}`);
+    throw new Error(`Invalid JSON response from ${res.status} ${res.statusText}: ${text}`);
   }
 
   if (!res.ok) throw new Error(data.message || "Request failed");

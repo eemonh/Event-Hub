@@ -1,4 +1,5 @@
-const API_BASE = "/api/users";
+const API_ORIGIN = import.meta.env.VITE_API_BASE_URL || "/api";
+const API_BASE = `${API_ORIGIN}/users`;
 
 async function request(url, options = {}) {
   const res = await fetch(url, options);
@@ -8,7 +9,7 @@ async function request(url, options = {}) {
   try {
     data = text ? JSON.parse(text) : {};
   } catch {
-    throw new Error(`Invalid JSON response: ${text}`);
+    throw new Error(`Invalid JSON response from ${res.status} ${res.statusText}: ${text}`);
   }
 
   if (!res.ok) throw new Error(data.message || "Request failed");
