@@ -7,20 +7,7 @@ import { useBreadcrumbs } from "../../context/BreadcrumbContext"
 import { useAllEvents } from "../../hooks/queries/useEvents"
 import { useDeleteEvent } from "../../hooks/mutations/useEventMutations"
 import EditEventModal from "../../components/events/EditEventModal"
-
-const StatusBadge = ({ status }) => {
-  const styles = {
-    published: "bg-emerald-50 text-emerald-700 border-emerald-100",
-    draft: "bg-gray-100 text-gray-600 border-gray-200",
-    cancelled: "bg-red-50 text-red-700 border-red-100",
-    completed: "bg-blue-50 text-blue-700 border-blue-100",
-  }
-  return (
-    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${styles[status] || styles.draft}`}>
-      {status.charAt(0).toUpperCase() + status.slice(1)}
-    </span>
-  )
-}
+import StatusBadge from "../../components/ui/StatusBadge"
 
 const icons = [Briefcase, Globe, Rocket, Users]
 

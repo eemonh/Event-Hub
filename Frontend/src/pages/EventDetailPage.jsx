@@ -9,7 +9,7 @@ import { useEvent, useMyEvents, useSavedEvents } from "../hooks/queries/useEvent
 import { useRegisterForEvent, useBookmarkEvent, useRemoveBookmark } from "../hooks/mutations/useEventMutations"
 
 const SCHEDULE_ICONS = [
-  { icon: Clock, bg: "bg-[#F3EAFE]", color: "text-[#7A2BE2]" },
+  { icon: Clock, bg: "bg-[#F3EAFE]", color: "text-primary" },
   { icon: ShieldCheck, bg: "bg-[#EEF3FF]", color: "text-[#5B67F1]" },
   { icon: Code2, bg: "bg-[#FFF1E8]", color: "text-[#D57B35]" },
   { icon: CalendarDays, bg: "bg-[#E6F7EC]", color: "text-[#2B8F4E]" },
@@ -70,7 +70,7 @@ export default function EventDetailPage() {
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#F6F1F7]">
-        <Loader2 className="h-8 w-8 animate-spin text-[#7A2BE2]" />
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     )
   }
@@ -81,7 +81,7 @@ export default function EventDetailPage() {
         <p className="text-lg font-medium text-[#5D6475]">{error?.message || "Event not found"}</p>
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 rounded-lg bg-[#7A1FE6] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#6918c7]"
+          className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white hover:bg-primary-hover"
         >
           <ArrowLeft size={16} /> Go Back
         </button>
@@ -96,7 +96,7 @@ export default function EventDetailPage() {
       <div className="mx-auto max-w-[1180px]">
         <button
           onClick={() => navigate(-1)}
-          className="mb-6 inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-[#7A2BE2] hover:text-[#6918c7]"
+          className="mb-6 inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-primary hover:text-primary-hover"
         >
           <ArrowLeft size={16} /> Back
         </button>
@@ -125,7 +125,7 @@ export default function EventDetailPage() {
 
             <div className="space-y-5">
               <div className="flex items-start gap-3">
-                <CalendarDays size={16} className="mt-[2px] text-[#7A2BE2]" />
+                <CalendarDays size={16} className="mt-[2px] text-primary" />
                 <div>
                   <p className="text-[13px] font-medium text-[#1C2333]">
                     {formatDate(event.startDate)}
@@ -138,7 +138,7 @@ export default function EventDetailPage() {
               </div>
 
               <div className="flex items-start gap-3">
-                <MapPin size={16} className="mt-[2px] text-[#7A2BE2]" />
+                <MapPin size={16} className="mt-[2px] text-primary" />
                 <div>
                   <p className="text-[13px] font-medium text-[#1C2333]">{event.venue || "TBD"}</p>
                   <p className="text-[12px] leading-5 text-[#8B90A0]">In-Person Event</p>
@@ -146,7 +146,7 @@ export default function EventDetailPage() {
               </div>
 
               <div className="flex items-start gap-3">
-                <Users size={16} className="mt-[2px] text-[#7A2BE2]" />
+                <Users size={16} className="mt-[2px] text-primary" />
                 <div>
                   <p className="text-[13px] font-medium text-[#1C2333]">Available Seats</p>
                   <p className="text-[12px] text-[#8B90A0]">
@@ -168,7 +168,7 @@ export default function EventDetailPage() {
               <button
                 onClick={handleRegister}
                 disabled={actionLoading === "register"}
-                className="mt-7 flex h-[50px] w-full items-center justify-center gap-2 rounded-[10px] bg-[#7A1FE6] text-[15px] font-semibold text-white transition hover:bg-[#6918c7] disabled:opacity-60"
+                className="mt-7 flex h-[50px] w-full items-center justify-center gap-2 rounded-[10px] bg-primary text-[15px] font-semibold text-white transition hover:bg-primary-hover disabled:opacity-60"
               >
                 {actionLoading === "register" ? <Loader2 size={16} className="animate-spin" /> : <ArrowRight size={16} />}
                 Register Now
@@ -180,14 +180,14 @@ export default function EventDetailPage() {
               disabled={actionLoading === "bookmark"}
               className={`mt-3 flex h-[48px] w-full items-center justify-center gap-2 rounded-[10px] border text-[14px] font-medium transition disabled:opacity-60 ${
                 isSaved
-                  ? "border-[#7A2BE2]/30 bg-[#7A2BE2]/5 text-[#7A2BE2]"
+                  ? "border-primary/30 bg-primary/5 text-primary"
                   : "border-[#E6E1E9] bg-[#FAFAFB] text-[#31394C] hover:bg-[#F2F3F5]"
               }`}
             >
               {actionLoading === "bookmark" ? (
                 <Loader2 size={15} className="animate-spin" />
               ) : (
-                <Bookmark size={15} className={isSaved ? "fill-[#7A2BE2]" : ""} />
+                <Bookmark size={15} className={isSaved ? "fill-primary" : ""} />
               )}
               {isSaved ? "Saved" : "Save for Later"}
             </button>
@@ -198,10 +198,10 @@ export default function EventDetailPage() {
           <div>
             <div className="flex items-center gap-2">
               {event.category && (
-                <span className="rounded-full bg-[#E9E1FF] px-3 py-[5px] text-[11px] font-medium text-[#6738D7]">{event.category}</span>
+                <span className="rounded-full bg-primary/10 px-3 py-[5px] text-[11px] font-medium text-primary">{event.category}</span>
               )}
               {event.type && (
-                <span className="rounded-full bg-[#EFEAF2] px-3 py-[5px] text-[11px] font-medium text-[#6C7080]">{event.type}</span>
+                <span className="rounded-full bg-gray-100 px-3 py-[5px] text-[11px] font-medium text-text-muted">{event.type}</span>
               )}
             </div>
 
@@ -240,7 +240,7 @@ export default function EventDetailPage() {
                         <div className="flex items-start justify-between">
                           <div>
                             {(item.day || item.time) && (
-                              <p className="text-[12px] font-semibold uppercase tracking-wide text-[#7A2BE2]">
+                              <p className="text-[12px] font-semibold uppercase tracking-wide text-primary">
                                 {item.day && `${item.day}`}{item.day && item.time ? " • " : ""}{item.time}
                               </p>
                             )}
@@ -264,8 +264,8 @@ export default function EventDetailPage() {
               <section className="mt-14 pb-20">
                 <h2 className="text-[36px] font-bold tracking-[-1px] text-[#141B2A]">Organizer</h2>
                 <div className="mt-8 flex items-center gap-5 rounded-[14px] border border-[#E7E1EA] bg-white p-5 shadow-[0_2px_6px_rgba(0,0,0,0.03)]">
-                  <div className="flex h-[68px] w-[68px] items-center justify-center rounded-full bg-[#7A2BE2]/10">
-                    <User size={28} className="text-[#7A2BE2]" />
+                  <div className="flex h-[68px] w-[68px] items-center justify-center rounded-full bg-primary/10">
+                    <User size={28} className="text-primary" />
                   </div>
                   <div>
                     <h3 className="text-[20px] font-bold text-[#1B2233]">{event.organizer.name}</h3>
@@ -286,10 +286,10 @@ export default function EventDetailPage() {
                   }}
                 />
                 <div className="relative flex h-[250px] w-[250px] items-center justify-center rounded-full bg-white/85 shadow-2xl backdrop-blur-sm">
-                  <div className="absolute h-5 w-5 rounded-full bg-[#A239FF]" />
+                  <div className="absolute h-5 w-5 rounded-full bg-primary" />
                   <div className="absolute bottom-[78px] rounded-full bg-white px-4 py-2 text-[13px] font-medium text-[#1A2233] shadow-lg">
                     <div className="flex items-center gap-1.5">
-                      <MapPin size={14} className="text-[#7A2BE2]" />
+                      <MapPin size={14} className="text-primary" />
                       {event.venue || "Venue"}
                     </div>
                   </div>

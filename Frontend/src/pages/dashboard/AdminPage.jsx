@@ -8,19 +8,7 @@ import {
   Activity, Palette, Utensils,
   MoreVertical, ArrowRight, Loader2,
 } from "lucide-react"
-
-const StatusBadge = ({ status }) => {
-  const styles = {
-    published: "bg-emerald-100 text-emerald-700",
-    draft: "bg-gray-100 text-gray-700",
-    cancelled: "bg-red-100 text-red-700",
-  }
-  return (
-    <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${styles[status] || styles.draft}`}>
-      {status.charAt(0).toUpperCase() + status.slice(1)}
-    </span>
-  )
-}
+import StatusBadge from "../../components/ui/StatusBadge"
 
 const eventIcons = [Activity, Palette, Utensils]
 const iconColorClasses = [

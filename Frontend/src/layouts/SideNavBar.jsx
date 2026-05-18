@@ -71,8 +71,8 @@ const SideNavBar = ({ isOpen = true, onToggle }) => {
                             </span>
                         </>
                     ) : (
-                        <div className="w-8 h-8 rounded-md border-2 border-[#6200ea] flex items-center justify-center">
-                            <Briefcase size={18} strokeWidth={2.66667} className="text-[#6200ea]" />
+                        <div className="w-8 h-8 rounded-md border-2 border-primary flex items-center justify-center">
+                            <Briefcase size={18} strokeWidth={2.66667} className="text-primary" />
                         </div>
                     )}
                 </div>
@@ -108,7 +108,7 @@ const SideNavBar = ({ isOpen = true, onToggle }) => {
                                         className={`flex items-center gap-3 ${isOpen ? 'px-4 py-3 w-full' : 'p-3 w-auto justify-center'} rounded-lg transition-colors duration-200
                                             ${
                                                 isActive
-                                                    ? `${isOpen ? 'bg-[#f3e5f5] text-[#6200ea] font-bold' : 'text-[#6200ea] bg-white ring-2 ring-[#6200ea]'}`
+                                                    ? `${isOpen ? 'bg-primary/10 text-primary font-bold' : 'text-primary bg-white ring-2 ring-primary'}`
                                                     : 'bg-transparent text-[#4A4455] font-semibold hover:bg-slate-50'
                                             }
                                         `}

@@ -59,7 +59,7 @@ export default function ContactPage() {
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans px-4 py-10 sm:py-16 sm:px-6 lg:px-8">
       {/* Header Section */}
       <div className="max-w-3xl mx-auto text-center mb-16">
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-[#7C3AED] tracking-tight mb-4">
+        <h1 className="text-4xl sm:text-5xl font-extrabold text-primary tracking-tight mb-4">
           Get in Touch
         </h1>
         <p className="text-base text-slate-500 font-medium">
@@ -82,7 +82,7 @@ export default function ContactPage() {
                   type="text"
                   placeholder="Your Name"
                   {...register("name")}
-                  className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7C3AED] focus:border-transparent transition-all ${
+                  className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition-all ${
                     errors.name ? "border-red-400 ring-1 ring-red-400" : "border-slate-200"
                   }`}
                 />
@@ -96,7 +96,7 @@ export default function ContactPage() {
                   type="email"
                   placeholder="your@email.com"
                   {...register("email")}
-                  className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7C3AED] focus:border-transparent transition-all ${
+                  className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition-all ${
                     errors.email ? "border-red-400 ring-1 ring-red-400" : "border-slate-200"
                   }`}
                 />
@@ -112,7 +112,7 @@ export default function ContactPage() {
                 type="text"
                 placeholder="How can we help?"
                 {...register("subject")}
-                className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7C3AED] focus:border-transparent transition-all ${
+                className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition-all ${
                   errors.subject ? "border-red-400 ring-1 ring-red-400" : "border-slate-200"
                 }`}
               />
@@ -127,7 +127,7 @@ export default function ContactPage() {
                 rows="5"
                 placeholder="Your message here..."
                 {...register("message")}
-                className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7C3AED] focus:border-transparent transition-all resize-none ${
+                className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition-all resize-none ${
                   errors.message ? "border-red-400 ring-1 ring-red-400" : "border-slate-200"
                 }`}
               ></textarea>
@@ -139,7 +139,7 @@ export default function ContactPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex items-center justify-center bg-[#7C3AED] hover:bg-[#6D28D9] disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-3.5 px-6 rounded-xl transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#7C3AED] w-full sm:w-auto"
+              className="inline-flex items-center justify-center bg-primary hover:bg-primary-hover disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-3.5 px-6 rounded-xl transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary w-full sm:w-auto"
             >
               {isSubmitting ? (
                 <>
@@ -165,7 +165,7 @@ export default function ContactPage() {
             <div className="space-y-6">
               {/* Email */}
               <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0 p-3 bg-[#F5F3FF] rounded-xl text-[#7C3AED]">
+                <div className="flex-shrink-0 p-3 bg-primary/10 rounded-xl text-primary">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                   </svg>
@@ -178,7 +178,7 @@ export default function ContactPage() {
 
               {/* Phone */}
               <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0 p-3 bg-[#F5F3FF] rounded-xl text-[#7C3AED]">
+                <div className="flex-shrink-0 p-3 bg-primary/10 rounded-xl text-primary">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
@@ -191,7 +191,7 @@ export default function ContactPage() {
 
               {/* Office */}
               <div className="flex items-start space-x-4">
-                <div className="flex-shrink-0 p-3 bg-[#F5F3FF] rounded-xl text-[#7C3AED]">
+                <div className="flex-shrink-0 p-3 bg-primary/10 rounded-xl text-primary">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -216,9 +216,9 @@ export default function ContactPage() {
                 <line x1="100" y1="-20" x2="300" y2="300" />
                 <line x1="250" y1="-20" x2="50" y2="300" />
                 <line x1="-20" y1="180" x2="400" y2="80" />
-                <circle cx="180" cy="110" r="6" fill="#7C3AED" stroke="#FFF" strokeWidth="2" />
-                <circle cx="100" cy="160" r="4" fill="#A78BFA" stroke="#FFF" strokeWidth="1.5" />
-                <circle cx="280" cy="90" r="5" fill="#A78BFA" stroke="#FFF" strokeWidth="1.5" />
+                <circle cx="180" cy="110" r="6" fill="currentColor" stroke="#FFF" strokeWidth="2" />
+                <circle cx="100" cy="160" r="4" fill="currentColor" opacity="0.5" stroke="#FFF" strokeWidth="1.5" />
+                <circle cx="280" cy="90" r="5" fill="currentColor" opacity="0.5" stroke="#FFF" strokeWidth="1.5" />
               </svg>
               <button className="absolute bottom-3 left-3 bg-white hover:bg-slate-50 text-slate-800 text-xs font-bold px-4 py-2 rounded-lg shadow-sm border border-slate-200/80 transition-colors">
                 View on Maps

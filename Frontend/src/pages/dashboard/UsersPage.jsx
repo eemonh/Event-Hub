@@ -317,7 +317,7 @@ export default function UsersPage() {
               <button
                 onClick={handleAddUser}
                 disabled={submitting}
-                className="px-4 py-2 text-sm font-semibold text-white bg-[#6200ea] rounded-lg hover:bg-[#5200c3] disabled:opacity-50 transition-colors flex items-center gap-2"
+                className="px-4 py-2 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary-hover disabled:opacity-50 transition-colors flex items-center gap-2"
               >
                 {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
                 Add User

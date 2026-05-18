@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #6366F1;
-  --color-primary-hover: #5558E8;
+  --color-primary: #6200ea;
+  --color-primary-hover: #5200c3;
   --color-text-primary: #111827;
   --color-text-muted: #6B7280;
   --color-border-light: #F3F4F6;
   --color-bg-muted: #F5F5F5;
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
-  --font-family-sans: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-family-sans: "Poppins", sans-serif;
 }
 
 @utility custom-scrollbar {
