@@ -115,7 +115,7 @@ const SideNavBar = ({ isOpen = true, onToggle }) => {
                                     >
                                         <Icon className="w-5 h-5" />
                                         {isOpen && (
-                                            <span className="font-['Inter'] text-[16px] leading-[12px] tracking-[0.6px]">
+                                            <span className="font-['Poppins'] text-[16px] leading-[12px] tracking-[0.6px]">
                                                 {item.name}
                                             </span>
                                         )}

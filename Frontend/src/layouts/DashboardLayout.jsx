@@ -19,7 +19,7 @@ function DashboardContent() {
   }, [isDesktop]);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#f8fafc] font-[Inter] text-slate-900">
+    <div className="flex h-screen overflow-hidden bg-[#f8fafc] font-[Poppins] text-slate-900">
       <SideNavBar isOpen={sidebarOpen} onToggle={() => setSidebarOpen((v) => !v)} />
       <div className="flex flex-1 flex-col">
         <TopAppBar breadcrumbs={breadcrumbs} actionLabel={action?.label ?? ''} onAction={action?.onClick ?? null} />

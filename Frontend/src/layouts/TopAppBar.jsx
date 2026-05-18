@@ -60,7 +60,7 @@ const TopAppBar = ({ breadcrumbs = [], actionLabel = "", onAction }) => {
 
             <div className="flex flex-row items-center gap-4">
                 {isAdmin && actionLabel && onAction && (
-                    <button type="button" onClick={onAction} className="flex flex-row items-center justify-center px-4 py-2 gap-2 h-10 bg-[#6200ea] hover:bg-[#5200c3] text-white rounded-lg transition-colors font-['Inter'] font-medium text-[14px] shadow-sm">
+                    <button type="button" onClick={onAction} className="flex flex-row items-center justify-center px-4 py-2 gap-2 h-10 bg-[#6200ea] hover:bg-[#5200c3] text-white rounded-lg transition-colors font-['Poppins'] font-medium text-[14px] shadow-sm">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
                         </svg>

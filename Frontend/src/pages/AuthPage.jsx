@@ -102,7 +102,7 @@ export default function AuthPage() {
         </div>
       </form>
       <div className="pt-8 text-center border-t border-gray-100 mt-4 sm:border-none sm:mt-0">
-        <p className="text-[14px] leading-[21px] text-[#64748B] font-['Inter']">
+        <p className="text-[14px] leading-[21px] text-[#64748B] font-['Poppins']">
           {config.footer.text}{" "}
           <Link to={config.footer.to} className="text-[#630ED4] font-medium hover:underline transition-all">
             {config.footer.linkText}

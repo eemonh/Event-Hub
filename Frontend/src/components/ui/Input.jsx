@@ -36,7 +36,7 @@ export default function Input({
           {label && (
             <label
               htmlFor={name}
-              className="text-[12px] sm:text-[14px] leading-tight font-semibold tracking-[0.6px] text-text-primary font-['Inter']"
+              className="text-[12px] sm:text-[14px] leading-tight font-semibold tracking-[0.6px] text-text-primary font-['Poppins']"
             >
               {label}
             </label>
