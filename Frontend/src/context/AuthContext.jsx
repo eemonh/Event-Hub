@@ -76,7 +76,7 @@ export function AuthProvider({ children }) {
     setToken(null);
     setSaved(null);
     saveAuth(null);
-    queryClient.clear();
+    queryClient.setQueryData(["auth-user"], null);
   }, [token, queryClient]);
 
   const value = useMemo(() => ({

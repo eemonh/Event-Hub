@@ -37,8 +37,8 @@ const TopAppBar = ({ breadcrumbs = [], actionLabel = "", onAction }) => {
     };
 
     const handleLogout = () => {
-        logout();
-        window.location.href = "/";
+    logout();
+    navigate("/");
     };
 
     return (
