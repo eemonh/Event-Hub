@@ -1,13 +1,11 @@
 import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import toast from "react-hot-toast"
-import { useAuth } from "../../context/AuthContext"
 import { useBreadcrumbs } from "../../context/BreadcrumbContext"
 import { useCreateEvent } from "../../hooks/mutations/useEventMutations"
 import EventForm from "../../components/events/EventForm"
 
 export default function CreateEventPage() {
-  const { token } = useAuth()
   const navigate = useNavigate()
   const { setBreadcrumbs, setAction } = useBreadcrumbs()
   const createMutation = useCreateEvent()

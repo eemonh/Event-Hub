@@ -89,14 +89,13 @@ const FALLBACK_GALLERY_ITEMS = [
 
 export default function EventGallery() {
   const { data } = useEvents({ limit: 6 })
-  const [galleryItems, setGalleryItems] = useState(FALLBACK_GALLERY_ITEMS)
   const [activeItemId, setActiveItemId] = useState(null)
   const closeButtonRef = useRef(null)
   const previouslyFocusedElement = useRef(null)
 
-  useEffect(() => {
+  const galleryItems = useMemo(() => {
     if (data?.events?.length > 0) {
-      const mapped = data.events.map((event, index) => ({
+      return data.events.map((event, index) => ({
         id: event._id || event.id,
         title: event.name,
         category: event.category,
@@ -107,8 +106,8 @@ export default function EventGallery() {
         featured: index === 0,
         summary: event.description || "",
       }))
-      setGalleryItems(mapped)
     }
+    return FALLBACK_GALLERY_ITEMS
   }, [data])
 
   const visibleItems = useMemo(() => galleryItems, [galleryItems])

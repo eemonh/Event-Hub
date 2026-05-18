@@ -1,12 +1,13 @@
 import { useParams, useNavigate } from "react-router-dom"
 import {
   CalendarDays, MapPin, Users, Bookmark, ArrowRight,
-  ShieldCheck, Leaf, Code2, Loader2, Ticket, ArrowLeft, User, Clock, Star,
+  ShieldCheck, Code2, Loader2, Ticket, ArrowLeft, User, Clock, Star,
 } from "lucide-react"
 import toast from "react-hot-toast"
 import { useAuth } from "../context/AuthContext"
 import { useEvent, useMyEvents, useSavedEvents } from "../hooks/queries/useEvents"
 import { useRegisterForEvent, useBookmarkEvent, useRemoveBookmark } from "../hooks/mutations/useEventMutations"
+import { EventDetailSkeleton } from "../components/ui/Skeletons"
 
 const SCHEDULE_ICONS = [
   { icon: Clock, bg: "bg-[#F3EAFE]", color: "text-primary" },
@@ -68,11 +69,7 @@ export default function EventDetailPage() {
     })
 
   if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-[#F6F1F7]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    )
+    return <EventDetailSkeleton />
   }
 
   if (error || !event) {

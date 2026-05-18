@@ -1,21 +1,20 @@
 import { useMemo, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { Calendar, Loader2 } from "lucide-react"
+import { Calendar } from "lucide-react"
 import toast from "react-hot-toast"
-import { useAuth } from "../../context/AuthContext"
 import { useBreadcrumbs } from "../../context/BreadcrumbContext"
 import { useMyEvents } from "../../hooks/queries/useEvents"
 import { useCancelRegistration } from "../../hooks/mutations/useEventMutations"
 import EventCard from "../../components/events/EventCard"
+import { EventGridSkeleton } from "../../components/ui/Skeletons"
 
 export default function MyEventsPage() {
-  const { token } = useAuth()
   const navigate = useNavigate()
   const { setBreadcrumbs, setAction } = useBreadcrumbs()
   const { data, isLoading } = useMyEvents()
   const cancelMutation = useCancelRegistration()
 
-  const events = data?.events || []
+  const events = useMemo(() => data?.events || [], [data])
 
   useEffect(() => {
     setBreadcrumbs(["Dashboard", "Events", "My Events"])
@@ -37,9 +36,7 @@ export default function MyEventsPage() {
   if (isLoading) {
     return (
       <main className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-violet-700" />
-        </div>
+        <EventGridSkeleton compact showFilters={false} />
       </main>
     )
   }

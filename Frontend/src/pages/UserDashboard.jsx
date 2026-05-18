@@ -1,17 +1,18 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import {
-  CalendarDays, Clock3, MapPin, Bookmark, Ticket, ChevronRight, Loader2, XCircle, Clock,
+  CalendarDays, Clock3, MapPin, Bookmark, Ticket, ChevronRight, XCircle, Clock,
 } from "lucide-react"
 import toast from "react-hot-toast"
 import { useAuth } from "../context/AuthContext"
 import { useBreadcrumbs } from "../context/BreadcrumbContext"
 import { useMyEvents, useRecommendedEvents, useSavedEvents } from "../hooks/queries/useEvents"
 import { useCancelRegistration } from "../hooks/mutations/useEventMutations"
+import { DashboardCardsSkeleton } from "../components/ui/Skeletons"
 
-function CountdownBadge({ targetDate }) {
+function CountdownBadge({ targetDate, currentTime }) {
   const remaining = (() => {
-    const diff = new Date(targetDate).getTime() - Date.now()
+    const diff = new Date(targetDate).getTime() - currentTime
     if (diff <= 0) return null
     return {
       days: Math.floor(diff / 86400000),
@@ -35,9 +36,10 @@ function CountdownBadge({ targetDate }) {
 }
 
 export default function UserDashboard() {
-  const { user, token } = useAuth()
+  const { user } = useAuth()
   const navigate = useNavigate()
   const { setBreadcrumbs, setAction } = useBreadcrumbs()
+  const [currentTime] = useState(() => Date.now())
   const { data: myData, isLoading: myLoading } = useMyEvents()
   const { data: recData, isLoading: recLoading } = useRecommendedEvents()
   const { data: savedData, isLoading: savedLoading } = useSavedEvents()
@@ -73,9 +75,7 @@ export default function UserDashboard() {
   if (myLoading || recLoading || savedLoading) {
     return (
       <main className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-violet-700" />
-        </div>
+        <DashboardCardsSkeleton />
       </main>
     )
   }
@@ -149,7 +149,7 @@ export default function UserDashboard() {
                     <div className="space-y-1.5">
                       <div className="flex items-center gap-2">
                         <h3 className="text-2xl font-semibold text-slate-900">{event.title || event.name}</h3>
-                        <CountdownBadge targetDate={event.startDate} />
+                        <CountdownBadge targetDate={event.startDate} currentTime={currentTime} />
                       </div>
                       <div className="flex flex-wrap items-center gap-4 text-sm text-slate-500">
                         <span className="flex items-center gap-1"><Clock3 size={14} />{event.startTime || "All day"}</span>

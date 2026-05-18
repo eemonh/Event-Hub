@@ -5,6 +5,7 @@ import { useAuth } from "../context/AuthContext"
 import { useEvents, useMyEvents, useSavedEvents } from "../hooks/queries/useEvents"
 import { useRegisterForEvent, useBookmarkEvent, useRemoveBookmark } from "../hooks/mutations/useEventMutations"
 import EventCard from "../components/events/EventCard"
+import { EventGridSkeleton } from "../components/ui/Skeletons"
 
 const CATEGORIES = ["All", "Technology", "Design", "Business", "Startup", "Music", "Arts", "Health", "Sports", "Education", "Food & Drink", "Networking", "Other"]
 
@@ -58,8 +59,8 @@ export default function EventsPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#f8fafc] px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mx-auto flex max-w-7xl items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div className="mx-auto max-w-7xl">
+          <EventGridSkeleton />
         </div>
       </div>
     )

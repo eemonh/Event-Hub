@@ -1,18 +1,17 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { Briefcase, Globe, Rocket, Users, Pencil, Trash2, Eye, Loader2 } from "lucide-react"
+import { Briefcase, Globe, Rocket, Users, Pencil, Trash2, Eye } from "lucide-react"
 import toast from "react-hot-toast"
-import { useAuth } from "../../context/AuthContext"
 import { useBreadcrumbs } from "../../context/BreadcrumbContext"
 import { useAllEvents } from "../../hooks/queries/useEvents"
 import { useDeleteEvent } from "../../hooks/mutations/useEventMutations"
 import EditEventModal from "../../components/events/EditEventModal"
 import StatusBadge from "../../components/ui/StatusBadge"
+import { DashboardTableSkeleton } from "../../components/ui/Skeletons"
 
 const icons = [Briefcase, Globe, Rocket, Users]
 
 export default function ManageEventsPage() {
-  const { token } = useAuth()
   const navigate = useNavigate()
   const { setBreadcrumbs, setAction } = useBreadcrumbs()
   const { data, isLoading } = useAllEvents()
@@ -37,7 +36,7 @@ export default function ManageEventsPage() {
   if (isLoading) {
     return (
       <main className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
-        <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-violet-700" /></div>
+        <DashboardTableSkeleton columns={6} />
       </main>
     )
   }

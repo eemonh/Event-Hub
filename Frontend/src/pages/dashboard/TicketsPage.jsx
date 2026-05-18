@@ -1,15 +1,16 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { useNavigate } from "react-router-dom"
-import { Calendar, Clock, MapPin, Ticket, QrCode, XCircle, X, Loader2 } from "lucide-react"
+import { Calendar, Clock, MapPin, Ticket, XCircle, X } from "lucide-react"
 import toast from "react-hot-toast"
 import QRCode from "qrcode"
 import { useAuth } from "../../context/AuthContext"
 import { useBreadcrumbs } from "../../context/BreadcrumbContext"
 import { useMyEvents } from "../../hooks/queries/useEvents"
 import { useCancelRegistration } from "../../hooks/mutations/useEventMutations"
+import { EventGridSkeleton, SkeletonBlock } from "../../components/ui/Skeletons"
 
 export default function TicketsPage() {
-  const { token, user } = useAuth()
+  const { user } = useAuth()
   const navigate = useNavigate()
   const { setBreadcrumbs, setAction } = useBreadcrumbs()
   const { data, isLoading } = useMyEvents()
@@ -19,7 +20,7 @@ export default function TicketsPage() {
   const [selectedQr, setSelectedQr] = useState(null)
   const [selectedQrEvent, setSelectedQrEvent] = useState(null)
 
-  const events = data?.events || []
+  const events = useMemo(() => data?.events || [], [data])
 
   useEffect(() => {
     setBreadcrumbs(["Dashboard", "Tickets"])
@@ -55,9 +56,7 @@ export default function TicketsPage() {
   if (isLoading) {
     return (
       <main className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-violet-700" />
-        </div>
+        <EventGridSkeleton compact showFilters={false} />
       </main>
     )
   }
@@ -105,7 +104,7 @@ export default function TicketsPage() {
                       onClick={() => { setSelectedQr(qrCodes[eventId]); setSelectedQrEvent(event) }}
                       className="h-32 w-32 cursor-pointer object-contain transition hover:scale-105" />
                   ) : (
-                    <Loader2 className="w-8 h-8 animate-spin text-violet-700" />
+                    <SkeletonBlock className="h-32 w-32 rounded-xl bg-violet-200/70" />
                   )}
                   <span className="absolute top-3 right-3 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-violet-700 shadow-sm">{event.category}</span>
                 </div>

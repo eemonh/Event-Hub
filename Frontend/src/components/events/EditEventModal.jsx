@@ -1,23 +1,14 @@
-import { useState, useEffect, useCallback } from "react"
-import { Loader2 } from "lucide-react"
+import { useCallback } from "react"
 import toast from "react-hot-toast"
 import Modal from "../ui/Modal"
-import { useAuth } from "../../context/AuthContext"
 import { useEvent } from "../../hooks/queries/useEvents"
 import { useUpdateEvent } from "../../hooks/mutations/useEventMutations"
 import EventForm from "./EventForm"
+import { ModalFormSkeleton } from "../ui/Skeletons"
 
 export default function EditEventModal({ eventId, isOpen, onClose }) {
-  const { token } = useAuth()
   const { data, isLoading } = useEvent(eventId)
   const updateMutation = useUpdateEvent()
-  const [initialized, setInitialized] = useState(false)
-
-  useEffect(() => {
-    if (!isOpen) {
-      setInitialized(false)
-    }
-  }, [isOpen])
 
   const handleSubmit = useCallback(async (payload) => {
     try {
@@ -52,9 +43,7 @@ export default function EditEventModal({ eventId, isOpen, onClose }) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
       {isLoading ? (
-        <div className="flex items-center justify-center py-24">
-          <Loader2 className="h-8 w-8 animate-spin text-violet-700" />
-        </div>
+        <ModalFormSkeleton />
       ) : showForm ? (
         <div className="p-6 sm:p-8">
           <div className="mb-6">

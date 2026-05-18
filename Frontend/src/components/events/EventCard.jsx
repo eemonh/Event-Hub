@@ -1,5 +1,5 @@
 import { memo } from "react"
-import { CalendarDays, MapPin, User, Bookmark, Ticket, Loader2 } from "lucide-react"
+import { CalendarDays, MapPin, User, Bookmark, Ticket } from "lucide-react"
 
 const EventCard = memo(function EventCard({
   event,

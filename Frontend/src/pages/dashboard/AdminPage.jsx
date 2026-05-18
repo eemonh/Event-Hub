@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useBreadcrumbs } from "../../context/BreadcrumbContext"
-import { useAuth } from "../../context/AuthContext"
 import { useAllEvents, useAdminStats } from "../../hooks/queries/useEvents"
 import {
   Calendar, UserPlus, Banknote, TrendingUp,
   Activity, Palette, Utensils,
-  MoreVertical, ArrowRight, Loader2,
+  MoreVertical, ArrowRight,
 } from "lucide-react"
 import StatusBadge from "../../components/ui/StatusBadge"
+import { DashboardCardsSkeleton } from "../../components/ui/Skeletons"
 
 const eventIcons = [Activity, Palette, Utensils]
 const iconColorClasses = [
@@ -18,12 +18,11 @@ const iconColorClasses = [
 ]
 
 export default function AdminPage() {
-  const { token } = useAuth()
   const navigate = useNavigate()
   const { setBreadcrumbs, setAction } = useBreadcrumbs()
   const { data: eventsData, isLoading: eventsLoading } = useAllEvents({ page: 1, limit: 50 })
   const { data: statsData, isLoading: statsLoading } = useAdminStats()
-  const [retryCount, setRetryCount] = useState(0)
+  const [, setRetryCount] = useState(0)
 
   const events = eventsData?.events || []
   const totalRegistrations = statsData?.totalRegistrations || 0
@@ -44,9 +43,7 @@ export default function AdminPage() {
   if (isLoading) {
     return (
       <main className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <Loader2 className="w-8 h-8 animate-spin text-violet-600" />
-        </div>
+        <DashboardCardsSkeleton />
       </main>
     )
   }

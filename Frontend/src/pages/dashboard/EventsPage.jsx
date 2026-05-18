@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
-import { CalendarDays, MapPin, User, Search, Loader2, Bookmark, Ticket } from "lucide-react"
+import { CalendarDays, Search } from "lucide-react"
 import { useAuth } from "../../context/AuthContext"
 import { useBreadcrumbs } from "../../context/BreadcrumbContext"
 import { useEvents, useMyEvents, useSavedEvents } from "../../hooks/queries/useEvents"
 import { useRegisterForEvent, useBookmarkEvent, useRemoveBookmark } from "../../hooks/mutations/useEventMutations"
 import EventCard from "../../components/events/EventCard"
+import { EventGridSkeleton } from "../../components/ui/Skeletons"
 
 const CATEGORIES = ["All", "Technology", "Design", "Business", "Startup", "Music", "Arts", "Health", "Sports", "Education", "Food & Drink", "Networking", "Other"]
 
@@ -60,9 +61,7 @@ export default function DashboardEvents() {
   if (isLoading) {
     return (
       <main className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-violet-700" />
-        </div>
+        <EventGridSkeleton compact />
       </main>
     )
   }

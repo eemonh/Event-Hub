@@ -1,9 +1,11 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect } from "react";
 import { Search, ChevronLeft, ChevronRight, Trash2, X, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
 import { useBreadcrumbs } from "../../context/BreadcrumbContext";
 import { getAllUsers, updateUserRole, deleteUser, createUser } from "../../services/users";
+import { DashboardTableSkeleton } from "../../components/ui/Skeletons";
 
 const ROLE_STYLES = {
   admin: "bg-purple-100 text-purple-700",
@@ -120,9 +122,7 @@ export default function UsersPage() {
   if (loading) {
     return (
       <main className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-purple-600" />
-        </div>
+        <DashboardTableSkeleton columns={4} rows={8} />
       </main>
     );
   }
