@@ -1,6 +1,6 @@
-/* eslint-disable react-refresh/only-export-components */
-import { useState, useCallback, createContext, useContext, useEffect } from "react";
-import { loginUser, registerUser, getMe } from "../services/auth";
+import { createContext, useContext, useState, useCallback, useMemo } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { configureAuth, apiClient } from "../api/apiClient";
 
 const AUTH_KEY = "eventhub_auth";
 const AuthContext = createContext(null);
@@ -10,13 +10,9 @@ function loadAuth() {
     const stored = localStorage.getItem(AUTH_KEY);
     if (stored) {
       const parsed = JSON.parse(stored);
-      if (parsed && parsed.user && parsed.token) {
-        return parsed;
-      }
+      if (parsed && parsed.user && parsed.token) return parsed;
     }
-  } catch {
-    return null;
-  }
+  } catch {}
   return null;
 }
 
@@ -29,51 +25,72 @@ function saveAuth(data) {
 }
 
 export function AuthProvider({ children }) {
-  const [state, setState] = useState(() => {
-    const saved = loadAuth();
-    return {
-      user: saved?.user ?? null,
-      token: saved?.token ?? null,
-    };
+  const queryClient = useQueryClient();
+  const [saved, setSaved] = useState(() => loadAuth());
+  const [token, setToken] = useState(() => saved?.token ?? null);
+
+  const getToken = useCallback(() => token, [token]);
+
+  const handleRefreshFailed = useCallback(() => {
+    setToken(null);
+    setSaved(null);
+    saveAuth(null);
+    queryClient.clear();
+  }, [queryClient]);
+
+  configureAuth(getToken, handleRefreshFailed);
+
+  const { data: userData, isLoading } = useQuery({
+    queryKey: ["auth-user"],
+    queryFn: () => apiClient("/auth/me"),
+    enabled: !!token,
+    staleTime: 60 * 1000,
+    retry: false,
+    meta: { noAuthRedirect: false },
   });
-  const [isLoading, setIsLoading] = useState(() => !!loadAuth()?.token);
 
-  useEffect(() => {
-    if (!state.token) return;
-
-    getMe(state.token)
-      .then((data) => {
-        setState((prev) => ({ ...prev, user: data.user }));
-      })
-      .catch(() => {
-        setState({ user: null, token: null });
-        saveAuth(null);
-      })
-      .finally(() => setIsLoading(false));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const user = userData?.user ?? saved?.user ?? null;
 
   const login = useCallback(async (email, password) => {
-    const result = await loginUser(email, password);
-    setState({ user: result.user, token: result.token });
-    saveAuth(result);
-  }, []);
+    const result = await apiClient("/auth/login", { method: "POST", body: { email, password }, noAuth: true });
+    setToken(result.token);
+    setSaved({ user: result.user, token: result.token });
+    saveAuth({ user: result.user, token: result.token });
+    queryClient.setQueryData(["auth-user"], result);
+    queryClient.invalidateQueries({ queryKey: ["events"] });
+  }, [queryClient]);
 
   const register = useCallback(async (name, email, password) => {
-    const result = await registerUser(name, email, password);
-    setState({ user: result.user, token: result.token });
-    saveAuth(result);
-  }, []);
+    const result = await apiClient("/auth/register", { method: "POST", body: { name, email, password }, noAuth: true });
+    setToken(result.token);
+    setSaved({ user: result.user, token: result.token });
+    saveAuth({ user: result.user, token: result.token });
+    queryClient.setQueryData(["auth-user"], result);
+    queryClient.invalidateQueries({ queryKey: ["events"] });
+  }, [queryClient]);
 
   const logout = useCallback(() => {
-    setState({ user: null, token: null });
+    if (token) {
+      apiClient("/auth/logout", { method: "POST" }).catch(() => {});
+    }
+    setToken(null);
+    setSaved(null);
     saveAuth(null);
-  }, []);
+    queryClient.clear();
+  }, [token, queryClient]);
 
-  const isAuthenticated = state.user !== null && state.token !== null;
+  const value = useMemo(() => ({
+    user,
+    token,
+    isLoading,
+    isAuthenticated: !!user && !!token,
+    login,
+    register,
+    logout,
+  }), [user, token, isLoading, login, register, logout]);
 
   return (
-    <AuthContext.Provider value={{ user: state.user, token: state.token, isLoading, isAuthenticated, login, register, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
@@ -81,8 +98,6 @@ export function AuthProvider({ children }) {
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
+  if (!ctx) throw new Error("useAuth must be used within an AuthProvider");
   return ctx;
 }

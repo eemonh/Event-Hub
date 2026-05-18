@@ -1,36 +1,15 @@
-import { useState, useEffect, useCallback } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import {
-  CalendarDays,
-  MapPin,
-  Users,
-  Bookmark,
-  ArrowRight,
-  ShieldCheck,
-  Leaf,
-  Code2,
-  Loader2,
-  Ticket,
-  ArrowLeft,
-  User,
-  DollarSign,
-  Mic,
-  Clock,
-  Star,
+  CalendarDays, MapPin, Users, Bookmark, ArrowRight,
+  ShieldCheck, Leaf, Code2, Loader2, Ticket, ArrowLeft, User, Clock, Star,
 } from "lucide-react"
 import toast from "react-hot-toast"
 import { useAuth } from "../context/AuthContext"
-import {
-  getEvent,
-  registerForEvent,
-  bookmarkEvent,
-  removeBookmark,
-  getMyEvents,
-  getSavedEvents,
-} from "../services/events"
+import { useEvent, useMyEvents, useSavedEvents } from "../hooks/queries/useEvents"
+import { useRegisterForEvent, useBookmarkEvent, useRemoveBookmark } from "../hooks/mutations/useEventMutations"
 
 const SCHEDULE_ICONS = [
-  { icon: Mic, bg: "bg-[#F3EAFE]", color: "text-[#7A2BE2]" },
+  { icon: Clock, bg: "bg-[#F3EAFE]", color: "text-[#7A2BE2]" },
   { icon: ShieldCheck, bg: "bg-[#EEF3FF]", color: "text-[#5B67F1]" },
   { icon: Code2, bg: "bg-[#FFF1E8]", color: "text-[#D57B35]" },
   { icon: CalendarDays, bg: "bg-[#E6F7EC]", color: "text-[#2B8F4E]" },
@@ -44,91 +23,51 @@ export default function EventDetailPage() {
   const { eventId } = useParams()
   const navigate = useNavigate()
   const { user, token } = useAuth()
-  const [event, setEvent] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [isSaved, setIsSaved] = useState(false)
-  const [isRegistered, setIsRegistered] = useState(false)
-  const [actionLoading, setActionLoading] = useState(null)
+  const { data, isLoading, error } = useEvent(eventId)
+  const { data: myEventsData } = useMyEvents()
+  const { data: savedData } = useSavedEvents()
+  const registerMutation = useRegisterForEvent()
+  const bookmarkMutation = useBookmarkEvent()
+  const removeBookmarkMutation = useRemoveBookmark()
 
-  const fetchEvent = useCallback(async () => {
-    if (!eventId) return
-    setLoading(true)
-    setError(null)
-    try {
-      const data = await getEvent(eventId)
-      setEvent(data.event)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }, [eventId])
+  const event = data?.event || null
 
-  useEffect(() => {
-    fetchEvent()
-  }, [fetchEvent])
+  const myEventIds = new Set((myEventsData?.events || []).map((e) => e._id || e.id))
+  const savedEventIds = new Set((savedData?.events || []).map((e) => e._id || e.id))
 
-  useEffect(() => {
-    if (!token || !eventId) return
-    getMyEvents(token)
-      .then((data) => {
-        const ids = new Set((data.events || []).map((e) => e._id || e.id))
-        setIsRegistered(ids.has(eventId))
-      })
-      .catch(() => {})
-    getSavedEvents(token)
-      .then((data) => {
-        const ids = new Set((data.events || []).map((e) => e._id || e.id))
-        setIsSaved(ids.has(eventId))
-      })
-      .catch(() => {})
-  }, [token, eventId])
+  const isOwner = event?.organizer?._id === user?.id
+  const isRegistered = myEventIds.has(eventId)
+  const isSaved = savedEventIds.has(eventId)
 
   const handleRegister = async () => {
     if (!token) return toast.error("Please log in to register")
-    setActionLoading("register")
-    try {
-      await registerForEvent(token, eventId)
-      toast.success("Registered successfully!")
-      setIsRegistered(true)
-      fetchEvent()
-    } catch (err) {
-      toast.error(err.message)
-    } finally {
-      setActionLoading(null)
-    }
+    registerMutation.mutate(eventId, {
+      onSuccess: () => toast.success("Registered successfully!"),
+      onError: (err) => toast.error(err.message),
+    })
   }
 
   const handleBookmark = async () => {
     if (!token) return toast.error("Please log in to bookmark")
-    setActionLoading("bookmark")
-    try {
-      if (isSaved) {
-        await removeBookmark(token, eventId)
-        setIsSaved(false)
-        toast.success("Bookmark removed")
-      } else {
-        await bookmarkEvent(token, eventId)
-        setIsSaved(true)
-        toast.success("Event saved!")
-      }
-    } catch (err) {
-      toast.error(err.message)
-    } finally {
-      setActionLoading(null)
+    if (isSaved) {
+      removeBookmarkMutation.mutate(eventId, {
+        onSuccess: () => toast.success("Bookmark removed"),
+        onError: (err) => toast.error(err.message),
+      })
+    } else {
+      bookmarkMutation.mutate(eventId, {
+        onSuccess: () => toast.success("Event saved!"),
+        onError: (err) => toast.error(err.message),
+      })
     }
   }
 
   const formatDate = (dateStr) =>
     new Date(dateStr).toLocaleDateString("en-US", {
-      weekday: "short",
-      year: "numeric",
-      month: "short",
-      day: "numeric",
+      weekday: "short", year: "numeric", month: "short", day: "numeric",
     })
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#F6F1F7]">
         <Loader2 className="h-8 w-8 animate-spin text-[#7A2BE2]" />
@@ -139,7 +78,7 @@ export default function EventDetailPage() {
   if (error || !event) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-[#F6F1F7] gap-4 px-4">
-        <p className="text-lg font-medium text-[#5D6475]">{error || "Event not found"}</p>
+        <p className="text-lg font-medium text-[#5D6475]">{error?.message || "Event not found"}</p>
         <button
           onClick={() => navigate(-1)}
           className="inline-flex items-center gap-2 rounded-lg bg-[#7A1FE6] px-6 py-2.5 text-sm font-semibold text-white hover:bg-[#6918c7]"
@@ -150,7 +89,7 @@ export default function EventDetailPage() {
     )
   }
 
-  const isOwner = event?.organizer?._id === user?.id
+  const actionLoading = registerMutation.isPending ? "register" : bookmarkMutation.isPending ? "bookmark" : null
 
   return (
     <div className="min-h-screen bg-[#F6F1F7] px-4 py-8 md:px-8">
@@ -165,14 +104,10 @@ export default function EventDetailPage() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_340px]">
           <div className="overflow-hidden rounded-[14px] border border-[#DAD4DD] bg-black shadow-sm h-[400px]">
             <img
-              src={
-                event.coverImage ||
-                "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1600&auto=format&fit=crop"
-              }
+              src={event.coverImage || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1600&auto=format&fit=crop"}
               alt={event.name}
               onError={(e) => {
-                e.target.src =
-                  "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1600&auto=format&fit=crop"
+                e.target.src = "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1600&auto=format&fit=crop"
               }}
               className="h-full w-full object-cover"
             />
@@ -194,13 +129,10 @@ export default function EventDetailPage() {
                 <div>
                   <p className="text-[13px] font-medium text-[#1C2333]">
                     {formatDate(event.startDate)}
-                    {event.endDate && event.endDate !== event.startDate
-                      ? ` - ${formatDate(event.endDate)}`
-                      : ""}
+                    {event.endDate && event.endDate !== event.startDate ? ` - ${formatDate(event.endDate)}` : ""}
                   </p>
                   <p className="text-[12px] text-[#8B90A0]">
-                    {event.startTime || "All day"}
-                    {event.endTime ? ` - ${event.endTime}` : ""}
+                    {event.startTime || "All day"}{event.endTime ? ` - ${event.endTime}` : ""}
                   </p>
                 </div>
               </div>
@@ -208,9 +140,7 @@ export default function EventDetailPage() {
               <div className="flex items-start gap-3">
                 <MapPin size={16} className="mt-[2px] text-[#7A2BE2]" />
                 <div>
-                  <p className="text-[13px] font-medium text-[#1C2333]">
-                    {event.venue || "TBD"}
-                  </p>
+                  <p className="text-[13px] font-medium text-[#1C2333]">{event.venue || "TBD"}</p>
                   <p className="text-[12px] leading-5 text-[#8B90A0]">In-Person Event</p>
                 </div>
               </div>
@@ -227,17 +157,11 @@ export default function EventDetailPage() {
             </div>
 
             {isOwner ? (
-              <button
-                disabled
-                className="mt-7 flex h-[50px] w-full items-center justify-center gap-2 rounded-[10px] bg-slate-100 text-[15px] font-semibold text-slate-500"
-              >
+              <button disabled className="mt-7 flex h-[50px] w-full items-center justify-center gap-2 rounded-[10px] bg-slate-100 text-[15px] font-semibold text-slate-500">
                 <User size={16} /> You are the organizer
               </button>
             ) : isRegistered ? (
-              <button
-                disabled
-                className="mt-7 flex h-[50px] w-full items-center justify-center gap-2 rounded-[10px] bg-emerald-100 text-[15px] font-semibold text-emerald-700"
-              >
+              <button disabled className="mt-7 flex h-[50px] w-full items-center justify-center gap-2 rounded-[10px] bg-emerald-100 text-[15px] font-semibold text-emerald-700">
                 <Ticket size={16} /> Registered
               </button>
             ) : (
@@ -246,11 +170,7 @@ export default function EventDetailPage() {
                 disabled={actionLoading === "register"}
                 className="mt-7 flex h-[50px] w-full items-center justify-center gap-2 rounded-[10px] bg-[#7A1FE6] text-[15px] font-semibold text-white transition hover:bg-[#6918c7] disabled:opacity-60"
               >
-                {actionLoading === "register" ? (
-                  <Loader2 size={16} className="animate-spin" />
-                ) : (
-                  <ArrowRight size={16} />
-                )}
+                {actionLoading === "register" ? <Loader2 size={16} className="animate-spin" /> : <ArrowRight size={16} />}
                 Register Now
               </button>
             )}
@@ -278,14 +198,10 @@ export default function EventDetailPage() {
           <div>
             <div className="flex items-center gap-2">
               {event.category && (
-                <span className="rounded-full bg-[#E9E1FF] px-3 py-[5px] text-[11px] font-medium text-[#6738D7]">
-                  {event.category}
-                </span>
+                <span className="rounded-full bg-[#E9E1FF] px-3 py-[5px] text-[11px] font-medium text-[#6738D7]">{event.category}</span>
               )}
               {event.type && (
-                <span className="rounded-full bg-[#EFEAF2] px-3 py-[5px] text-[11px] font-medium text-[#6C7080]">
-                  {event.type}
-                </span>
+                <span className="rounded-full bg-[#EFEAF2] px-3 py-[5px] text-[11px] font-medium text-[#6C7080]">{event.type}</span>
               )}
             </div>
 
@@ -294,18 +210,14 @@ export default function EventDetailPage() {
             </h1>
 
             {event.subtitle && (
-              <p className="mt-5 max-w-[720px] text-[20px] leading-[1.55] text-[#5D6475]">
-                {event.subtitle}
-              </p>
+              <p className="mt-5 max-w-[720px] text-[20px] leading-[1.55] text-[#5D6475]">{event.subtitle}</p>
             )}
 
             {event.description && (
               <>
                 <div className="mt-10 border-t border-[#E5DEE8]" />
                 <section className="mt-10">
-                  <h2 className="text-[36px] font-bold tracking-[-1px] text-[#141B2A]">
-                    About This Event
-                  </h2>
+                  <h2 className="text-[36px] font-bold tracking-[-1px] text-[#141B2A]">About This Event</h2>
                   <div className="mt-6 max-w-[760px] space-y-6 text-[15px] leading-8 text-[#676E7E]">
                     {event.description.split("\n").map((para, i) => (
                       <p key={i}>{para}</p>
@@ -317,9 +229,7 @@ export default function EventDetailPage() {
 
             {event.schedule?.length > 0 && (
               <section className="mt-20">
-                <h2 className="text-[36px] font-bold tracking-[-1px] text-[#141B2A]">
-                  Schedule Highlights
-                </h2>
+                <h2 className="text-[36px] font-bold tracking-[-1px] text-[#141B2A]">Schedule Highlights</h2>
                 <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2">
                   {event.schedule.map((item, i) => {
                     const iconIndex = i % 8
@@ -334,21 +244,13 @@ export default function EventDetailPage() {
                                 {item.day && `${item.day}`}{item.day && item.time ? " • " : ""}{item.time}
                               </p>
                             )}
-                            {item.title && (
-                              <h3 className="mt-2 text-[24px] font-bold text-[#1A2233]">
-                                {item.title}
-                              </h3>
-                            )}
+                            {item.title && <h3 className="mt-2 text-[24px] font-bold text-[#1A2233]">{item.title}</h3>}
                           </div>
                           <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${iconConfig.bg}`}>
                             <IconComponent size={16} className={iconConfig.color} />
                           </div>
                         </div>
-                        {item.description && (
-                          <p className="mt-5 text-[14px] leading-7 text-[#72798B]">
-                            {item.description}
-                          </p>
-                        )}
+                        {item.description && <p className="mt-5 text-[14px] leading-7 text-[#72798B]">{item.description}</p>}
                       </div>
                     )
                   })}
@@ -360,20 +262,14 @@ export default function EventDetailPage() {
 
             {event.organizer && (
               <section className="mt-14 pb-20">
-                <h2 className="text-[36px] font-bold tracking-[-1px] text-[#141B2A]">
-                  Organizer
-                </h2>
+                <h2 className="text-[36px] font-bold tracking-[-1px] text-[#141B2A]">Organizer</h2>
                 <div className="mt-8 flex items-center gap-5 rounded-[14px] border border-[#E7E1EA] bg-white p-5 shadow-[0_2px_6px_rgba(0,0,0,0.03)]">
                   <div className="flex h-[68px] w-[68px] items-center justify-center rounded-full bg-[#7A2BE2]/10">
                     <User size={28} className="text-[#7A2BE2]" />
                   </div>
                   <div>
-                    <h3 className="text-[20px] font-bold text-[#1B2233]">
-                      {event.organizer.name}
-                    </h3>
-                    <p className="mt-1 text-[14px] text-[#707789]">
-                      {event.organizer.email || "Event organizer"}
-                    </p>
+                    <h3 className="text-[20px] font-bold text-[#1B2233]">{event.organizer.name}</h3>
+                    <p className="mt-1 text-[14px] text-[#707789]">{event.organizer.email || "Event organizer"}</p>
                   </div>
                 </div>
               </section>

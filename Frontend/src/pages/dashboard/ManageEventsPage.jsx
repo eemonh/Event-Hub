@@ -1,57 +1,58 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Briefcase, Globe, Rocket, Users, Pencil, Trash2, Eye, Loader2 } from "lucide-react";
-import toast from "react-hot-toast";
-import { useAuth } from "../../context/AuthContext";
-import { useBreadcrumbs } from "../../context/BreadcrumbContext";
-import { getAllEvents, deleteEvent } from "../../services/events";
-import EditEventModal from "../../components/events/EditEventModal";
+import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import { Briefcase, Globe, Rocket, Users, Pencil, Trash2, Eye, Loader2 } from "lucide-react"
+import toast from "react-hot-toast"
+import { useAuth } from "../../context/AuthContext"
+import { useBreadcrumbs } from "../../context/BreadcrumbContext"
+import { useAllEvents } from "../../hooks/queries/useEvents"
+import { useDeleteEvent } from "../../hooks/mutations/useEventMutations"
+import EditEventModal from "../../components/events/EditEventModal"
 
 const StatusBadge = ({ status }) => {
-  const styles = { published: "bg-emerald-50 text-emerald-700 border-emerald-100", draft: "bg-gray-100 text-gray-600 border-gray-200", cancelled: "bg-red-50 text-red-700 border-red-100", completed: "bg-blue-50 text-blue-700 border-blue-100" };
+  const styles = {
+    published: "bg-emerald-50 text-emerald-700 border-emerald-100",
+    draft: "bg-gray-100 text-gray-600 border-gray-200",
+    cancelled: "bg-red-50 text-red-700 border-red-100",
+    completed: "bg-blue-50 text-blue-700 border-blue-100",
+  }
   return (
     <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border ${styles[status] || styles.draft}`}>
       {status.charAt(0).toUpperCase() + status.slice(1)}
     </span>
-  );
-};
+  )
+}
 
-const icons = [Briefcase, Globe, Rocket, Users];
+const icons = [Briefcase, Globe, Rocket, Users]
 
 export default function ManageEventsPage() {
-  const { token } = useAuth();
-  const navigate = useNavigate();
-  const { setBreadcrumbs, setAction } = useBreadcrumbs();
-  const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [editEventId, setEditEventId] = useState(null);
+  const { token } = useAuth()
+  const navigate = useNavigate()
+  const { setBreadcrumbs, setAction } = useBreadcrumbs()
+  const { data, isLoading } = useAllEvents()
+  const deleteMutation = useDeleteEvent()
+  const [editEventId, setEditEventId] = useState(null)
 
-  const fetchEvents = async () => {
-    try {
-      const data = await getAllEvents(token);
-      setEvents(data.events || []);
-    } catch (err) { toast.error(err.message); }
-    finally { setLoading(false); }
-  };
+  const events = data?.events || []
 
-  useEffect(() => { fetchEvents(); }, [token]);
   useEffect(() => {
-    setBreadcrumbs(["Dashboard", "Events", "Manage"]);
-    setAction({ label: "Create Event", onClick: () => navigate("/dashboard/events/create") });
-  }, [setBreadcrumbs, setAction, navigate]);
+    setBreadcrumbs(["Dashboard", "Events", "Manage"])
+    setAction({ label: "Create Event", onClick: () => navigate("/dashboard/events/create") })
+  }, [setBreadcrumbs, setAction, navigate])
 
-  const handleDelete = async (id) => {
-    if (!confirm("Are you sure you want to delete this event?")) return;
-    try { await deleteEvent(token, id); toast.success("Event deleted successfully"); fetchEvents(); }
-    catch (err) { toast.error(err.message); }
-  };
+  const handleDelete = (id) => {
+    if (!confirm("Are you sure you want to delete this event?")) return
+    deleteMutation.mutate(id, {
+      onSuccess: () => toast.success("Event deleted successfully"),
+      onError: (err) => toast.error(err.message),
+    })
+  }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <main className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
         <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 animate-spin text-violet-700" /></div>
       </main>
-    );
+    )
   }
 
   return (
@@ -78,9 +79,9 @@ export default function ManageEventsPage() {
                 <tr><td colSpan="6" className="px-6 py-10 text-center text-gray-500">No events found</td></tr>
               ) : (
                 events.map((event) => {
-                  const Icon = icons[Math.abs(event.type?.length || 0) % 4];
-                  const isPast = new Date(event.endDate || event.startDate) < new Date();
-                  const displayStatus = event.status === "published" && isPast ? "completed" : event.status;
+                  const Icon = icons[Math.abs(event.type?.length || 0) % 4]
+                  const isPast = new Date(event.endDate || event.startDate) < new Date()
+                  const displayStatus = event.status === "published" && isPast ? "completed" : event.status
                   return (
                     <tr key={event._id || event.id} className="hover:bg-gray-50/50 transition-colors">
                       <td className="px-6 py-5">
@@ -108,7 +109,7 @@ export default function ManageEventsPage() {
                         </div>
                       </td>
                     </tr>
-                  );
+                  )
                 })
               )}
             </tbody>
@@ -120,8 +121,7 @@ export default function ManageEventsPage() {
         eventId={editEventId}
         isOpen={!!editEventId}
         onClose={() => setEditEventId(null)}
-        onSaved={fetchEvents}
       />
     </main>
-  );
+  )
 }

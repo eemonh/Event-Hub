@@ -1,97 +1,69 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useBreadcrumbs } from "../../context/BreadcrumbContext";
-import { useAuth } from "../../context/AuthContext";
-import { getAllEvents, getAdminStats } from "../../services/events";
+import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import { useBreadcrumbs } from "../../context/BreadcrumbContext"
+import { useAuth } from "../../context/AuthContext"
+import { useAllEvents, useAdminStats } from "../../hooks/queries/useEvents"
 import {
   Calendar, UserPlus, Banknote, TrendingUp,
   Activity, Palette, Utensils,
-  MoreVertical, ChevronLeft, ChevronRight, ArrowRight, Loader2,
-} from "lucide-react";
-import toast from "react-hot-toast";
+  MoreVertical, ArrowRight, Loader2,
+} from "lucide-react"
 
 const StatusBadge = ({ status }) => {
   const styles = {
     published: "bg-emerald-100 text-emerald-700",
     draft: "bg-gray-100 text-gray-700",
     cancelled: "bg-red-100 text-red-700",
-  };
+  }
   return (
     <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ${styles[status] || styles.draft}`}>
       {status.charAt(0).toUpperCase() + status.slice(1)}
     </span>
-  );
-};
+  )
+}
 
-const eventIcons = [Activity, Palette, Utensils];
-
+const eventIcons = [Activity, Palette, Utensils]
 const iconColorClasses = [
   { bg: "bg-purple-100", icon: "text-purple-600" },
   { bg: "bg-blue-100", icon: "text-blue-600" },
   { bg: "bg-amber-100", icon: "text-amber-700" },
-];
+]
 
 export default function AdminPage() {
-  const { token } = useAuth();
-  const navigate = useNavigate();
-  const { setBreadcrumbs, setAction } = useBreadcrumbs();
-  const [events, setEvents] = useState([]);
-  const [totalRegistrations, setTotalRegistrations] = useState(0);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [retryCount, setRetryCount] = useState(0);
+  const { token } = useAuth()
+  const navigate = useNavigate()
+  const { setBreadcrumbs, setAction } = useBreadcrumbs()
+  const { data: eventsData, isLoading: eventsLoading } = useAllEvents({ page: 1, limit: 50 })
+  const { data: statsData, isLoading: statsLoading } = useAdminStats()
+  const [retryCount, setRetryCount] = useState(0)
+
+  const events = eventsData?.events || []
+  const totalRegistrations = statsData?.totalRegistrations || 0
+  const isLoading = eventsLoading || statsLoading
 
   useEffect(() => {
-    setBreadcrumbs(["Dashboard"]);
-    setAction({ label: "Create Event", onClick: () => navigate("/dashboard/events/create") });
-  }, [setBreadcrumbs, setAction, navigate]);
+    setBreadcrumbs(["Dashboard"])
+    setAction({ label: "Create Event", onClick: () => navigate("/dashboard/events/create") })
+  }, [setBreadcrumbs, setAction, navigate])
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-
-      const results = await Promise.allSettled([
-        getAllEvents(token).then((r) => r.events || []),
-        getAdminStats(token).then((r) => r),
-      ]);
-
-      const [eventsRes, statsRes] = results;
-
-      if (eventsRes.status === "fulfilled") setEvents(eventsRes.value);
-      else console.error("Failed to fetch events:", eventsRes.reason);
-
-      if (statsRes.status === "fulfilled") setTotalRegistrations(statsRes.value.totalRegistrations);
-      else console.error("Failed to fetch stats:", statsRes.reason);
-
-      const failures = results.filter((r) => r.status === "rejected");
-      if (failures.length > 0) {
-        const msg = `Failed to load ${failures.length} of 2 data sources`;
-        setError(msg);
-        toast.error(msg);
-      }
-
-      setLoading(false);
-    };
-    fetchData();
-  }, [token, retryCount]);
+  const error = null
 
   const recentEvents = [...events]
     .filter((e) => e.status === "published")
     .sort((a, b) => new Date(b.startDate) - new Date(a.startDate))
-    .slice(0, 5);
+    .slice(0, 5)
 
-  if (loading) {
+  if (isLoading) {
     return (
       <main className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
         <div className="flex items-center justify-center min-h-[60vh]">
           <Loader2 className="w-8 h-8 animate-spin text-violet-600" />
         </div>
       </main>
-    );
+    )
   }
 
-  const statsData = [
+  const statsDataArray = [
     {
       title: "TOTAL EVENTS",
       value: String(events.length),
@@ -116,13 +88,13 @@ export default function AdminPage() {
       colorClass: "text-emerald-600 bg-emerald-100",
       gradientClass: "bg-gradient-to-t from-emerald-50 to-white",
     },
-  ];
+  ]
 
   return (
     <main className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard Overview</h1>
-        <p className="text-gray-500 text-sm">Here&apos;s what&apos;s happening with your events today.</p>
+        <p className="text-gray-500 text-sm">Here's what's happening with your events today.</p>
       </div>
 
       {error && (
@@ -140,8 +112,8 @@ export default function AdminPage() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {statsData.map((stat) => {
-          const Icon = stat.icon;
+        {statsDataArray.map((stat) => {
+          const Icon = stat.icon
           return (
             <div
               key={stat.title}
@@ -149,25 +121,20 @@ export default function AdminPage() {
             >
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <h3 className="text-xs font-bold text-gray-500 tracking-wider mb-2 uppercase">
-                    {stat.title}
-                  </h3>
-                  <div className="text-4xl font-extrabold text-gray-900">
-                    {stat.value}
-                  </div>
+                  <h3 className="text-xs font-bold text-gray-500 tracking-wider mb-2 uppercase">{stat.title}</h3>
+                  <div className="text-4xl font-extrabold text-gray-900">{stat.value}</div>
                 </div>
                 <div className={`p-2.5 rounded-xl ${stat.colorClass}`}>
                   <Icon className="w-5 h-5" />
                 </div>
               </div>
-
               <div className="flex items-center text-sm mt-2">
                 <TrendingUp className="w-4 h-4 text-emerald-500 mr-1.5" />
                 <span className="text-emerald-600 font-semibold mr-2">{stat.trend}</span>
                 <span className="text-gray-400">from last month</span>
               </div>
             </div>
-          );
+          )
         })}
       </div>
 
@@ -175,8 +142,7 @@ export default function AdminPage() {
         <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center">
           <h2 className="text-lg font-bold text-gray-900">Upcoming Events</h2>
           <button onClick={() => navigate("/dashboard/events")} className="cursor-pointer text-[#6200ea] hover:text-[#5200c3] text-sm font-semibold flex items-center transition-colors">
-            View All
-            <ArrowRight className="w-4 h-4 ml-1.5" />
+            View All <ArrowRight className="w-4 h-4 ml-1.5" />
           </button>
         </div>
 
@@ -194,15 +160,13 @@ export default function AdminPage() {
             <tbody className="divide-y divide-gray-100">
               {recentEvents.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-10 text-center text-sm text-gray-400">
-                    No published events yet.
-                  </td>
+                  <td colSpan={5} className="px-6 py-10 text-center text-sm text-gray-400">No published events yet.</td>
                 </tr>
               ) : (
                 recentEvents.map((event) => {
-                  const EventIcon = eventIcons[Math.abs(event.name?.length || 0) % 3];
-                  const colors = iconColorClasses[Math.abs(event.name?.length || 0) % 3];
-                  const startDate = new Date(event.startDate);
+                  const EventIcon = eventIcons[Math.abs(event.name?.length || 0) % 3]
+                  const colors = iconColorClasses[Math.abs(event.name?.length || 0) % 3]
+                  const startDate = new Date(event.startDate)
                   return (
                     <tr key={event._id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4 flex items-center">
@@ -221,16 +185,14 @@ export default function AdminPage() {
                         <div className="text-xs text-gray-400">{event.startTime || "All day"}</div>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-600 font-medium">{event.venue}</td>
-                      <td className="px-6 py-4">
-                        <StatusBadge status={event.status} />
-                      </td>
+                      <td className="px-6 py-4"><StatusBadge status={event.status} /></td>
                       <td className="px-6 py-4 text-right">
                         <button className="text-gray-400 hover:text-gray-600 p-1 rounded-md transition-colors">
                           <MoreVertical className="w-5 h-5" />
                         </button>
                       </td>
                     </tr>
-                  );
+                  )
                 })
               )}
             </tbody>
@@ -238,5 +200,5 @@ export default function AdminPage() {
         </div>
       </div>
     </main>
-  );
+  )
 }

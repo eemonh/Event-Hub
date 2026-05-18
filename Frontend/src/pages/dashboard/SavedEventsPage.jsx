@@ -1,105 +1,56 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Calendar, MapPin, Bookmark, Loader2 } from "lucide-react";
-import toast from "react-hot-toast";
-import { useAuth } from "../../context/AuthContext";
-import { useBreadcrumbs } from "../../context/BreadcrumbContext";
-import { getSavedEvents, removeBookmark, getMyEvents } from "../../services/events";
-
-
-const SavedEventCard = ({ event, onRemove, onClick, isOwner, isRegistered }) => {
-  return (
-    <div onClick={onClick} className="flex flex-col bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer">
-      <div className="relative h-48 w-full bg-gray-100">
-        <img
-          src={event.coverImage || "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800"}
-          alt={event.title || event.name}
-          onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800"; }}
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full shadow-sm">
-          <span className="text-xs font-bold text-gray-800 tracking-wide">{event.category}</span>
-        </div>
-      </div>
-      <div className="p-6 flex flex-col flex-grow">
-        <div className="flex justify-between items-start mb-4 gap-4">
-          <h3 className="text-xl font-bold text-gray-900 leading-tight">{event.title || event.name}</h3>
-          <button onClick={(e) => { e.stopPropagation(); onRemove(event._id || event.id); }} className="text-violet-700 hover:text-violet-800 transition-colors flex-shrink-0 mt-1" title="Remove bookmark">
-            <Bookmark className="w-5 h-5" fill="currentColor" />
-          </button>
-        </div>
-        <div className="space-y-3 mb-8 flex-grow">
-          <div className="flex items-center text-sm text-gray-500 font-medium">
-            <Calendar className="w-4 h-4 mr-3 text-gray-400 flex-shrink-0" />
-            {event.startDate ? new Date(event.startDate).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : event.datetime}
-          </div>
-          <div className="flex items-center text-sm text-gray-500 font-medium">
-            <MapPin className="w-4 h-4 mr-3 text-gray-400 flex-shrink-0" />
-            {event.venue || event.location}
-          </div>
-        </div>
-        {isOwner ? (
-          <span className="flex w-full items-center justify-center gap-2 rounded-xl bg-slate-100 px-4 py-3 text-sm font-medium text-slate-500"><Bookmark size={14} />You are the organizer</span>
-        ) : isRegistered ? (
-          <span className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-100 px-4 py-3 text-sm font-medium text-emerald-700"><Bookmark size={14} />Registered</span>
-        ) : (
-          <button className="w-full py-3 px-4 rounded-xl text-sm font-bold transition-colors bg-violet-700 hover:bg-violet-800 text-white shadow-sm">Register Now</button>
-        )}
-      </div>
-    </div>
-  );
-};
+import { useMemo, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import { Bookmark, Loader2 } from "lucide-react"
+import toast from "react-hot-toast"
+import { useAuth } from "../../context/AuthContext"
+import { useBreadcrumbs } from "../../context/BreadcrumbContext"
+import { useSavedEvents, useMyEvents } from "../../hooks/queries/useEvents"
+import { useRemoveBookmark, useRegisterForEvent } from "../../hooks/mutations/useEventMutations"
+import EventCard from "../../components/events/EventCard"
 
 export default function SavedEventsPage() {
-  const { user, token } = useAuth();
-  const navigate = useNavigate();
-  const { setBreadcrumbs, setAction } = useBreadcrumbs();
-  const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [registeredIds, setRegisteredIds] = useState(new Set());
-  const fetchSaved = async () => {
-    try {
-      const data = await getSavedEvents(token);
-      setEvents(data.events || []);
-    } catch (err) {
-      toast.error(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { user, token } = useAuth()
+  const navigate = useNavigate()
+  const { setBreadcrumbs, setAction } = useBreadcrumbs()
+  const { data: savedData, isLoading } = useSavedEvents()
+  const { data: myEventsData } = useMyEvents()
+  const removeBookmarkMutation = useRemoveBookmark()
+  const registerMutation = useRegisterForEvent()
 
-  const fetchRegistered = async () => {
-    if (!token) return;
-    try {
-      const data = await getMyEvents(token);
-      setRegisteredIds(new Set((data.events || []).map((e) => e._id || e.id)));
-    } catch {}
-  };
+  const events = savedData?.events || []
+  const registeredIds = useMemo(
+    () => new Set((myEventsData?.events || []).map((e) => e._id || e.id)),
+    [myEventsData]
+  )
 
-  useEffect(() => { fetchSaved(); fetchRegistered(); }, [token]);
   useEffect(() => {
-    setBreadcrumbs(["Dashboard", "Events", "Saved"]);
-    setAction({ label: "Explore Events", onClick: () => navigate("/events") });
-  }, [setBreadcrumbs, setAction, navigate]);
+    setBreadcrumbs(["Dashboard", "Events", "Saved"])
+    setAction({ label: "Explore Events", onClick: () => navigate("/events") })
+  }, [setBreadcrumbs, setAction, navigate])
 
-  const handleRemove = async (eventId) => {
-    try {
-      await removeBookmark(token, eventId);
-      toast.success("Bookmark removed");
-      fetchSaved();
-    } catch (err) {
-      toast.error(err.message);
-    }
-  };
+  const handleRemove = (eventId) => {
+    removeBookmarkMutation.mutate(eventId, {
+      onSuccess: () => toast.success("Bookmark removed"),
+      onError: (err) => toast.error(err.message),
+    })
+  }
 
-  if (loading) {
+  const handleRegister = (eventId) => {
+    if (!token) return
+    registerMutation.mutate(eventId, {
+      onSuccess: () => toast.success("Registered successfully!"),
+      onError: (err) => toast.error(err.message),
+    })
+  }
+
+  if (isLoading) {
     return (
       <main className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
         <div className="flex items-center justify-center py-20">
           <Loader2 className="w-8 h-8 animate-spin text-violet-700" />
         </div>
       </main>
-    );
+    )
   }
 
   return (
@@ -120,11 +71,24 @@ export default function SavedEventsPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {events.map((event) => (
-            <SavedEventCard key={event._id || event.id} event={event} onRemove={handleRemove} onClick={() => navigate('/events/' + (event._id || event.id))} isOwner={(event.organizer?.toString()) === user?.id} isRegistered={registeredIds.has(event._id || event.id)} />
-          ))}
+          {events.map((event) => {
+            const eventId = event._id || event.id
+            const isOwner = (event.organizer?.toString()) === user?.id
+            return (
+              <EventCard
+                key={eventId}
+                event={event}
+                mode="saved"
+                isOwner={isOwner}
+                isRegistered={registeredIds.has(eventId)}
+                onRemoveBookmark={handleRemove}
+                onRegister={handleRegister}
+                onClick={() => navigate("/events/" + eventId)}
+              />
+            )
+          })}
         </div>
       )}
     </main>
-  );
+  )
 }

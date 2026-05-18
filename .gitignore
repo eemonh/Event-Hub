@@ -6,9 +6,3 @@ dist/
 .gitignore
 
 
-.opencode
-docs
-.superpowers
-.gitignore
-Backend/.env
-.gitignore

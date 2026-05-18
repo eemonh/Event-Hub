@@ -1,115 +1,47 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Calendar, Clock, MapPin, Ticket, RotateCcw, Loader2 } from "lucide-react";
-import toast from "react-hot-toast";
-import { useAuth } from "../../context/AuthContext";
-import { useBreadcrumbs } from "../../context/BreadcrumbContext";
-import { getMyEvents, cancelRegistration } from "../../services/events";
-
-
-const EventCard = ({ event, isPast, onCancel, onClick }) => {
-  return (
-    <div onClick={onClick} className="flex flex-col bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200 cursor-pointer">
-      <div className="h-48 w-full overflow-hidden bg-gray-100">
-        <img
-          src={event.coverImage || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=800"}
-          alt={event.title || event.name}
-          onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&q=80&w=800"; }}
-          className={`w-full h-full object-cover ${isPast ? "grayscale opacity-80" : ""}`}
-        />
-      </div>
-      <div className="p-5 flex flex-col flex-grow">
-        <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
-          {event.title || event.name}
-        </h3>
-        <div className="mb-4">
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-            isPast ? "bg-gray-100 text-gray-600" : "bg-purple-100 text-purple-700"
-          }`}>
-            {isPast ? "Attended" : "Registered"}
-          </span>
-        </div>
-        <div className="space-y-2 mb-6 flex-grow">
-          <div className="flex items-center text-sm text-gray-500">
-            <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-            {event.startDate ? new Date(event.startDate).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) : event.date}
-          </div>
-          <div className="flex items-center text-sm text-gray-500">
-            <Clock className="w-4 h-4 mr-2 text-gray-400" />
-            {event.startTime || event.time || "All day"}
-          </div>
-          <div className="flex items-center text-sm text-gray-500">
-            <MapPin className="w-4 h-4 mr-2 text-gray-400" />
-            {event.venue || event.location}
-          </div>
-        </div>
-        {isPast ? (
-          <button disabled className="w-full flex items-center justify-center py-2.5 px-4 rounded-lg text-sm font-semibold bg-purple-50 text-purple-400 cursor-not-allowed">
-            <RotateCcw className="w-4 h-4 mr-2" />
-            Event Ended
-          </button>
-        ) : (
-          <div className="flex gap-2">
-            <button className="flex-1 flex items-center justify-center py-2.5 px-4 rounded-lg text-sm font-semibold bg-violet-700 hover:bg-violet-800 text-white transition-colors">
-              <Ticket className="w-4 h-4 mr-2" />
-              View Ticket
-            </button>
-            <button onClick={(e) => { e.stopPropagation(); onCancel(event._id || event.id); }} className="py-2.5 px-4 rounded-lg text-sm font-semibold bg-red-50 text-red-600 hover:bg-red-100 transition-colors">
-              Cancel
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
+import { useMemo, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import { Calendar, Loader2 } from "lucide-react"
+import toast from "react-hot-toast"
+import { useAuth } from "../../context/AuthContext"
+import { useBreadcrumbs } from "../../context/BreadcrumbContext"
+import { useMyEvents } from "../../hooks/queries/useEvents"
+import { useCancelRegistration } from "../../hooks/mutations/useEventMutations"
+import EventCard from "../../components/events/EventCard"
 
 export default function MyEventsPage() {
-  const { token } = useAuth();
-  const navigate = useNavigate();
-  const { setBreadcrumbs, setAction } = useBreadcrumbs();
-  const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const fetchEvents = async () => {
-    try {
-      const data = await getMyEvents(token);
-      setEvents(data.events || []);
-    } catch (err) {
-      toast.error(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { token } = useAuth()
+  const navigate = useNavigate()
+  const { setBreadcrumbs, setAction } = useBreadcrumbs()
+  const { data, isLoading } = useMyEvents()
+  const cancelMutation = useCancelRegistration()
 
-  useEffect(() => { fetchEvents(); }, [token]);
+  const events = data?.events || []
+
   useEffect(() => {
-    setBreadcrumbs(["Dashboard", "Events", "My Events"]);
-    setAction({ label: "Explore More", onClick: () => navigate("/events") });
-  }, [setBreadcrumbs, setAction, navigate]);
+    setBreadcrumbs(["Dashboard", "Events", "My Events"])
+    setAction({ label: "Explore More", onClick: () => navigate("/events") })
+  }, [setBreadcrumbs, setAction, navigate])
 
-  const handleCancel = async (eventId) => {
-    if (!confirm("Are you sure you want to cancel your registration?")) return;
-    try {
-      await cancelRegistration(token, eventId);
-      toast.success("Registration cancelled");
-      fetchEvents();
-    } catch (err) {
-      toast.error(err.message);
-    }
-  };
+  const now = useMemo(() => new Date(), [])
+  const upcoming = useMemo(() => events.filter((e) => new Date(e.startDate) >= now), [events, now])
+  const past = useMemo(() => events.filter((e) => new Date(e.startDate) < now), [events, now])
 
-  const now = new Date();
-  const upcoming = events.filter((e) => new Date(e.startDate) >= now);
-  const past = events.filter((e) => new Date(e.startDate) < now);
+  const handleCancel = (eventId) => {
+    if (!confirm("Are you sure you want to cancel your registration?")) return
+    cancelMutation.mutate(eventId, {
+      onSuccess: () => toast.success("Registration cancelled"),
+      onError: (err) => toast.error(err.message),
+    })
+  }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <main className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
         <div className="flex items-center justify-center py-20">
           <Loader2 className="w-8 h-8 animate-spin text-violet-700" />
         </div>
       </main>
-    );
+    )
   }
 
   return (
@@ -135,7 +67,14 @@ export default function MyEventsPage() {
               <h2 className="text-xl font-semibold text-gray-800 mb-6">Upcoming Events</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {upcoming.map((event) => (
-                  <EventCard key={event._id || event.id} event={event} isPast={false} onCancel={handleCancel} onClick={() => navigate('/events/' + (event._id || event.id))} />
+                  <EventCard
+                    key={event._id || event.id}
+                    event={event}
+                    mode="my-events"
+                    isPast={false}
+                    onCancel={handleCancel}
+                    onClick={() => navigate("/events/" + (event._id || event.id))}
+                  />
                 ))}
               </div>
             </div>
@@ -145,7 +84,13 @@ export default function MyEventsPage() {
               <h2 className="text-xl font-semibold text-gray-800 mb-6">Past Events</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {past.map((event) => (
-                  <EventCard key={event._id || event.id} event={event} isPast={true} onClick={() => navigate('/events/' + (event._id || event.id))} />
+                  <EventCard
+                    key={event._id || event.id}
+                    event={event}
+                    mode="my-events"
+                    isPast={true}
+                    onClick={() => navigate("/events/" + (event._id || event.id))}
+                  />
                 ))}
               </div>
             </div>
@@ -153,5 +98,5 @@ export default function MyEventsPage() {
         </>
       )}
     </main>
-  );
+  )
 }
