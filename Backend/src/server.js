@@ -19,7 +19,13 @@ import User from "./models/User.js";
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-app.use(cors({ origin: process.env.CLIENT_URL || "http://localhost:5173", credentials: true }));
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    credentials: true,
+  }),
+);
 app.use(express.json());
 app.use(cookieParser());
 
@@ -44,7 +50,9 @@ app.use((req, res) => {
 
 app.use((err, req, res, next) => {
   console.error("Error:", err.message);
-  res.status(err.status || 500).json({ message: err.message || "Internal server error" });
+  res
+    .status(err.status || 500)
+    .json({ message: err.message || "Internal server error" });
 });
 
 async function ensureAdminAccount() {
@@ -56,7 +64,9 @@ async function ensureAdminAccount() {
     return;
   }
 
-  const existingUser = await User.findOne({ email: adminEmail }).select("+password");
+  const existingUser = await User.findOne({ email: adminEmail }).select(
+    "+password",
+  );
   if (existingUser) {
     existingUser.role = "admin";
     existingUser.password = adminPassword;
