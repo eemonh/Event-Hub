@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronDown, Calendar, MapPin } from "lucide-react";
+import { ChevronDown, Calendar, MapPin, Plus, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
 import { useBreadcrumbs } from "../../context/BreadcrumbContext";
@@ -17,6 +17,7 @@ export default function CreateEventPage() {
     name: "", type: "", category: "", startDate: "", startTime: "",
     endDate: "", endTime: "", venue: "", coverImage: "", description: "",
     capacity: "", price: "0", status: "published",
+    subtitle: "", schedule: [],
   });
 
   useEffect(() => {
@@ -27,6 +28,28 @@ export default function CreateEventPage() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleScheduleChange = (index, field, value) => {
+    setFormData((prev) => {
+      const schedule = [...prev.schedule];
+      schedule[index] = { ...schedule[index], [field]: value };
+      return { ...prev, schedule };
+    });
+  };
+
+  const addScheduleItem = () => {
+    setFormData((prev) => ({
+      ...prev,
+      schedule: [...prev.schedule, { day: "", time: "", title: "", description: "" }],
+    }));
+  };
+
+  const removeScheduleItem = (index) => {
+    setFormData((prev) => ({
+      ...prev,
+      schedule: prev.schedule.filter((_, i) => i !== index),
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -43,6 +66,7 @@ export default function CreateEventPage() {
       venue: formData.venue, coverImage: formData.coverImage, description: formData.description,
       capacity: parseInt(formData.capacity) || 100, price: parseFloat(formData.price) || 0,
       status: formData.status,
+      subtitle: formData.subtitle, schedule: formData.schedule,
     };
     console.log("[CreateEvent] Payload:", JSON.stringify(payload, null, 2));
     try {
@@ -101,6 +125,11 @@ export default function CreateEventPage() {
                 </select>
                 <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
               </div>
+            </div>
+            <div>
+              <label className="block text-xs font-bold text-gray-500 mb-2">Subtitle</label>
+              <input type="text" name="subtitle" value={formData.subtitle} onChange={handleChange} placeholder="A short tagline under the title"
+                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/30 text-gray-900 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-gray-400 transition-all" />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
@@ -172,6 +201,49 @@ export default function CreateEventPage() {
               <label className="block text-xs font-bold text-gray-500 mb-2">Event Description</label>
               <textarea name="description" value={formData.description} onChange={handleChange} rows="4" placeholder="Provide details about your event..." required
                 className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/30 text-gray-900 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-gray-400 transition-all resize-y"></textarea>
+            </div>
+
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <label className="block text-xs font-bold text-gray-500">Schedule Highlights</label>
+                <button type="button" onClick={addScheduleItem}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-purple-200 px-3 py-1.5 text-xs font-semibold text-purple-700 hover:bg-purple-50 transition-colors">
+                  <Plus size={14} /> Add Item
+                </button>
+              </div>
+              {formData.schedule.map((item, i) => (
+                <div key={i} className="relative rounded-lg border border-gray-200 bg-gray-50/30 p-4 space-y-3">
+                  <button type="button" onClick={() => removeScheduleItem(i)}
+                    className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors">
+                    <Trash2 size={16} />
+                  </button>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-semibold text-gray-400 mb-1">Day</label>
+                      <input type="text" value={item.day} onChange={(e) => handleScheduleChange(i, "day", e.target.value)} placeholder="e.g. Day 1"
+                        className="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-gray-400 transition-all" />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-semibold text-gray-400 mb-1">Time</label>
+                      <input type="text" value={item.time} onChange={(e) => handleScheduleChange(i, "time", e.target.value)} placeholder="e.g. 09:00 AM"
+                        className="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-gray-400 transition-all" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-gray-400 mb-1">Title</label>
+                    <input type="text" value={item.title} onChange={(e) => handleScheduleChange(i, "title", e.target.value)} placeholder="Session title"
+                      className="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-gray-400 transition-all" />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-gray-400 mb-1">Description</label>
+                    <textarea value={item.description} onChange={(e) => handleScheduleChange(i, "description", e.target.value)} rows="2" placeholder="Session description"
+                      className="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-gray-400 transition-all resize-y"></textarea>
+                  </div>
+                </div>
+              ))}
+              {formData.schedule.length === 0 && (
+                <p className="text-xs text-gray-400 italic">No schedule items added yet.</p>
+              )}
             </div>
           </form>
         </div>

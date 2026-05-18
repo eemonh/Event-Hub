@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
 import { useBreadcrumbs } from "../../context/BreadcrumbContext";
 import { getSavedEvents, removeBookmark, getMyEvents } from "../../services/events";
-import EventDetailModal from "../../components/events/EventDetailModal";
+
 
 const SavedEventCard = ({ event, onRemove, onClick, isOwner, isRegistered }) => {
   return (
@@ -57,8 +57,6 @@ export default function SavedEventsPage() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [registeredIds, setRegisteredIds] = useState(new Set());
-  const [selectedEventId, setSelectedEventId] = useState(null);
-
   const fetchSaved = async () => {
     try {
       const data = await getSavedEvents(token);
@@ -123,16 +121,10 @@ export default function SavedEventsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {events.map((event) => (
-            <SavedEventCard key={event._id || event.id} event={event} onRemove={handleRemove} onClick={() => setSelectedEventId(event._id || event.id)} isOwner={(event.organizer?.toString()) === user?.id} isRegistered={registeredIds.has(event._id || event.id)} />
+            <SavedEventCard key={event._id || event.id} event={event} onRemove={handleRemove} onClick={() => navigate('/events/' + (event._id || event.id))} isOwner={(event.organizer?.toString()) === user?.id} isRegistered={registeredIds.has(event._id || event.id)} />
           ))}
         </div>
       )}
-
-      <EventDetailModal
-        eventId={selectedEventId}
-        isOpen={!!selectedEventId}
-        onClose={() => setSelectedEventId(null)}
-      />
     </main>
   );
 }

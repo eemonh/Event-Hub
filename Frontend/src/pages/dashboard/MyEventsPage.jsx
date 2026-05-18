@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
 import { useBreadcrumbs } from "../../context/BreadcrumbContext";
 import { getMyEvents, cancelRegistration } from "../../services/events";
-import EventDetailModal from "../../components/events/EventDetailModal";
+
 
 const EventCard = ({ event, isPast, onCancel, onClick }) => {
   return (
@@ -70,8 +70,6 @@ export default function MyEventsPage() {
   const { setBreadcrumbs, setAction } = useBreadcrumbs();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedEventId, setSelectedEventId] = useState(null);
-
   const fetchEvents = async () => {
     try {
       const data = await getMyEvents(token);
@@ -137,7 +135,7 @@ export default function MyEventsPage() {
               <h2 className="text-xl font-semibold text-gray-800 mb-6">Upcoming Events</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {upcoming.map((event) => (
-                  <EventCard key={event._id || event.id} event={event} isPast={false} onCancel={handleCancel} onClick={() => setSelectedEventId(event._id || event.id)} />
+                  <EventCard key={event._id || event.id} event={event} isPast={false} onCancel={handleCancel} onClick={() => navigate('/events/' + (event._id || event.id))} />
                 ))}
               </div>
             </div>
@@ -147,19 +145,13 @@ export default function MyEventsPage() {
               <h2 className="text-xl font-semibold text-gray-800 mb-6">Past Events</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {past.map((event) => (
-                  <EventCard key={event._id || event.id} event={event} isPast={true} onClick={() => setSelectedEventId(event._id || event.id)} />
+                  <EventCard key={event._id || event.id} event={event} isPast={true} onClick={() => navigate('/events/' + (event._id || event.id))} />
                 ))}
               </div>
             </div>
           )}
         </>
       )}
-
-      <EventDetailModal
-        eventId={selectedEventId}
-        isOpen={!!selectedEventId}
-        onClose={() => setSelectedEventId(null)}
-      />
     </main>
   );
 }

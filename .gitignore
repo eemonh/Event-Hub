@@ -4,3 +4,11 @@ package-lock.json
 dist/
 
 .gitignore
+
+
+.opencode
+docs
+.superpowers
+.gitignore
+Backend/.env
+.gitignore

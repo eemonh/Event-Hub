@@ -223,7 +223,7 @@ export default function DashboardEvents() {
             const isRegistered = registeredIds.has(eventId);
             const isEventOwner = isOwner(event);
             return (
-              <div key={eventId} className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_4px_15px_rgba(0,0,0,0.02)] transition-shadow duration-300 hover:shadow-lg">
+              <div key={eventId} onClick={() => navigate('/events/' + eventId)} className="flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_4px_15px_rgba(0,0,0,0.02)] transition-shadow duration-300 hover:shadow-lg cursor-pointer">
                 <div className="relative h-48 w-full overflow-hidden bg-slate-200">
                   <img
                     src={event.coverImage || "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=1200&auto=format&fit=crop"}

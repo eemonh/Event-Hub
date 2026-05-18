@@ -10,6 +10,7 @@ import { useAuth } from './src/context/AuthContext'
 
 const HomePage = lazy(() => import('./src/pages/HomePage'))
 const EventsPage = lazy(() => import('./src/pages/EventsPage'))
+const EventDetailPage = lazy(() => import('./src/pages/EventDetailPage'))
 const ContactPage = lazy(() => import('./src/pages/ContactPage'))
 const AboutUs = lazy(() => import('./src/pages/AboutUs'))
 const AuthPage = lazy(() => import('./src/pages/AuthPage'))
@@ -26,6 +27,8 @@ const UsersPage = lazy(() => import('./src/pages/dashboard/UsersPage'))
 const ProfileSettingsPage = lazy(() => import('./src/pages/dashboard/ProfileSettingsPage'))
 const TicketsPage = lazy(() => import('./src/pages/dashboard/TicketsPage'))
 const PrototypeExploreEvents = lazy(() => import('./src/Prototype/ExploreEvents'))
+const PrototypeEventPage = lazy(() => import('./src/Prototype/EventPage'))
+const PrototypeEventDetailsPage = lazy(() => import('./src/Prototype/EventDetailsPage'))
 function ConditionalDashboard() {
   const { user } = useAuth();
   return user?.role === "admin" ? <AdminPage /> : <UserDashboard />;
@@ -47,6 +50,9 @@ export default function App() {
 
           <Route path="/register" element={<AuthPage />} />
           <Route path="/login" element={<AuthPage />} />
+          <Route path="/events/:eventId" element={<EventDetailPage />} />
+          <Route path="/prototype/event" element={<PrototypeEventPage />} />
+          <Route path="/prototype/event-details" element={<PrototypeEventDetailsPage />} />
           <Route path="/prototype/explore-events" element={<PrototypeExploreEvents />} />
 
           <Route element={<ProtectedRoute />}>

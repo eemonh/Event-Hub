@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { useBreadcrumbs } from "../context/BreadcrumbContext";
 import { getMyEvents, getRecommendedEvents, getSavedEvents, cancelRegistration } from "../services/events";
-import EventDetailModal from "../components/events/EventDetailModal";
+
 
 function CountdownBadge({ targetDate }) {
   const [remaining, setRemaining] = useState(null);
@@ -49,8 +49,6 @@ export default function UserDashboard() {
   const [recommended, setRecommended] = useState([]);
   const [savedEvents, setSavedEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedEventId, setSelectedEventId] = useState(null);
-
   useEffect(() => {
     setBreadcrumbs(["Dashboard", "Overview"]);
     setAction({ label: "Create Event", onClick: () => navigate("/dashboard/events/create") });
@@ -170,7 +168,7 @@ export default function UserDashboard() {
               const ownerId = event.organizer?._id ?? event.organizer;
               const isOwner = ownerId?.toString() === user?.id;
               return (
-                <div key={event._id || event.id} onClick={() => setSelectedEventId(event._id || event.id)} className={`cursor-pointer flex flex-col gap-4 px-6 py-5 lg:flex-row lg:items-center lg:justify-between ${index !== Math.min(upcomingEvents.length, 3) - 1 ? "border-b border-slate-100" : ""}`}>
+                <div key={event._id || event.id} onClick={() => navigate('/events/' + (event._id || event.id))} className={`cursor-pointer flex flex-col gap-4 px-6 py-5 lg:flex-row lg:items-center lg:justify-between ${index !== Math.min(upcomingEvents.length, 3) - 1 ? "border-b border-slate-100" : ""}`}>
                   <div className="flex items-start gap-4">
                     <div className="flex h-16 w-16 flex-col items-center justify-center rounded-lg bg-violet-100">
                       <span className="text-xs font-semibold uppercase tracking-wide text-violet-700">{month}</span>
@@ -219,7 +217,7 @@ export default function UserDashboard() {
             {recommended.slice(0, 6).map((event) => {
               const startDate = new Date(event.startDate);
               return (
-                <div key={event._id || event.id} onClick={() => setSelectedEventId(event._id || event.id)} className="cursor-pointer overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+                <div key={event._id || event.id} onClick={() => navigate('/events/' + (event._id || event.id))} className="cursor-pointer overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md">
                   <div className="relative h-52 overflow-hidden">
                     <img src={event.coverImage || "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=1200&auto=format&fit=crop"} alt={event.name} onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=1200&auto=format&fit=crop"; }} className="h-full w-full object-cover" />
                     <div className="absolute left-3 top-3 rounded-md bg-white px-2 py-1 text-xs font-semibold text-violet-700 shadow">{event.category}</div>
@@ -242,12 +240,6 @@ export default function UserDashboard() {
           </div>
         )}
       </section>
-
-      <EventDetailModal
-        eventId={selectedEventId}
-        isOpen={!!selectedEventId}
-        onClose={() => setSelectedEventId(null)}
-      />
     </main>
   );
 }

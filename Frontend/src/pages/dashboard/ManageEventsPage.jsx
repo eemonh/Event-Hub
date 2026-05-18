@@ -5,7 +5,6 @@ import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
 import { useBreadcrumbs } from "../../context/BreadcrumbContext";
 import { getAllEvents, deleteEvent } from "../../services/events";
-import EventDetailModal from "../../components/events/EventDetailModal";
 import EditEventModal from "../../components/events/EditEventModal";
 
 const StatusBadge = ({ status }) => {
@@ -25,7 +24,6 @@ export default function ManageEventsPage() {
   const { setBreadcrumbs, setAction } = useBreadcrumbs();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedEventId, setSelectedEventId] = useState(null);
   const [editEventId, setEditEventId] = useState(null);
 
   const fetchEvents = async () => {
@@ -104,7 +102,7 @@ export default function ManageEventsPage() {
                       <td className="px-6 py-5"><StatusBadge status={displayStatus} /></td>
                       <td className="px-6 py-5 text-center">
                         <div className="flex items-center justify-center gap-2">
-                          <button onClick={() => setSelectedEventId(event._id || event.id)} className="p-1.5 rounded-md text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors" title="View"><Eye className="w-4 h-4" /></button>
+                          <button onClick={() => navigate('/events/' + (event._id || event.id))} className="p-1.5 rounded-md text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors" title="View"><Eye className="w-4 h-4" /></button>
                           <button onClick={() => setEditEventId(event._id || event.id)} className="p-1.5 rounded-md text-gray-400 hover:text-violet-600 hover:bg-violet-50 transition-colors" title="Edit"><Pencil className="w-4 h-4" /></button>
                           <button onClick={() => handleDelete(event._id || event.id)} className="p-1.5 rounded-md text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors" title="Delete"><Trash2 className="w-4 h-4" /></button>
                         </div>
@@ -117,12 +115,6 @@ export default function ManageEventsPage() {
           </table>
         </div>
       </div>
-
-      <EventDetailModal
-        eventId={selectedEventId}
-        isOpen={!!selectedEventId}
-        onClose={() => setSelectedEventId(null)}
-      />
 
       <EditEventModal
         eventId={editEventId}

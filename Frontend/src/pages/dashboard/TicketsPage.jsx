@@ -6,7 +6,7 @@ import QRCode from "qrcode";
 import { useAuth } from "../../context/AuthContext";
 import { useBreadcrumbs } from "../../context/BreadcrumbContext";
 import { getMyEvents, cancelRegistration } from "../../services/events";
-import EventDetailModal from "../../components/events/EventDetailModal";
+
 
 export default function TicketsPage() {
   const { token, user } = useAuth();
@@ -15,7 +15,6 @@ export default function TicketsPage() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showUpcoming, setShowUpcoming] = useState(true);
-  const [selectedEventId, setSelectedEventId] = useState(null);
   const [qrCodes, setQrCodes] = useState({});
   const [selectedQr, setSelectedQr] = useState(null);
   const [selectedQrEvent, setSelectedQrEvent] = useState(null);
@@ -218,7 +217,7 @@ export default function TicketsPage() {
                 </div>
 
                 <div
-                  onClick={() => setSelectedEventId(eventId)}
+                  onClick={() => navigate('/events/' + eventId)}
                   className="cursor-pointer border-t border-slate-100 bg-slate-50/70 px-5 py-3 text-center text-xs font-semibold text-violet-700 transition hover:bg-slate-100"
                 >
                   View Event Details
@@ -228,12 +227,6 @@ export default function TicketsPage() {
           })}
         </div>
       )}
-
-      <EventDetailModal
-        eventId={selectedEventId}
-        isOpen={!!selectedEventId}
-        onClose={() => setSelectedEventId(null)}
-      />
 
       {selectedQr && (
         <div
