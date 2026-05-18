@@ -1,48 +1,49 @@
 const API_BASE = "/api/auth";
 
+async function request(url, options = {}) {
+  const res = await fetch(url, options);
+  let data;
+  try {
+    data = await res.json();
+  } catch {
+    const text = await res.text();
+    throw new Error(`Invalid JSON response: ${text}`);
+  }
+  if (!res.ok) throw new Error(data.message);
+  return data;
+}
+
 export async function loginUser(email, password) {
-  const res = await fetch(`${API_BASE}/login`, {
+  return request(`${API_BASE}/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message);
-  return data;
 }
 
 export async function registerUser(name, email, password) {
-  const res = await fetch(`${API_BASE}/register`, {
+  return request(`${API_BASE}/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name, email, password }),
   });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message);
-  return data;
 }
 
 export async function getMe(token) {
-  const res = await fetch(`${API_BASE}/me`, {
+  return request(`${API_BASE}/me`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message);
-  return data;
 }
 
 export async function logout(token) {
-  const res = await fetch(`${API_BASE}/logout`, {
+  return request(`${API_BASE}/logout`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
   });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message);
-  return data;
 }
 
 export async function changePassword(token, currentPassword, newPassword) {
-  const res = await fetch(`${API_BASE}/password`, {
+  return request(`${API_BASE}/password`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -50,13 +51,10 @@ export async function changePassword(token, currentPassword, newPassword) {
     },
     body: JSON.stringify({ currentPassword, newPassword }),
   });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.message);
-  return data;
 }
 
 export async function updateProfile(token, data) {
-  const res = await fetch(`${API_BASE}/profile`, {
+  return request(`${API_BASE}/profile`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -64,7 +62,4 @@ export async function updateProfile(token, data) {
     },
     body: JSON.stringify(data),
   });
-  const result = await res.json();
-  if (!res.ok) throw new Error(result.message);
-  return result;
 }

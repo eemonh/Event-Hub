@@ -6,7 +6,13 @@ export async function submitContact({ name, email, subject, message }) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name, email, subject, message }),
   });
-  const data = await res.json();
+  let data;
+  try {
+    data = await res.json();
+  } catch {
+    const text = await res.text();
+    throw new Error(`Invalid JSON response: ${text}`);
+  }
   if (!res.ok) throw new Error(data.message);
   return data;
 }

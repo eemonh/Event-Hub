@@ -2,7 +2,13 @@ const API_BASE = "/api/users";
 
 async function request(url, options = {}) {
   const res = await fetch(url, options);
-  const data = await res.json();
+  let data;
+  try {
+    data = await res.json();
+  } catch {
+    const text = await res.text();
+    throw new Error(`Invalid JSON response: ${text}`);
+  }
   if (!res.ok) throw new Error(data.message);
   return data;
 }

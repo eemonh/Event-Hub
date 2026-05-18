@@ -63,7 +63,13 @@ export async function apiClient(endpoint, options = {}) {
     }
   }
 
-  const data = await res.json();
+  let data;
+  try {
+    data = await res.json();
+  } catch {
+    const text = await res.text();
+    throw new Error(`Invalid JSON response: ${text}`);
+  }
   if (!res.ok) throw new Error(data.message || "Request failed");
   return data;
 }
