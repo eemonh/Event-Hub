@@ -27,3 +27,13 @@
   }
 }
 
+@media (max-width: 767px) {
+  *::-webkit-scrollbar {
+    display: none;
+  }
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+}
+
