@@ -276,15 +276,14 @@ export default function EventDetailPage() {
           <div>
             <div className="sticky top-6 overflow-hidden rounded-[16px] border border-[#D9D3DD] bg-[#7A8897] shadow-[0_6px_20px_rgba(0,0,0,0.08)]">
               <div className="relative flex h-[360px] items-center justify-center">
-                <div
-                  className="absolute inset-0 bg-cover bg-center opacity-35"
+                <div className="relative flex h-[250px] w-[250px] items-center justify-center overflow-hidden rounded-full bg-cover bg-center shadow-2xl"
                   style={{
                     backgroundImage: `url(https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=1200&auto=format&fit=crop)`,
                   }}
-                />
-                <div className="relative flex h-[250px] w-[250px] items-center justify-center rounded-full bg-white/85 shadow-2xl backdrop-blur-sm">
-                  <div className="absolute h-5 w-5 rounded-full bg-primary" />
-                  <div className="absolute bottom-[78px] rounded-full bg-white px-4 py-2 text-[13px] font-medium text-[#1A2233] shadow-lg">
+                >
+                  <div className="absolute inset-0 rounded-full bg-black/15" />
+                  <div className="absolute h-5 w-5 rounded-full bg-primary z-10" />
+                  <div className="absolute bottom-[78px] z-10 rounded-full bg-white px-4 py-2 text-[13px] font-medium text-[#1A2233] shadow-lg">
                     <div className="flex items-center gap-1.5">
                       <MapPin size={14} className="text-primary" />
                       {event.venue || "Venue"}
