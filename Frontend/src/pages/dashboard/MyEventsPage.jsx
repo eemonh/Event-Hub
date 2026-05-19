@@ -35,14 +35,14 @@ export default function MyEventsPage() {
 
   if (isLoading) {
     return (
-      <main className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
+    <main className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-12">
         <EventGridSkeleton compact showFilters={false} />
       </main>
     )
   }
 
   return (
-    <main className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
+    <main className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-12">
       <div className="mb-2">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">My Events</h1>
         <p className="text-gray-500">Manage your registrations and view your tickets.</p>
@@ -60,9 +60,9 @@ export default function MyEventsPage() {
       ) : (
         <>
           {upcoming.length > 0 && (
-            <div className="mb-12">
-              <h2 className="text-xl font-semibold text-gray-800 mb-6">Upcoming Events</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="mb-12">
+                <h2 className="text-xl font-semibold text-gray-800 mb-6">Upcoming Events</h2>
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {upcoming.map((event) => (
                   <EventCard
                     key={event._id || event.id}
@@ -79,7 +79,7 @@ export default function MyEventsPage() {
           {past.length > 0 && (
             <div>
               <h2 className="text-xl font-semibold text-gray-800 mb-6">Past Events</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {past.map((event) => (
                   <EventCard
                     key={event._id || event.id}

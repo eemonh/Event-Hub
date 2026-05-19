@@ -42,7 +42,7 @@ export default function AdminPage() {
 
   if (isLoading) {
     return (
-      <main className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
+      <main className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-12">
         <DashboardCardsSkeleton />
       </main>
     )
@@ -76,7 +76,7 @@ export default function AdminPage() {
   ]
 
   return (
-    <main className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
+    <main className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-12">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard Overview</h1>
         <p className="text-gray-500 text-sm">Here's what's happening with your events today.</p>
@@ -96,7 +96,7 @@ export default function AdminPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
         {statsDataArray.map((stat) => {
           const Icon = stat.icon
           return (
@@ -137,8 +137,8 @@ export default function AdminPage() {
               <tr className="bg-gray-50/50 text-gray-500 text-xs font-semibold uppercase tracking-wider border-b border-gray-100">
                 <th className="px-6 py-4 font-medium">Event Name</th>
                 <th className="px-6 py-4 font-medium">Date & Time</th>
-                <th className="px-6 py-4 font-medium">Venue</th>
-                <th className="px-6 py-4 font-medium">Status</th>
+                <th className="px-6 py-4 font-medium hidden md:table-cell">Venue</th>
+                <th className="px-6 py-4 font-medium hidden lg:table-cell">Status</th>
                 <th className="px-6 py-4 font-medium text-right">Actions</th>
               </tr>
             </thead>
@@ -169,8 +169,8 @@ export default function AdminPage() {
                         </div>
                         <div className="text-xs text-gray-400">{event.startTime || "All day"}</div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-600 font-medium">{event.venue}</td>
-                      <td className="px-6 py-4"><StatusBadge status={event.status} /></td>
+                      <td className="px-6 py-4 hidden md:table-cell text-sm text-gray-600 font-medium">{event.venue}</td>
+                        <td className="px-6 py-4 hidden lg:table-cell"><StatusBadge status={event.status} /></td>
                       <td className="px-6 py-4 text-right">
                         <button className="text-gray-400 hover:text-gray-600 p-1 rounded-md transition-colors">
                           <MoreVertical className="w-5 h-5" />

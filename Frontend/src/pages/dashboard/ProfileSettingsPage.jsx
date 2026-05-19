@@ -82,7 +82,7 @@ export default function ProfileSettingsPage() {
   };
 
   return (
-    <main className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
+    <main className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-12">
       <div className="mb-2">
         <h1 className="text-3xl font-bold text-gray-900">Profile Settings</h1>
       </div>
@@ -92,7 +92,7 @@ export default function ProfileSettingsPage() {
           <div className="mb-10">
             <h2 className="text-lg font-bold text-gray-900 mb-3">Personal Information</h2>
             <hr className="border-gray-100 mb-6" />
-            <div className="space-y-6 max-w-3xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6 max-w-3xl">
               <div>
                 <label className="block text-xs font-bold text-gray-800 mb-2">Full Name</label>
                 <input
@@ -157,7 +157,7 @@ export default function ProfileSettingsPage() {
         <form onSubmit={handleChangePassword}>
           <h2 className="text-lg font-bold text-gray-900 mb-3">Change Password</h2>
           <hr className="border-gray-100 mb-6" />
-          <div className="space-y-6 max-w-3xl">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-6 max-w-3xl">
             <div>
               <label className="block text-xs font-bold text-gray-800 mb-2">Current Password</label>
               <input

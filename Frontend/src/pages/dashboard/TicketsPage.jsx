@@ -55,14 +55,14 @@ export default function TicketsPage() {
 
   if (isLoading) {
     return (
-      <main className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
+      <main className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-12">
         <EventGridSkeleton compact showFilters={false} />
       </main>
     )
   }
 
   return (
-    <main className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
+     <main className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-12">
       <div className="mb-2">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">My Tickets</h1>
         <p className="text-gray-500">View and manage your event tickets.</p>
@@ -131,14 +131,14 @@ export default function TicketsPage() {
       {selectedQr && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm"
           onClick={() => { setSelectedQr(null); setSelectedQrEvent(null) }}>
-          <div className="relative rounded-2xl bg-white p-8 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="relative max-w-[calc(100vw-2rem)] sm:max-w-md rounded-2xl bg-white p-6 sm:p-8 shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <button onClick={() => { setSelectedQr(null); setSelectedQrEvent(null) }}
               className="absolute right-4 top-4 rounded-full bg-gray-100 p-2 text-gray-500 hover:bg-gray-200 transition-colors">
               <X size={18} />
             </button>
             <img src={selectedQr} alt="Event QR Code" className="h-64 w-64 object-contain" />
             {selectedQrEvent && (
-              <p className="mt-4 text-center text-sm font-semibold text-gray-700">{selectedQrEvent.title || selectedQrEvent.name}</p>
+              <p className="mt-4 text-center text-sm sm:text-lg md:text-xl font-semibold text-gray-700">{selectedQrEvent.title || selectedQrEvent.name}</p>
             )}
             <p className="text-center text-xs text-gray-500 mt-1">Show this QR at the event entrance</p>
           </div>

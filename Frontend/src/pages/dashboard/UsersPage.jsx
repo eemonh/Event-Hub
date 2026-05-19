@@ -121,14 +121,14 @@ export default function UsersPage() {
 
   if (loading) {
     return (
-      <main className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
+      <main className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-12">
         <DashboardTableSkeleton columns={4} rows={8} />
       </main>
     );
   }
 
   return (
-    <main className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
+    <main className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-12">
       <div className="flex flex-col lg:flex-row lg:items-end justify-between mb-2 gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Users Management</h1>
@@ -164,13 +164,60 @@ export default function UsersPage() {
       </div>
 
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
+        {/* Mobile card layout — visible on < sm */}
+        <div className="sm:hidden divide-y divide-gray-100">
+          {paginated.length === 0 ? (
+            <div className="px-6 py-10 text-center text-sm text-gray-400">No users found</div>
+          ) : (
+            paginated.map((user) => (
+              <div key={user.id || user._id} className="p-4">
+                <div className="flex items-center mb-3">
+                  {avatarEl(user)}
+                  <div>
+                    <div className="font-semibold text-gray-900 text-sm">{user.name}</div>
+                    <div className="text-xs text-gray-500">{user.email}</div>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
+                  {roleBadge(user.role)}
+                  <div className="flex items-center gap-2">
+                    {user.role === "user" && (
+                      <button
+                        onClick={() => handleRoleChange(user, "admin")}
+                        className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-violet-50 text-violet-600 hover:bg-violet-100 transition-colors"
+                      >
+                        Promote
+                      </button>
+                    )}
+                    {user.role === "admin" && (
+                      <button
+                        onClick={() => handleRoleChange(user, "user")}
+                        className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+                      >
+                        Demote
+                      </button>
+                    )}
+                    <button
+                      onClick={() => handleDelete(user)}
+                      className="p-1.5 rounded-md text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                      title="Delete user"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+        {/* Desktop table — visible on sm+ */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-purple-50/50 border-b border-gray-200">
                 <th className="px-6 py-4 text-xs font-semibold text-purple-900/70 uppercase tracking-wider w-[35%]">Name</th>
                 <th className="px-6 py-4 text-xs font-semibold text-purple-900/70 uppercase tracking-wider w-[35%]">Email</th>
-                <th className="px-6 py-4 text-xs font-semibold text-purple-900/70 uppercase tracking-wider">Role</th>
+                <th className="px-6 py-4 text-xs font-semibold text-purple-900/70 uppercase tracking-wider hidden md:table-cell">Role</th>
                 <th className="px-6 py-4 text-xs font-semibold text-purple-900/70 uppercase tracking-wider text-right">Actions</th>
               </tr>
             </thead>
@@ -188,10 +235,10 @@ export default function UsersPage() {
                         <span className="font-semibold text-gray-900 text-sm">{user.name}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 hidden sm:table-cell">
                       <span className="text-sm text-gray-500">{user.email}</span>
                     </td>
-                    <td className="px-6 py-4">{roleBadge(user.role)}</td>
+                    <td className="px-6 py-4 hidden md:table-cell">{roleBadge(user.role)}</td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-2">
                         {user.role === "user" && (

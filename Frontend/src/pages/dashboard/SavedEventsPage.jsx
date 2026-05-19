@@ -46,14 +46,14 @@ export default function SavedEventsPage() {
 
   if (isLoading) {
     return (
-      <main className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
+    <main className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-12">
         <EventGridSkeleton compact showFilters={false} />
       </main>
     )
   }
 
   return (
-    <main className="mx-auto flex max-w-7xl flex-col gap-6 px-6 py-6">
+    <main className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-6 sm:px-6 sm:py-8 md:px-8 md:py-12">
       <div className="mb-2">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Saved Events</h1>
         <p className="text-gray-500 text-base">Events you've bookmarked for later.</p>
@@ -69,7 +69,7 @@ export default function SavedEventsPage() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {events.map((event) => {
             const eventId = event._id || event.id
             const isOwner = (event.organizer?.toString()) === user?.id
