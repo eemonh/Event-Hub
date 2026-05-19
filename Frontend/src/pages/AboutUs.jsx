@@ -17,11 +17,39 @@ const AboutPage = () => {
       </section>
 
       {/* 2. Our Story Section */}
-       <section className="bg-slate-50 py-20 px-6 md:px-12 lg:px-24">
-       </section>
+       <section className="bg-[#f8f9fa] py-20 px-6 md:px-12 lg:px-24">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-12 lg:gap-20">
+          <div className="w-full md:w-1/2">
+            <h2 className="text-3xl font-extrabold text-gray-900 mb-6">Our Story</h2>
+            <div className="space-y-4 text-gray-600 text-sm md:text-base leading-relaxed">
+              <p>
+                Founded in 2020 out of a sheer frustration with fragmented event
+                management tools, EventHub was born from a simple idea: bringing people
+                together shouldn't be difficult. What started as a small passion project in a
+                shared workspace quickly evolved into a robust platform serving thousands
+                of communities worldwide.
+              </p>
+              <p>
+                We recognized that whether it's a local tech meetup, a massive music
+                festival, or a specialized corporate seminar, the underlying need is the same
+                —a reliable, elegant bridge between organizers and their audience. Our team
+                spent years refining the user experience, ensuring that the technology stays
+                out of the way so the event itself can shine.
+              </p>
+            </div>
+          </div>
+          <div className="w-full md:w-1/2">
+            <img
+              src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+              alt="Team collaborating around a table"
+              className="rounded-2xl shadow-md w-full object-cover aspect-[4/3]"
+            />
+          </div>
+        </div>
+      </section>
 
        {/* 3. Core Values Section */}
-       <section className="bg-slate-50 py-20 px-6 md:px-12 lg:px-24">
+       <section className="bg-[#fcfaff] py-20 px-6 md:px-12 lg:px-24">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14">
             <h2 className="text-3xl font-extrabold text-gray-900 mb-3">Core Values</h2>
