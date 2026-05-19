@@ -68,6 +68,43 @@ export function useUpdateEvent() {
   });
 }
 
+export function useToggleUpvote() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (eventId) => apiClient(`/events/${eventId}/upvote`, { method: "POST" }),
+    onSuccess: (_, eventId) => {
+      queryClient.invalidateQueries({ queryKey: ["event", eventId] });
+    },
+  });
+}
+
+export function useAddComment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ eventId, text }) =>
+      apiClient(`/events/${eventId}/comments`, {
+        method: "POST",
+        body: { text },
+      }),
+    onSuccess: (_, { eventId }) => {
+      queryClient.invalidateQueries({ queryKey: ["comments", eventId] });
+      queryClient.invalidateQueries({ queryKey: ["event", eventId] });
+    },
+  });
+}
+
+export function useDeleteComment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ eventId, commentId }) =>
+      apiClient(`/events/${eventId}/comments/${commentId}`, { method: "DELETE" }),
+    onSuccess: (_, { eventId }) => {
+      queryClient.invalidateQueries({ queryKey: ["comments", eventId] });
+      queryClient.invalidateQueries({ queryKey: ["event", eventId] });
+    },
+  });
+}
+
 export function useDeleteEvent() {
   const queryClient = useQueryClient();
   return useMutation({

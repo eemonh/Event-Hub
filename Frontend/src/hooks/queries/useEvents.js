@@ -66,6 +66,15 @@ export function useAllEvents(filters = {}) {
   });
 }
 
+export function useComments(eventId) {
+  return useQuery({
+    queryKey: ["comments", eventId],
+    queryFn: () => apiClient(`/events/${eventId}/comments`),
+    enabled: !!eventId,
+    staleTime: 10 * 1000,
+  });
+}
+
 export function useAdminStats() {
   return useQuery({
     queryKey: ["admin-stats"],

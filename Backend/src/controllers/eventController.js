@@ -1,6 +1,9 @@
 import Event, { CATEGORIES } from "../models/Event.js";
 import Registration from "../models/Registration.js";
 import Bookmark from "../models/Bookmark.js";
+import Upvote from "../models/Upvote.js";
+import Comment from "../models/Comment.js";
+import { getRecommendations } from "../utils/recommendationEngine.js";
 
 export async function listEvents(req, res) {
   try {
@@ -38,7 +41,25 @@ export async function getEvent(req, res) {
     if (!event) return res.status(404).json({ message: "Event not found" });
     const registrationCount = await Registration.countDocuments({ event: event._id });
     const bookmarkCount = await Bookmark.countDocuments({ event: event._id });
-    res.json({ event: { ...event.toJSON(), registrationCount, bookmarkCount } });
+    const upvoteCount = await Upvote.countDocuments({ event: event._id });
+    const commentCount = await Comment.countDocuments({ event: event._id });
+
+    let userUpvoted = false;
+    if (req.user) {
+      const existing = await Upvote.findOne({ user: req.user._id, event: event._id });
+      userUpvoted = !!existing;
+    }
+
+    res.json({
+      event: {
+        ...event.toJSON(),
+        registrationCount,
+        bookmarkCount,
+        upvoteCount,
+        commentCount,
+        userUpvoted,
+      },
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -136,19 +157,80 @@ export async function getRecommendedEvents(req, res) {
     ).map((b) => b.event);
     const excludeIds = [...new Set([...registeredEventIds, ...bookmarkedEventIds])];
 
-    const filter = { status: "published" };
-    if (user.interests && user.interests.length > 0) {
-      filter.category = { $in: user.interests };
-    }
-    if (excludeIds.length > 0) {
-      filter._id = { $nin: excludeIds };
+    const events = await getRecommendations(user, excludeIds);
+    res.json({ events });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+export async function toggleUpvote(req, res) {
+  try {
+    const event = await Event.findById(req.params.id);
+    if (!event) return res.status(404).json({ message: "Event not found" });
+
+    const existing = await Upvote.findOne({ user: req.user._id, event: event._id });
+    if (existing) {
+      await Upvote.deleteOne({ _id: existing._id });
+      const upvoteCount = await Upvote.countDocuments({ event: event._id });
+      return res.json({ upvoted: false, upvoteCount });
     }
 
-    const events = await Event.find(filter)
-      .sort({ startDate: 1 })
-      .limit(12)
-      .populate("organizer", "name email");
-    res.json({ events: events.map((e) => e.toJSON()) });
+    await Upvote.create({ user: req.user._id, event: event._id });
+    const upvoteCount = await Upvote.countDocuments({ event: event._id });
+    res.json({ upvoted: true, upvoteCount });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+export async function getComments(req, res) {
+  try {
+    const { page = 1, limit = 20 } = req.query;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+    const comments = await Comment.find({ event: req.params.id })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(parseInt(limit))
+      .populate("user", "name avatar");
+    const total = await Comment.countDocuments({ event: req.params.id });
+    res.json({ comments, total, page: parseInt(page), pages: Math.ceil(total / parseInt(limit)) });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+}
+
+export async function addComment(req, res) {
+  try {
+    const event = await Event.findById(req.params.id);
+    if (!event) return res.status(404).json({ message: "Event not found" });
+    if (!req.body.text || !req.body.text.trim()) {
+      return res.status(400).json({ message: "Comment text is required" });
+    }
+    const comment = await Comment.create({
+      user: req.user._id,
+      event: event._id,
+      text: req.body.text.trim(),
+    });
+    const populated = await comment.populate("user", "name avatar");
+    const commentCount = await Comment.countDocuments({ event: event._id });
+    res.status(201).json({ comment: populated.toJSON(), commentCount });
+  } catch (error) {
+    if (error.name === "ValidationError") {
+      const messages = Object.values(error.errors).map((e) => e.message);
+      return res.status(400).json({ message: messages.join(", ") });
+    }
+    res.status(500).json({ message: error.message });
+  }
+}
+
+export async function deleteComment(req, res) {
+  try {
+    const comment = await Comment.findOne({ _id: req.params.commentId, user: req.user._id });
+    if (!comment) return res.status(404).json({ message: "Comment not found or not authorized" });
+    await Comment.deleteOne({ _id: comment._id });
+    const commentCount = await Comment.countDocuments({ event: comment.event });
+    res.json({ message: "Comment deleted", commentCount });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

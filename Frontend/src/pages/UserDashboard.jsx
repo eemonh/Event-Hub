@@ -197,7 +197,12 @@ export default function UserDashboard() {
                     <img src={event.coverImage || "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=1200&auto=format&fit=crop"} alt={event.name} loading="lazy"
                       onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=1200&auto=format&fit=crop" }}
                       className="h-full w-full object-cover" />
-                    <div className="absolute left-3 top-3 rounded-md bg-white px-2 py-1 text-xs font-semibold text-violet-700 shadow">{event.category}</div>
+                    <div className="absolute left-3 top-3 flex flex-col gap-1">
+                      <span className="rounded-md bg-white px-2 py-1 text-xs font-semibold text-violet-700 shadow">{event.category}</span>
+                      {event.reason && (
+                        <span className="rounded-md bg-violet-700 px-2 py-1 text-xs font-medium text-white shadow">{event.reason}</span>
+                      )}
+                    </div>
                   </div>
                   <div className="space-y-4 p-4">
                     <h3 className="font-[Poppins] text-2xl font-semibold leading-snug text-slate-900">{event.name}</h3>
