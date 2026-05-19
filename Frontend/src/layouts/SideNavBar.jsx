@@ -40,7 +40,7 @@ const SideNavBar = ({ isOpen = true, onToggle }) => {
                 ...(isAdmin
                     ? [
                         { name: "Create Event", path: "/dashboard/events/create", icon: PlusCircle },
-                        { name: "Event Management", path: "/dashboard/events/manage", icon: ListTodo },
+                        { name: "Manage Events", path: "/dashboard/events/manage", icon: ListTodo },
                     ]
                     : []),
             ],
@@ -115,7 +115,7 @@ const SideNavBar = ({ isOpen = true, onToggle }) => {
                                     >
                                         <Icon className="w-5 h-5" />
                                         {isOpen && (
-                                            <span className="font-['Poppins'] text-[16px] leading-[12px] tracking-[0.6px]">
+                                            <span className="font-['Poppins'] text-[16px] leading-none tracking-[0.6px] truncate">
                                                 {item.name}
                                             </span>
                                         )}
