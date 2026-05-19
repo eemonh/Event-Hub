@@ -33,7 +33,7 @@ export default function TicketsPage() {
       const eventId = event._id || event.id
       if (!qrCodes[eventId]) {
         const data = JSON.stringify({ eventId, userId: user?.id, eventName: event.name, date: event.startDate })
-        QRCode.toDataURL(data, { width: 200, margin: 1, color: { dark: "#4F46E5" } })
+        QRCode.toDataURL(data, { width: 200, margin: 1, color: { dark: "#4f46e5" } })
           .then((url) => setQrCodes((prev) => ({ ...prev, [eventId]: url })))
           .catch(() => {})
       }

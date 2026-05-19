@@ -58,7 +58,7 @@ const SideNavBar = ({ isOpen = true, onToggle }) => {
     ];
 
     return (
-        <aside className={`box-border flex flex-col ${isOpen ? 'items-start p-3 gap-3 w-64' : 'items-center p-2 gap-3 w-16'} h-full bg-white border-r border-[#E2E8F0]`}>
+        <aside className={`box-border flex flex-col ${isOpen ? 'items-start p-3 gap-3 w-64' : 'items-center p-2 gap-3 w-16'} h-full bg-white border-r border-slate-200`}>
 
             {/* Logo Section + Toggle */}
             <div className={`flex ${isOpen ? 'flex-row justify-between items-center w-full mb-4 mt-2' : 'flex-col items-center w-full mb-4 mt-2 gap-3'}`}>
@@ -109,7 +109,7 @@ const SideNavBar = ({ isOpen = true, onToggle }) => {
                                             ${
                                                 isActive
                                                     ? `${isOpen ? 'bg-primary/10 text-primary font-bold' : 'text-primary bg-white ring-2 ring-primary'}`
-                                                    : 'bg-transparent text-[#4A4455] font-semibold hover:bg-slate-50'
+                                                     : 'bg-transparent text-slate-700 font-semibold hover:bg-gray-50'
                                             }
                                         `}
                                     >
@@ -130,7 +130,7 @@ const SideNavBar = ({ isOpen = true, onToggle }) => {
             {/* Logout Button */}
             <button
                 onClick={() => { logout(); navigate('/'); }}
-                className={`flex ${isOpen ? 'flex-row justify-center items-center px-4 py-3 gap-2 w-full h-[50px]' : 'p-3 w-auto justify-center'} bg-[#d32f2f] text-white font-semibold rounded-lg hover:bg-[#b71c1c] transition-colors mt-auto`}
+                 className={`flex ${isOpen ? 'flex-row justify-center items-center px-4 py-3 gap-2 w-full h-[50px]' : 'p-3 w-auto justify-center'} bg-red-600 text-white font-semibold rounded-lg hover:bg-red-800 transition-colors mt-auto`}
             >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

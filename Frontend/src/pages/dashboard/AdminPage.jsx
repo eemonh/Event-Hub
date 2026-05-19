@@ -126,7 +126,7 @@ export default function AdminPage() {
       <div className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden">
         <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center">
           <h2 className="text-lg font-bold text-gray-900">Upcoming Events</h2>
-          <button onClick={() => navigate("/dashboard/events")} className="cursor-pointer text-[#6200ea] hover:text-[#5200c3] text-sm font-semibold flex items-center transition-colors">
+          <button onClick={() => navigate("/dashboard/events")} className="cursor-pointer text-primary hover:text-primary-hover text-sm font-semibold flex items-center transition-colors">
             View All <ArrowRight className="w-4 h-4 ml-1.5" />
           </button>
         </div>

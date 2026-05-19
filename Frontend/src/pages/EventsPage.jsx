@@ -58,7 +58,7 @@ export default function EventsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#f8fafc] px-4 py-12 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-slate-50 px-4 py-12 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-7xl">
           <EventGridSkeleton />
         </div>
@@ -67,15 +67,15 @@ export default function EventsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] px-4 py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-50 px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold tracking-tight text-[#111827] mb-2">Explore Events</h1>
+          <h1 className="text-4xl font-bold tracking-tight text-gray-900 mb-2">Explore Events</h1>
           <p className="text-base text-slate-500">Discover the best events happening around you.</p>
         </div>
 
         <div className="mb-10 flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-3 shadow-[0_2px_10px_rgba(0,0,0,0.02)] md:flex-row">
-          <form onSubmit={handleSearch} className="flex flex-grow items-center rounded-xl border border-slate-100 bg-[#f8fafc] px-4 py-2 transition-all focus-within:border-transparent focus-within:ring-2 focus-within:ring-primary">
+          <form onSubmit={handleSearch}           className="flex flex-grow items-center rounded-xl border border-slate-100 bg-slate-50 px-4 py-2 transition-all focus-within:border-transparent focus-within:ring-2 focus-within:ring-primary">
             <Search className="mr-3 h-5 w-5 flex-shrink-0 text-slate-400" />
             <input
               type="text"
@@ -91,7 +91,7 @@ export default function EventsPage() {
               <select
                 value={category || "All"}
                 onChange={(e) => { setCategory(e.target.value === "All" ? "" : e.target.value); setPage(1) }}
-                className="w-full cursor-pointer appearance-none rounded-xl border border-slate-100 bg-[#f8fafc] px-4 py-3 pr-10 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-primary sm:w-44"
+                className="w-full cursor-pointer appearance-none rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 pr-10 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-primary sm:w-44"
               >
                 <option value="All">All Categories</option>
                 {CATEGORIES.filter(c => c !== "All").map(cat => (

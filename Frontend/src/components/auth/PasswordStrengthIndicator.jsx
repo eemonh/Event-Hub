@@ -9,15 +9,15 @@ export default function PasswordStrengthIndicator({ password = "" }) {
     <div className="flex flex-col gap-1 pt-1">
       <div className="flex items-center gap-2">
         <Circle size={12}
-          className={hasMinLength ? "text-green-500 fill-green-500" : "text-[#CCC3D8]"} />
-        <p className={`text-[13px] leading-tight font-['Poppins'] ${hasMinLength ? "text-green-600" : "text-[#64748B]"}`}>
+           className={hasMinLength ? "text-green-500 fill-green-500" : "text-slate-300"} />
+        <p className={`text-[13px] leading-tight font-['Poppins'] ${hasMinLength ? "text-green-600" : "text-slate-500"}`}>
           Must be at least {MIN_PASSWORD_LENGTH} characters
         </p>
       </div>
       <div className="flex items-center gap-2">
         <Circle size={12}
-          className={hasSpecialChar ? "text-green-500 fill-green-500" : "text-[#CCC3D8]"} />
-        <p className={`text-[13px] leading-tight font-['Poppins'] ${hasSpecialChar ? "text-green-600" : "text-[#64748B]"}`}>
+          className={hasSpecialChar ? "text-green-500 fill-green-500" : "text-slate-300"} />
+        <p className={`text-[13px] leading-tight font-['Poppins'] ${hasSpecialChar ? "text-green-600" : "text-slate-500"}`}>
           Must contain one special character
         </p>
       </div>
