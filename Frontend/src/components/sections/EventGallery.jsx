@@ -190,16 +190,16 @@ export default function EventGallery() {
                 className="h-full max-h-[64vh] w-full object-cover lg:max-h-none"
               />
               {visibleItems.length > 1 && (
-                <>
+                <div className="absolute inset-0 z-10 flex items-center justify-between px-4 pointer-events-none">
                   <button type="button" onClick={showPreviousItem} aria-label="Show previous hosted event"
-                    className="absolute left-4 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-text-primary shadow-lg outline-none transition hover:bg-white focus-visible:ring-4 focus-visible:ring-primary/40">
+                    className="pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-text-primary shadow-lg outline-none transition hover:bg-white focus-visible:ring-4 focus-visible:ring-primary/40">
                     <ChevronLeft className="h-5 w-5" aria-hidden="true" />
                   </button>
                   <button type="button" onClick={showNextItem} aria-label="Show next hosted event"
-                    className="absolute right-4 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-text-primary shadow-lg outline-none transition hover:bg-white focus-visible:ring-4 focus-visible:ring-primary/40">
+                    className="pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-text-primary shadow-lg outline-none transition hover:bg-white focus-visible:ring-4 focus-visible:ring-primary/40">
                     <ChevronRight className="h-5 w-5" aria-hidden="true" />
                   </button>
-                </>
+                </div>
               )}
             </div>
             <div className="flex min-h-0 flex-col overflow-y-auto p-5 sm:p-7 lg:p-8">
