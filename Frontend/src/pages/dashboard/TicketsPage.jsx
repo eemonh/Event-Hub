@@ -98,15 +98,19 @@ export default function TicketsPage() {
             const isPast = startDate < now
             return (
               <div key={eventId} className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
-                <div className="relative h-40 w-full bg-violet-100 flex items-center justify-center">
-                  {qrCodes[eventId] ? (
-                    <img src={qrCodes[eventId]} alt="QR Code"
-                      onClick={() => { setSelectedQr(qrCodes[eventId]); setSelectedQrEvent(event) }}
-                      className="h-32 w-32 cursor-pointer object-contain transition hover:scale-105" />
-                  ) : (
-                    <SkeletonBlock className="h-32 w-32 rounded-xl bg-violet-200/70" />
-                  )}
-                  <span className="absolute top-3 right-3 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-violet-700 shadow-sm">{event.category}</span>
+                <div className="relative h-40 w-full flex items-center justify-center overflow-hidden bg-gray-200"
+                  style={{ backgroundImage: `url(${event.coverImage || "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=1200&auto=format&fit=crop"})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+                  <div className="absolute inset-0 bg-black/40" />
+                  <div className="relative z-10 bg-white/90 p-1.5 rounded-xl">
+                    {qrCodes[eventId] ? (
+                      <img src={qrCodes[eventId]} alt="QR Code"
+                        onClick={() => { setSelectedQr(qrCodes[eventId]); setSelectedQrEvent(event) }}
+                        className="h-32 w-32 cursor-pointer object-contain transition hover:scale-105" />
+                    ) : (
+                      <SkeletonBlock className="h-32 w-32 rounded-xl bg-white/70" />
+                    )}
+                  </div>
+                  <span className="absolute top-3 right-3 z-10 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-violet-700 shadow-sm">{event.category}</span>
                 </div>
                 <div className="p-5 space-y-3">
                   <h3 className="text-lg font-bold text-gray-900 leading-tight">{event.title || event.name}</h3>
