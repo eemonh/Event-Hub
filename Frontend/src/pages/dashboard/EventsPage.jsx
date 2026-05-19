@@ -16,9 +16,11 @@ export default function DashboardEvents() {
   const { setBreadcrumbs, setAction } = useBreadcrumbs()
   const [category, setCategory] = useState("")
   const [search, setSearch] = useState("")
+  const [sort, setSort] = useState("date_desc")
+  const [dateFilter, setDateFilter] = useState("upcoming")
   const [page, setPage] = useState(1)
 
-  const { data, isLoading } = useEvents({ category, search, page, limit: 6 })
+  const { data, isLoading } = useEvents({ category, search, sort, dateFilter, page, limit: 6 })
   const { data: myEventsData } = useMyEvents()
   const { data: savedData } = useSavedEvents()
 
@@ -84,16 +86,50 @@ export default function DashboardEvents() {
             className="w-full rounded-xl border border-gray-200 bg-white py-3 pl-12 pr-4 text-sm text-gray-900 outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500"
           />
         </div>
-        <select
-          value={category || "All"}
-          onChange={(e) => { setCategory(e.target.value === "All" ? "" : e.target.value); setPage(1) }}
-          className="w-full cursor-pointer appearance-none rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-700 outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 sm:w-48"
-        >
-          <option value="All">All Categories</option>
-          {CATEGORIES.filter(c => c !== "All").map(cat => (
-            <option key={cat} value={cat}>{cat}</option>
-          ))}
-        </select>
+        <div className="relative w-full sm:w-auto">
+          <select
+            value={category || "All"}
+            onChange={(e) => { setCategory(e.target.value === "All" ? "" : e.target.value); setPage(1) }}
+            className="w-full cursor-pointer appearance-none rounded-xl border border-gray-200 bg-white px-4 py-3 pr-10 text-sm text-gray-700 outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 sm:w-48"
+          >
+            <option value="All">All Categories</option>
+            {CATEGORIES.filter(c => c !== "All").map(cat => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-slate-500">
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+          </div>
+        </div>
+
+        <div className="relative w-full sm:w-auto">
+          <select
+            value={sort}
+            onChange={(e) => { setSort(e.target.value); setPage(1) }}
+            className="w-full cursor-pointer appearance-none rounded-xl border border-gray-200 bg-white px-4 py-3 pr-10 text-sm text-gray-700 outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 sm:w-40"
+          >
+            <option value="date_asc">Date (Earliest)</option>
+            <option value="date_desc">Date (Latest)</option>
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-slate-500">
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+          </div>
+        </div>
+
+        <div className="relative w-full sm:w-auto">
+          <select
+            value={dateFilter || "all"}
+            onChange={(e) => { setDateFilter(e.target.value === "all" ? "" : e.target.value); setPage(1) }}
+            className="w-full cursor-pointer appearance-none rounded-xl border border-gray-200 bg-white px-4 py-3 pr-10 text-sm text-gray-700 outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 sm:w-36"
+          >
+            <option value="all">All Dates</option>
+            <option value="upcoming">Upcoming</option>
+            <option value="past">Past</option>
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-slate-500">
+            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+          </div>
+        </div>
       </div>
 
       {events.length === 0 ? (

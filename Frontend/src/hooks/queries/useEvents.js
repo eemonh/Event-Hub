@@ -2,13 +2,15 @@ import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "../../api/apiClient";
 
 export function useEvents(filters = {}) {
-  const { category, search, page = 1, limit = 6 } = filters;
+  const { category, search, sort, dateFilter, page = 1, limit = 6 } = filters;
   return useQuery({
-    queryKey: ["events", { category, search, page, limit }],
+    queryKey: ["events", { category, search, sort, dateFilter, page, limit }],
     queryFn: () => {
       const params = new URLSearchParams();
       if (category) params.set("category", category);
       if (search) params.set("search", search);
+      if (sort) params.set("sort", sort);
+      if (dateFilter) params.set("dateFilter", dateFilter);
       if (page) params.set("page", page);
       if (limit) params.set("limit", limit);
       const qs = params.toString();

@@ -4,7 +4,7 @@ import Bookmark from "../models/Bookmark.js";
 
 export async function listEvents(req, res) {
   try {
-    const { category, search, page = 1, limit = 20 } = req.query;
+    const { category, search, sort = "date_asc", dateFilter, page = 1, limit = 20 } = req.query;
     const filter = { status: "published" };
     if (category && CATEGORIES.includes(category)) filter.category = category;
     if (search) {
@@ -13,9 +13,15 @@ export async function listEvents(req, res) {
         { description: { $regex: search, $options: "i" } },
       ];
     }
+    if (dateFilter === "upcoming") {
+      filter.startDate = { ...(filter.startDate || {}), $gte: new Date() };
+    } else if (dateFilter === "past") {
+      filter.startDate = { ...(filter.startDate || {}), $lt: new Date() };
+    }
+    const sortOrder = sort === "date_desc" ? -1 : 1;
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const events = await Event.find(filter)
-      .sort({ startDate: 1 })
+      .sort({ startDate: sortOrder })
       .skip(skip)
       .limit(parseInt(limit))
       .populate("organizer", "name email");
