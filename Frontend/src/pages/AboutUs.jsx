@@ -21,7 +21,7 @@ const AboutPage = () => {
        </section>
 
        {/* 3. Core Values Section */}
-       <section className="bg-slate-50 py-20 px-6 md:px-12 lg:px-24">
+       <section className="bg-[#F9F1FF] py-20 px-6 md:px-12 lg:px-24">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14">
             <h2 className="text-3xl font-extrabold text-gray-900 mb-3">Core Values</h2>
