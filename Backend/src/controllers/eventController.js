@@ -3,7 +3,7 @@ import Registration from "../models/Registration.js";
 import Bookmark from "../models/Bookmark.js";
 import Upvote from "../models/Upvote.js";
 import Comment from "../models/Comment.js";
-import { getRecommendations } from "../utils/recommendationEngine.js";
+import { getRecommendations, clearRecommendationCache } from "../utils/recommendationEngine.js";
 
 export async function listEvents(req, res) {
   try {
@@ -173,10 +173,12 @@ export async function toggleUpvote(req, res) {
     if (existing) {
       await Upvote.deleteOne({ _id: existing._id });
       const upvoteCount = await Upvote.countDocuments({ event: event._id });
+      clearRecommendationCache(req.user._id);
       return res.json({ upvoted: false, upvoteCount });
     }
 
     await Upvote.create({ user: req.user._id, event: event._id });
+    clearRecommendationCache(req.user._id);
     const upvoteCount = await Upvote.countDocuments({ event: event._id });
     res.json({ upvoted: true, upvoteCount });
   } catch (error) {
@@ -214,6 +216,7 @@ export async function addComment(req, res) {
     });
     const populated = await comment.populate("user", "name avatar");
     const commentCount = await Comment.countDocuments({ event: event._id });
+    clearRecommendationCache(req.user._id);
     res.status(201).json({ comment: populated.toJSON(), commentCount });
   } catch (error) {
     if (error.name === "ValidationError") {
@@ -230,6 +233,7 @@ export async function deleteComment(req, res) {
     if (!comment) return res.status(404).json({ message: "Comment not found or not authorized" });
     await Comment.deleteOne({ _id: comment._id });
     const commentCount = await Comment.countDocuments({ event: comment.event });
+    clearRecommendationCache(req.user._id);
     res.json({ message: "Comment deleted", commentCount });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -249,6 +253,7 @@ export async function registerForEvent(req, res) {
     if (registrationCount >= event.capacity) return res.status(400).json({ message: "Event is at full capacity" });
 
     const registration = await Registration.create({ user: req.user._id, event: event._id });
+    clearRecommendationCache(req.user._id);
     res.status(201).json({ registration: registration.toJSON() });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -262,6 +267,7 @@ export async function cancelRegistration(req, res) {
       event: req.params.id,
     });
     if (!registration) return res.status(404).json({ message: "Registration not found" });
+    clearRecommendationCache(req.user._id);
     res.json({ message: "Registration cancelled successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -277,6 +283,7 @@ export async function bookmarkEvent(req, res) {
     if (existing) return res.status(400).json({ message: "Event already bookmarked" });
 
     const bookmark = await Bookmark.create({ user: req.user._id, event: event._id });
+    clearRecommendationCache(req.user._id);
     res.status(201).json({ bookmark: bookmark.toJSON() });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -290,6 +297,7 @@ export async function removeBookmark(req, res) {
       event: req.params.id,
     });
     if (!bookmark) return res.status(404).json({ message: "Bookmark not found" });
+    clearRecommendationCache(req.user._id);
     res.json({ message: "Bookmark removed successfully" });
   } catch (error) {
     res.status(500).json({ message: error.message });

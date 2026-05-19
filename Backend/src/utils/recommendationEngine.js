@@ -4,6 +4,7 @@ import Bookmark from '../models/Bookmark.js';
 import Upvote from '../models/Upvote.js';
 import Comment from '../models/Comment.js';
 import { buildKeywordProfile, computeKeywordSimilarity } from './keywordExtractor.js';
+import * as cache from './cache.js';
 
 export function computeCategoryScore(userInterests, eventCategory) {
   if (!userInterests || userInterests.length === 0) return 0;
@@ -157,7 +158,15 @@ export function computeReason(scores) {
   return parts[0];
 }
 
+export function clearRecommendationCache(userId) {
+  cache.remove(userId.toString());
+}
+
 export async function getRecommendations(user, excludeIds) {
+  const cacheKey = user._id.toString();
+  const cached = cache.get(cacheKey);
+  if (cached) return cached;
+
   const userInterests = user.interests || [];
   const hasHistory = excludeIds.length > 0;
 
@@ -239,5 +248,7 @@ export async function getRecommendations(user, excludeIds) {
   });
 
   scored.sort((a, b) => b.score - a.score);
-  return scored.slice(0, 12);
+  const result = scored.slice(0, 12);
+  cache.set(cacheKey, result);
+  return result;
 }

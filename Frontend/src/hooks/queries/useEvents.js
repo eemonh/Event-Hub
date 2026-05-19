@@ -48,7 +48,7 @@ export function useRecommendedEvents() {
   return useQuery({
     queryKey: ["recommended-events"],
     queryFn: () => apiClient("/events/recommended"),
-    staleTime: 60 * 1000,
+    staleTime: 300 * 1000,
   });
 }
 
