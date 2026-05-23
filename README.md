@@ -39,7 +39,7 @@ flowchart LR
 cd Backend
 cp .env.example .env        # fill in MONGO_URI and JWT secrets
 npm install
-npm run dev                  # http://localhost:4000
+npm run server                  # http://localhost:4000
 
 # Frontend (separate terminal)
 cd Frontend
