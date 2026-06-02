@@ -13,7 +13,7 @@ const BreadcrumbContext = createContext<BreadcrumbContextValue | undefined>(unde
 
 export function BreadcrumbProvider({ children }: { children: ReactNode }) {
   const [breadcrumbs, setBreadcrumbs] = useState<Breadcrumb[]>([]);
-  const [action, setAction] = useState<BreadcrumbAction>({ label: "", onClick: null });
+  const [action, setAction] = useState<BreadcrumbAction>(null);
   return (
     <BreadcrumbContext.Provider value={{ breadcrumbs, setBreadcrumbs, action, setAction }}>
       {children}

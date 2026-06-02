@@ -78,7 +78,7 @@ export type Breadcrumb =
 
 export type BreadcrumbAction = {
   label: string;
-  onClick: (() => void) | null;
+  onClick: () => void;
 } | null;
 
 // Auth
