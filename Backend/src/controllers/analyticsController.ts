@@ -91,8 +91,9 @@ export async function getOverview(req: Request, res: Response) {
     };
 
     res.json({ stats });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }
 
@@ -119,8 +120,9 @@ export async function getRegistrationTrends(req: Request, res: Response) {
 
     const data = Object.entries(dateMap).map(([date, count]) => ({ date, count }));
     res.json({ data });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }
 
@@ -138,8 +140,9 @@ export async function getCategoryBreakdown(req: Request, res: Response) {
     ]);
 
     res.json({ byCategory, byStatus });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }
 
@@ -184,8 +187,9 @@ export async function getEventPerformance(req: Request, res: Response) {
 
     const total = await Event.countDocuments();
     res.json({ events, total, page, pages: Math.ceil(total / limit) });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }
 
@@ -212,8 +216,9 @@ export async function getUserGrowth(req: Request, res: Response) {
 
     const data = Object.entries(dateMap).map(([date, count]) => ({ date, count }));
     res.json({ data });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }
 
@@ -251,7 +256,8 @@ export async function getTopEvents(req: Request, res: Response) {
     ]);
 
     res.json({ events });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }

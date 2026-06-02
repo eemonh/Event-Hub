@@ -36,15 +36,16 @@ export async function register(req: Request, res: Response) {
       user: { id: user._id, name: user.name, email: user.email, role: user.role },
       token,
     });
-  } catch (error: any) {
-    console.error("Register error:", error.message);
-    console.error("Stack:", error.stack);
-    if (error.name === "ValidationError") {
-      const messages = Object.values(error.errors).map((e: any) => e.message);
-      return res.status(400).json({ message: messages.join(", ") });
-    }
-    if (error.message.includes("secret is not configured")) {
-      return res.status(500).json({ message: "Server configuration error. Please contact admin." });
+  } catch (error: unknown) {
+    console.error("Register error:", error instanceof Error ? error.message : error);
+    if (error instanceof Error) {
+      if ("name" in error && (error as any).name === "ValidationError") {
+        const messages = Object.values((error as any).errors).map((e: any) => e.message);
+        return res.status(400).json({ message: messages.join(", ") });
+      }
+      if (error.message.includes("secret is not configured")) {
+        return res.status(500).json({ message: "Server configuration error. Please contact admin." });
+      }
     }
     res.status(500).json({ message: "Something went wrong. Please try again." });
   }
@@ -97,8 +98,9 @@ export async function getMe(req: Request, res: Response) {
     res.json({
       user: { id: user._id, name: user.name, email: user.email, role: user.role, avatar: user.avatar, interests: user.interests },
     });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }
 
@@ -119,8 +121,9 @@ export async function updateProfile(req: Request, res: Response) {
     res.json({
       user: { id: user._id, name: user.name, email: user.email, role: user.role, avatar: user.avatar, interests: user.interests },
     });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }
 
@@ -137,8 +140,9 @@ export async function logout(req: Request, res: Response) {
       });
     }
     res.json({ message: "Logged out successfully" });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }
 
@@ -174,7 +178,8 @@ export async function changePassword(req: Request, res: Response) {
     await Token.deleteMany({ user: user._id, type: "refresh" });
 
     res.json({ message: "Password changed successfully" });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }

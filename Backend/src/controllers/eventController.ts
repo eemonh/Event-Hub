@@ -6,9 +6,29 @@ import Upvote from "../models/Upvote.js";
 import Comment from "../models/Comment.js";
 import { getRecommendations, clearRecommendationCache } from "../utils/recommendationEngine.js";
 
+interface ListEventsQuery {
+  category?: string;
+  search?: string;
+  sort?: string;
+  dateFilter?: string;
+  page?: string;
+  limit?: string;
+}
+
+interface ListEventsQuery {
+  category?: string;
+  search?: string;
+  sort?: string;
+  dateFilter?: string;
+  page?: string;
+  limit?: string;
+}
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 export async function listEvents(req: Request, res: Response) {
   try {
-    const { category, search, sort = "date_asc", dateFilter, page = 1, limit = 20 } = req.query as any;
+    const { category, search, sort = "date_asc", dateFilter, page = "1", limit = "20" } = req.query as ListEventsQuery;
     const filter: any = { status: "published" };
     if (category && CATEGORIES.includes(category)) filter.category = category;
     if (search) {
@@ -31,8 +51,9 @@ export async function listEvents(req: Request, res: Response) {
       .populate("organizer", "name email");
     const total = await Event.countDocuments(filter);
     res.json({ events, total, page: parseInt(page), pages: Math.ceil(total / parseInt(limit)) });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }
 
@@ -61,8 +82,9 @@ export async function getEvent(req: Request, res: Response) {
         userUpvoted,
       },
     });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }
 
@@ -76,12 +98,13 @@ export async function createEvent(req: Request, res: Response) {
     console.log("[createEvent] eventData.coverImage:", eventData.coverImage);
     const event = await Event.create(eventData);
     res.status(201).json({ event: event.toJSON() });
-  } catch (error: any) {
-    if (error.name === "ValidationError") {
-      const messages = Object.values(error.errors).map((e: any) => e.message);
+  } catch (error: unknown) {
+    if (error instanceof Error && "name" in error && (error as any).name === "ValidationError") {
+      const messages = Object.values((error as any).errors).map((e: any) => e.message);
       return res.status(400).json({ message: messages.join(", ") });
     }
-    res.status(500).json({ message: error.message });
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }
 
@@ -93,12 +116,13 @@ export async function updateEvent(req: Request, res: Response) {
     });
     if (!event) return res.status(404).json({ message: "Event not found" });
     res.json({ event: event.toJSON() });
-  } catch (error: any) {
-    if (error.name === "ValidationError") {
-      const messages = Object.values(error.errors).map((e: any) => e.message);
+  } catch (error: unknown) {
+    if (error instanceof Error && "name" in error && (error as any).name === "ValidationError") {
+      const messages = Object.values((error as any).errors).map((e: any) => e.message);
       return res.status(400).json({ message: messages.join(", ") });
     }
-    res.status(500).json({ message: error.message });
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }
 
@@ -109,8 +133,9 @@ export async function deleteEvent(req: Request, res: Response) {
     await Registration.deleteMany({ event: event._id });
     await Bookmark.deleteMany({ event: event._id });
     res.json({ message: "Event deleted successfully" });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }
 
@@ -123,15 +148,18 @@ export async function getMyEvents(req: Request, res: Response) {
       .populate("event")
       .sort({ registeredAt: -1 });
     const events = registrations
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .filter((r: any) => r.event)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .map((r: any) => ({
         ...r.event.toJSON(),
         registeredAt: r.registeredAt,
         registrationId: r._id,
       }));
     res.json({ events });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }
 
@@ -144,15 +172,18 @@ export async function getSavedEvents(req: Request, res: Response) {
       .populate("event")
       .sort({ savedAt: -1 });
     const events = bookmarks
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .filter((b: any) => b.event)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .map((b: any) => ({
         ...b.event.toJSON(),
         savedAt: b.savedAt,
         bookmarkId: b._id,
       }));
     res.json({ events });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }
 
@@ -164,16 +195,19 @@ export async function getRecommendedEvents(req: Request, res: Response) {
     }
     const registeredEventIds = (
       await Registration.find({ user: user._id }).select("event")
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ).map((r: any) => r.event);
     const bookmarkedEventIds = (
       await Bookmark.find({ user: user._id }).select("event")
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ).map((b: any) => b.event);
     const excludeIds = [...new Set([...registeredEventIds, ...bookmarkedEventIds])];
 
     const events = await getRecommendations(user, excludeIds);
     res.json({ events });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }
 
@@ -197,14 +231,15 @@ export async function toggleUpvote(req: Request, res: Response) {
     clearRecommendationCache(req.user._id);
     const upvoteCount = await Upvote.countDocuments({ event: event._id });
     res.json({ upvoted: true, upvoteCount });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }
 
 export async function getComments(req: Request, res: Response) {
   try {
-    const { page = 1, limit = 20 } = req.query as any;
+    const { page = "1", limit = "20" } = req.query as ListEventsQuery;
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const comments = await Comment.find({ event: req.params.id })
       .sort({ createdAt: -1 })
@@ -213,8 +248,9 @@ export async function getComments(req: Request, res: Response) {
       .populate("user", "name avatar");
     const total = await Comment.countDocuments({ event: req.params.id });
     res.json({ comments, total, page: parseInt(page), pages: Math.ceil(total / parseInt(limit)) });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }
 
@@ -237,12 +273,13 @@ export async function addComment(req: Request, res: Response) {
     const commentCount = await Comment.countDocuments({ event: event._id });
     clearRecommendationCache(req.user._id);
     res.status(201).json({ comment: populated.toJSON(), commentCount });
-  } catch (error: any) {
-    if (error.name === "ValidationError") {
-      const messages = Object.values(error.errors).map((e: any) => e.message);
+  } catch (error: unknown) {
+    if (error instanceof Error && "name" in error && (error as any).name === "ValidationError") {
+      const messages = Object.values((error as any).errors).map((e: any) => e.message);
       return res.status(400).json({ message: messages.join(", ") });
     }
-    res.status(500).json({ message: error.message });
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }
 
@@ -257,8 +294,9 @@ export async function deleteComment(req: Request, res: Response) {
     const commentCount = await Comment.countDocuments({ event: comment.event });
     clearRecommendationCache(req.user._id);
     res.json({ message: "Comment deleted", commentCount });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }
 
@@ -280,8 +318,9 @@ export async function registerForEvent(req: Request, res: Response) {
     const registration = await Registration.create({ user: req.user._id, event: event._id });
     clearRecommendationCache(req.user._id);
     res.status(201).json({ registration: registration.toJSON() });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }
 
@@ -297,8 +336,9 @@ export async function cancelRegistration(req: Request, res: Response) {
     if (!registration) return res.status(404).json({ message: "Registration not found" });
     clearRecommendationCache(req.user._id);
     res.json({ message: "Registration cancelled successfully" });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }
 
@@ -316,8 +356,9 @@ export async function bookmarkEvent(req: Request, res: Response) {
     const bookmark = await Bookmark.create({ user: req.user._id, event: event._id });
     clearRecommendationCache(req.user._id);
     res.status(201).json({ bookmark: bookmark.toJSON() });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }
 
@@ -333,8 +374,9 @@ export async function removeBookmark(req: Request, res: Response) {
     if (!bookmark) return res.status(404).json({ message: "Bookmark not found" });
     clearRecommendationCache(req.user._id);
     res.json({ message: "Bookmark removed successfully" });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }
 
@@ -343,14 +385,15 @@ export async function getAdminStats(req: Request, res: Response) {
     const totalEvents = await Event.countDocuments();
     const totalRegistrations = await Registration.countDocuments();
     res.json({ totalEvents, totalRegistrations });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }
 
 export async function getAllEvents(req: Request, res: Response) {
   try {
-    const { page = 1, limit = 20 } = req.query as any;
+    const { page = "1", limit = "20" } = req.query as ListEventsQuery;
     const skip = (parseInt(page) - 1) * parseInt(limit);
     const events = await Event.find()
       .sort({ createdAt: -1 })
@@ -359,7 +402,8 @@ export async function getAllEvents(req: Request, res: Response) {
       .populate("organizer", "name email");
     const total = await Event.countDocuments();
     res.json({ events: events.map((e) => e.toJSON()), total, page: parseInt(page), pages: Math.ceil(total / parseInt(limit)) });
-  } catch (error: any) {
-    res.status(500).json({ message: error.message });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Something went wrong";
+    res.status(500).json({ message });
   }
 }

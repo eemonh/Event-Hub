@@ -11,8 +11,8 @@ export async function submitContact(req: Request, res: Response) {
 
   const contact = await Contact.create({ name, email, subject, message });
 
-  sendContactNotification(contact).catch((err: any) =>
-    console.error("Email notification error:", err.message)
+  sendContactNotification(contact).catch((err: unknown) =>
+    console.error("Email notification error:", err instanceof Error ? err.message : err)
   );
 
   res.status(201).json({ message: "Message sent successfully!" });
