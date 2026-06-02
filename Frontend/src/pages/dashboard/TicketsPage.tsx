@@ -16,9 +16,9 @@ export default function TicketsPage() {
   const { data, isLoading } = useMyEvents()
   const cancelMutation = useCancelRegistration()
   const [showUpcoming, setShowUpcoming] = useState(true)
-  const [qrCodes, setQrCodes] = useState({})
-  const [selectedQr, setSelectedQr] = useState(null)
-  const [selectedQrEvent, setSelectedQrEvent] = useState(null)
+  const [qrCodes, setQrCodes] = useState<Record<string, string>>({})
+  const [selectedQr, setSelectedQr] = useState<string | null>(null)
+  const [selectedQrEvent, setSelectedQrEvent] = useState<{ name?: string; title?: string } | null>(null)
 
   const events = useMemo(() => data?.events || [], [data])
 
@@ -30,8 +30,8 @@ export default function TicketsPage() {
   useEffect(() => {
     if (!events || events.length === 0) return
     events.forEach((event) => {
-      const eventId = event._id || event.id
-      if (!qrCodes[eventId]) {
+      const eventId = event._id || event.id || ""
+      if (eventId && !qrCodes[eventId]) {
         const data = JSON.stringify({ eventId, userId: user?.id, eventName: event.name, date: event.startDate })
         QRCode.toDataURL(data, { width: 200, margin: 1, color: { dark: "#4f46e5" } })
           .then((url) => setQrCodes((prev) => ({ ...prev, [eventId]: url })))
@@ -45,7 +45,7 @@ export default function TicketsPage() {
   const pastEvents = events.filter((e) => new Date(e.startDate) < now)
   const displayedEvents = showUpcoming ? upcomingEvents : pastEvents
 
-  const handleCancel = (eventId) => {
+  const handleCancel = (eventId: string) => {
     if (!confirm("Are you sure you want to cancel your registration?")) return
     cancelMutation.mutate(eventId, {
       onSuccess: () => toast.success("Registration cancelled"),
@@ -93,7 +93,7 @@ export default function TicketsPage() {
       ) : (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {displayedEvents.map((event) => {
-            const eventId = event._id || event.id
+            const eventId = event._id || event.id || ""
             const startDate = new Date(event.startDate)
             const isPast = startDate < now
             return (

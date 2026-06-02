@@ -29,14 +29,14 @@ export default function SavedEventsPage() {
     setAction({ label: "Explore Events", onClick: () => navigate("/events") })
   }, [setBreadcrumbs, setAction, navigate])
 
-  const handleRemove = (eventId) => {
+  const handleRemove = (eventId: string) => {
     removeBookmarkMutation.mutate(eventId, {
       onSuccess: () => toast.success("Bookmark removed"),
       onError: (err) => toast.error(err.message),
     })
   }
 
-  const handleRegister = (eventId) => {
+  const handleRegister = (eventId: string) => {
     if (!token) return
     registerMutation.mutate(eventId, {
       onSuccess: () => toast.success("Registered successfully!"),

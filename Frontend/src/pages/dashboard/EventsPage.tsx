@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, type MouseEvent } from "react"
 import { useNavigate } from "react-router-dom"
 import { CalendarDays, Search } from "lucide-react"
 import { useAuth } from "../../context/AuthContext"
@@ -39,14 +39,14 @@ export default function DashboardEvents() {
     setAction({ label: "Create Event", onClick: () => navigate("/dashboard/events/create") })
   }, [setBreadcrumbs, setAction, navigate])
 
-  const handleRegister = (eventId, e) => {
-    e.stopPropagation()
+  const handleRegister = (eventId: string, e?: MouseEvent<HTMLElement>) => {
+    e?.stopPropagation()
     if (!token) return
     registerMutation.mutate(eventId)
   }
 
-  const handleBookmark = (eventId, e) => {
-    e.stopPropagation()
+  const handleBookmark = (eventId: string, e?: MouseEvent<HTMLElement>) => {
+    e?.stopPropagation()
     if (!token) return
     if (savedIds.has(eventId)) {
       removeBookmarkMutation.mutate(eventId)
@@ -55,8 +55,8 @@ export default function DashboardEvents() {
     }
   }
 
-  const isOwner = (event) => {
-    const ownerId = event.organizer?._id ?? event.organizer
+  const isOwner = (event: { organizer?: string | { _id?: string }; _id?: string; id?: string }) => {
+    const ownerId = (typeof event.organizer === "object" ? event.organizer?._id : undefined) ?? event.organizer
     return ownerId?.toString() === user?.id
   }
 

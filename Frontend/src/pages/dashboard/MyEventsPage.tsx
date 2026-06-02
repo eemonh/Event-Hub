@@ -25,7 +25,7 @@ export default function MyEventsPage() {
   const upcoming = useMemo(() => events.filter((e) => new Date(e.startDate) >= now), [events, now])
   const past = useMemo(() => events.filter((e) => new Date(e.startDate) < now), [events, now])
 
-  const handleCancel = (eventId) => {
+  const handleCancel = (eventId: string) => {
     if (!confirm("Are you sure you want to cancel your registration?")) return
     cancelMutation.mutate(eventId, {
       onSuccess: () => toast.success("Registration cancelled"),

@@ -6,6 +6,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useBreadcrumbs } from "../../context/BreadcrumbContext";
 import { getAllUsers, updateUserRole, deleteUser, createUser } from "../../services/users";
 import { DashboardTableSkeleton } from "../../components/ui/Skeletons";
+import type { User, UsersResponse } from "../../types";
 
 const ROLE_STYLES = {
   admin: "bg-purple-100 text-purple-700",
@@ -17,13 +18,13 @@ const USERS_PER_PAGE = 8;
 export default function UsersPage() {
   const { token } = useAuth();
   const { setBreadcrumbs, setAction } = useBreadcrumbs();
-  const [users, setUsers] = useState([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [addForm, setAddForm] = useState({ name: "", email: "", password: "", role: "user" });
+  const [addForm, setAddForm] = useState<{ name: string; email: string; password: string; role: string }>({ name: "", email: "", password: "", role: "user" });
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -35,9 +36,9 @@ export default function UsersPage() {
   useEffect(() => {
     if (!token) return;
     setLoading(true);
-    getAllUsers(token)
+    getAllUsers<UsersResponse>(token!)
       .then((res) => setUsers(res.users))
-      .catch((err) => toast.error(err?.message || "Failed to load users"))
+      .catch((err: unknown) => toast.error(err instanceof Error ? err.message : "Failed to load users"))
       .finally(() => setLoading(false));
   }, [token]);
 
@@ -53,7 +54,7 @@ export default function UsersPage() {
   const totalPages = Math.ceil(filtered.length / USERS_PER_PAGE);
   const paginated = filtered.slice((currentPage - 1) * USERS_PER_PAGE, currentPage * USERS_PER_PAGE);
 
-  const avatarEl = (user) => {
+  const avatarEl = (user: User) => {
     if (user.avatar) {
       return <img src={user.avatar} alt={user.name} className="w-8 h-8 rounded-full object-cover mr-3 flex-shrink-0" />;
     }
@@ -65,32 +66,32 @@ export default function UsersPage() {
     );
   };
 
-  const roleBadge = (role) => (
+  const roleBadge = (role: keyof typeof ROLE_STYLES) => (
     <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${ROLE_STYLES[role] || ROLE_STYLES.user}`}>
       {role}
     </span>
   );
 
-  const handleRoleChange = async (user, newRole) => {
+  const handleRoleChange = async (user: User, newRole: "admin" | "user") => {
     const actionLabel = newRole === "admin" ? "promoted to admin" : "demoted to user";
     if (!window.confirm(`${newRole === "admin" ? "Promote" : "Demote"} "${user.name}" ${newRole === "admin" ? "to admin" : "to user"}?`)) return;
     try {
-      await updateUserRole(token, user.id || user._id, newRole);
+      await updateUserRole(token!, user.id || user._id, newRole);
       toast.success(`${user.name} ${actionLabel}`);
       setUsers((prev) => prev.map((u) => ((u.id || u._id) === (user.id || user._id) ? { ...u, role: newRole } : u)));
     } catch (err) {
-      toast.error(err.message || "Failed to update role");
+      toast.error(err instanceof Error ? err.message : "Failed to update role");
     }
   };
 
-  const handleDelete = async (user) => {
+  const handleDelete = async (user: User) => {
     if (!window.confirm(`Delete user "${user.name}"? This cannot be undone.`)) return;
     try {
-      await deleteUser(token, user.id || user._id);
+      await deleteUser(token!, user.id || user._id);
       toast.success(`${user.name} deleted`);
       setUsers((prev) => prev.filter((u) => (u.id || u._id) !== (user.id || user._id)));
     } catch (err) {
-      toast.error(err.message || "Failed to delete user");
+      toast.error(err instanceof Error ? err.message : "Failed to delete user");
     }
   };
 
@@ -106,14 +107,14 @@ export default function UsersPage() {
     }
     setSubmitting(true);
     try {
-      await createUser(token, { name: name.trim(), email: email.trim(), password, role });
+      await createUser(token!, { name: name.trim(), email: email.trim(), password, role });
       toast.success("User created successfully");
       setShowAddModal(false);
       setAddForm({ name: "", email: "", password: "", role: "user" });
-      const res = await getAllUsers(token);
+      const res: UsersResponse = await getAllUsers(token!);
       setUsers(res.users);
     } catch (err) {
-      toast.error(err.message || "Failed to create user");
+      toast.error(err instanceof Error ? err.message : "Failed to create user");
     } finally {
       setSubmitting(false);
     }

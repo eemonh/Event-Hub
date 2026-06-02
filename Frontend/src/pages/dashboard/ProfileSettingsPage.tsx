@@ -38,26 +38,26 @@ export default function ProfileSettingsPage() {
     setAction(null);
   }, [setBreadcrumbs, setAction]);
 
-  const toggleInterest = (cat) => {
+  const toggleInterest = (cat: string) => {
     setInterests((prev) =>
       prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
     );
   };
 
-  const handleSaveProfile = async (e) => {
+  const handleSaveProfile = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSaving(true);
     try {
-      await updateProfile(token, { name, interests });
+      await updateProfile(token!, { name, interests });
       toast.success("Profile updated successfully");
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setSaving(false);
     }
   };
 
-  const handleChangePassword = async (e) => {
+  const handleChangePassword = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
       toast.error("Passwords do not match");
@@ -69,13 +69,13 @@ export default function ProfileSettingsPage() {
     }
     setChangingPassword(true);
     try {
-      await changePassword(token, currentPassword, newPassword);
+      await changePassword(token!, currentPassword, newPassword);
       toast.success("Password changed successfully");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setChangingPassword(false);
     }

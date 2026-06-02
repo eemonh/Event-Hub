@@ -16,7 +16,7 @@ export default function ManageEventsPage() {
   const { setBreadcrumbs, setAction } = useBreadcrumbs()
   const { data, isLoading } = useAllEvents()
   const deleteMutation = useDeleteEvent()
-  const [editEventId, setEditEventId] = useState(null)
+  const [editEventId, setEditEventId] = useState<string | null>(null)
 
   const events = data?.events || []
 
@@ -25,7 +25,7 @@ export default function ManageEventsPage() {
     setAction({ label: "Create Event", onClick: () => navigate("/dashboard/events/create") })
   }, [setBreadcrumbs, setAction, navigate])
 
-  const handleDelete = (id) => {
+  const handleDelete = (id: string) => {
     if (!confirm("Are you sure you want to delete this event?")) return
     deleteMutation.mutate(id, {
       onSuccess: () => toast.success("Event deleted successfully"),
@@ -77,9 +77,9 @@ export default function ManageEventsPage() {
                   <div className="px-5 py-4 border-t border-gray-100 flex items-center justify-between">
                     <StatusBadge status={displayStatus} />
                     <div className="flex items-center gap-1">
-                      <button onClick={() => navigate('/events/' + (event._id || event.id))} className="p-1.5 rounded-md text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors" title="View"><Eye className="w-4 h-4" /></button>
-                      <button onClick={() => setEditEventId(event._id || event.id)} className="p-1.5 rounded-md text-gray-400 hover:text-violet-600 hover:bg-violet-50 transition-colors" title="Edit"><Pencil className="w-4 h-4" /></button>
-                      <button onClick={() => handleDelete(event._id || event.id)} className="p-1.5 rounded-md text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors" title="Delete"><Trash2 className="w-4 h-4" /></button>
+                      <button onClick={() => navigate('/events/' + (event._id || event.id || ""))} className="p-1.5 rounded-md text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors" title="View"><Eye className="w-4 h-4" /></button>
+                      <button onClick={() => setEditEventId(event._id || event.id || null)} className="p-1.5 rounded-md text-gray-400 hover:text-violet-600 hover:bg-violet-50 transition-colors" title="Edit"><Pencil className="w-4 h-4" /></button>
+                      <button onClick={() => handleDelete(event._id || event.id || "")} className="p-1.5 rounded-md text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors" title="Delete"><Trash2 className="w-4 h-4" /></button>
                     </div>
                   </div>
                 </div>
@@ -90,7 +90,7 @@ export default function ManageEventsPage() {
       </div>
 
       <EditEventModal
-        eventId={editEventId}
+        eventId={editEventId!}
         isOpen={!!editEventId}
         onClose={() => setEditEventId(null)}
       />

@@ -45,7 +45,7 @@ export default function AdminPage() {
         </button>
       </div>
 
-      <StatCards stats={overviewData?.stats} isLoading={overviewLoading} />
+      <StatCards stats={(overviewData as unknown as { stats: Record<string, { value: number; trend: number }> })?.stats} isLoading={overviewLoading} />
 
       <RegistrationTrends />
 

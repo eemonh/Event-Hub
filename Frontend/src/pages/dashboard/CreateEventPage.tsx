@@ -4,6 +4,7 @@ import toast from "react-hot-toast"
 import { useBreadcrumbs } from "../../context/BreadcrumbContext"
 import { useCreateEvent } from "../../hooks/mutations/useEventMutations"
 import EventForm from "../../components/events/EventForm"
+import type { EventFormData } from "../../types"
 
 export default function CreateEventPage() {
   const navigate = useNavigate()
@@ -15,13 +16,13 @@ export default function CreateEventPage() {
     setAction(null)
   }, [setBreadcrumbs, setAction])
 
-  const handleSubmit = async (payload) => {
+  const handleSubmit = async (payload: EventFormData) => {
     try {
-      await createMutation.mutateAsync(payload)
+      await createMutation.mutateAsync(payload as unknown as Record<string, unknown>)
       toast.success("Event created successfully!")
       navigate("/dashboard/events/manage")
     } catch (err) {
-      toast.error(err.message)
+      toast.error(err instanceof Error ? err.message : "Something went wrong")
     }
   }
 
