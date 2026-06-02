@@ -32,7 +32,7 @@ const EventCard = memo(function EventCard({
   onRemoveBookmark,
   onClick,
 }: EventCardProps) {
-  const eventId = event._id || event.id
+  const eventId = (event._id || event.id) ?? ""
   const startDate = new Date(event.startDate)
 
   const cardContent = (

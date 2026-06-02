@@ -4,19 +4,26 @@ import Modal from "../ui/Modal"
 import { useEvent } from "../../hooks/queries/useEvents"
 import { useUpdateEvent } from "../../hooks/mutations/useEventMutations"
 import EventForm from "./EventForm"
+import type { EventFormData } from "../../types"
 import { ModalFormSkeleton } from "../ui/Skeletons"
 
-export default function EditEventModal({ eventId, isOpen, onClose }) {
+interface EditEventModalProps {
+  eventId: string;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export default function EditEventModal({ eventId, isOpen, onClose }: EditEventModalProps) {
   const { data, isLoading } = useEvent(eventId)
   const updateMutation = useUpdateEvent()
 
-  const handleSubmit = useCallback(async (payload) => {
+  const handleSubmit = useCallback(async (payload: EventFormData) => {
     try {
-      await updateMutation.mutateAsync({ id: eventId, data: payload })
+      await updateMutation.mutateAsync({ id: eventId, data: payload as unknown as Record<string, unknown> })
       toast.success("Event updated successfully!")
       onClose()
-    } catch (err) {
-      toast.error(err.message)
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Failed to update event")
     }
   }, [eventId, updateMutation, onClose])
 
@@ -26,16 +33,16 @@ export default function EditEventModal({ eventId, isOpen, onClose }) {
     name: event.name || "",
     type: event.type || "",
     category: event.category || "",
-    startDate: event.startDate ? event.startDate.slice(0, 10) : "",
+    startDate: event.startDate?.slice(0, 10) || "",
     startTime: event.startTime || "",
-    endDate: event.endDate ? event.endDate.slice(0, 10) : "",
+    endDate: event.endDate?.slice(0, 10) || "",
     endTime: event.endTime || "",
     venue: event.venue || "",
     coverImage: event.coverImage || "",
     description: event.description || "",
     capacity: event.capacity?.toString() || "",
     price: event.price?.toString() || "0",
-    status: event.status || "published",
+    status: (event.status as "draft" | "published" | "cancelled") || "published",
     subtitle: event.subtitle || "",
     schedule: event.schedule || [],
   } : undefined
