@@ -13,7 +13,12 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-const SideNavBar = ({ isOpen = true, onToggle }) => {
+interface SideNavBarProps {
+    isOpen: boolean;
+    onToggle: () => void;
+}
+
+const SideNavBar = ({ isOpen = true, onToggle }: SideNavBarProps) => {
     const navigate = useNavigate();
     const { pathname } = useLocation();
     const { user, logout } = useAuth();

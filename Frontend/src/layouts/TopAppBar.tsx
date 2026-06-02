@@ -2,8 +2,15 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { User, Settings, LogOut, ChevronDown } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
+import type { Breadcrumb } from "../types";
 
-const TopAppBar = ({ breadcrumbs = [], actionLabel = "", onAction }) => {
+interface TopAppBarProps {
+    breadcrumbs: Breadcrumb[];
+    actionLabel: string;
+    onAction: (() => void) | null;
+}
+
+const TopAppBar = ({ breadcrumbs = [], actionLabel = "", onAction }: TopAppBarProps) => {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
     const isAdmin = user?.role === "admin";
@@ -13,16 +20,16 @@ const TopAppBar = ({ breadcrumbs = [], actionLabel = "", onAction }) => {
         ? user.name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
         : "U";
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    const dropdownRef = useRef(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
     const closeDropdown = useCallback(() => setDropdownOpen(false), []);
 
     useEffect(() => {
         if (!dropdownOpen) return;
-        const handleClick = (e) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) closeDropdown();
+        const handleClick = (e: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) closeDropdown();
         };
-        const handleKey = (e) => { if (e.key === "Escape") closeDropdown(); };
+        const handleKey = (e: KeyboardEvent) => { if (e.key === "Escape") closeDropdown(); };
         document.addEventListener("mousedown", handleClick);
         window.addEventListener("keydown", handleKey);
         return () => {
@@ -31,7 +38,7 @@ const TopAppBar = ({ breadcrumbs = [], actionLabel = "", onAction }) => {
         };
     }, [dropdownOpen, closeDropdown]);
 
-    const handleNav = (path) => {
+    const handleNav = (path: string) => {
         navigate(path);
         closeDropdown();
     };
@@ -47,7 +54,7 @@ const TopAppBar = ({ breadcrumbs = [], actionLabel = "", onAction }) => {
                 <div className="flex items-center text-sm">
                     {breadcrumbs.map((crumb, index) => (
                         <span key={index} className={index === breadcrumbs.length - 1 ? "text-gray-900 font-semibold" : "text-gray-500"}>
-                            {crumb}
+                            {typeof crumb === "string" ? crumb : crumb.label}
                             {index < breadcrumbs.length - 1 && (
                                 <svg className="w-4 h-4 mx-2 text-gray-400 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

@@ -21,7 +21,7 @@ export default function MainHeader() {
 
   useEffect(() => {
     if (!isMobileOpen) return
-    const onKey = (e) => {
+    const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setIsMobileOpen(false)
     }
     document.addEventListener("keydown", onKey)
