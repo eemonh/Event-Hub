@@ -58,11 +58,12 @@ export function useSavedEvents() {
   });
 }
 
-export function useRecommendedEvents() {
+export function useRecommendedEvents(options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: ["recommended-events"],
     queryFn: () => apiClient<Pick<EventsResponse, "events">>("/events/recommended"),
     staleTime: 300 * 1000,
+    ...options,
   });
 }
 

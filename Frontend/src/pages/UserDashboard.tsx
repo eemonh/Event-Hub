@@ -10,7 +10,7 @@ import { useMyEvents, useRecommendedEvents, useSavedEvents } from "../hooks/quer
 import { useCancelRegistration } from "../hooks/mutations/useEventMutations"
 import { DashboardCardsSkeleton } from "../components/ui/Skeletons"
 
-function CountdownBadge({ targetDate, currentTime }) {
+function CountdownBadge({ targetDate, currentTime }: { targetDate: string; currentTime: number }) {
   const remaining = (() => {
     const diff = new Date(targetDate).getTime() - currentTime
     if (diff <= 0) return null
@@ -57,14 +57,14 @@ export default function UserDashboard() {
   const now = new Date()
   const upcomingEvents = myEvents
     .filter((e) => new Date(e.startDate) >= now)
-    .sort((a, b) => new Date(a.startDate) - new Date(b.startDate))
+    .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
 
   const thisMonthCount = upcomingEvents.filter((e) => {
     const d = new Date(e.startDate)
     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
   }).length
 
-  const handleCancel = (eventId) => {
+  const handleCancel = (eventId: string) => {
     if (!confirm("Are you sure you want to cancel your registration?")) return
     cancelMutation.mutate(eventId, {
       onSuccess: () => toast.success("Registration cancelled"),
@@ -136,7 +136,8 @@ export default function UserDashboard() {
               const startDate = new Date(event.startDate)
               const month = startDate.toLocaleString("en-US", { month: "short" })
               const day = startDate.getDate()
-              const ownerId = event.organizer?._id ?? event.organizer
+              const organizerObj = typeof event.organizer === "object" ? event.organizer : null
+              const ownerId = organizerObj?._id ?? event.organizer
               const isOwner = ownerId?.toString() === user?.id
               return (
                 <div key={event._id || event.id} onClick={() => navigate('/events/' + (event._id || event.id))}
@@ -163,7 +164,7 @@ export default function UserDashboard() {
                         <Ticket size={15} />View Ticket
                       </button>
                       <button
-                        onClick={(e) => { e.stopPropagation(); handleCancel(event._id || event.id) }}
+                        onClick={(e) => { e.stopPropagation(); handleCancel(event._id) }}
                         className="inline-flex items-center gap-1.5 rounded-full border border-red-200 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50"
                       >
                         <XCircle size={15} />Cancel
@@ -188,14 +189,15 @@ export default function UserDashboard() {
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
             {recommended.slice(0, 6).map((event) => {
               const startDate = new Date(event.startDate)
-              const ownerId = event.organizer?._id ?? event.organizer
+              const organizerObj = typeof event.organizer === "object" ? event.organizer : null
+              const ownerId = organizerObj?._id ?? event.organizer
               const isOwner = ownerId?.toString() === user?.id
               return (
                 <div key={event._id || event.id} onClick={() => navigate('/events/' + (event._id || event.id))}
                   className="cursor-pointer overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md">
                   <div className="relative h-52 overflow-hidden">
                     <img src={event.coverImage || "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=1200&auto=format&fit=crop"} alt={event.name} loading="lazy"
-                      onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=1200&auto=format&fit=crop" }}
+                      onError={(e) => { (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=1200&auto=format&fit=crop" }}
                       className="h-full w-full object-cover" />
                     <div className="absolute left-3 top-3 flex flex-col gap-1">
                       <span className="rounded-md bg-white px-2 py-1 text-xs font-semibold text-violet-700 shadow">{event.category}</span>

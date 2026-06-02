@@ -5,9 +5,10 @@ import { z } from "zod";
 import { submitContact } from "../services/contact";
 import toast from "react-hot-toast";
 import { Send, Loader2 } from "lucide-react";
+import type { ContactFormData } from "../types";
 
 export default function ContactPage() {
-  const [openFaq, setOpenFaq] = useState(0);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const contactSchema = z.object({
     name: z.string().min(2, "Name must be at least 2 characters"),
@@ -26,13 +27,13 @@ export default function ContactPage() {
     defaultValues: { name: "", email: "", subject: "", message: "" },
   });
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: ContactFormData) => {
     try {
       await submitContact(data);
       toast.success("Message sent successfully!");
       reset();
     } catch (err) {
-      toast.error(err.message || "Something went wrong. Please try again.");
+      toast.error(err instanceof Error ? err.message : "Something went wrong. Please try again.");
     }
   };
 
@@ -51,7 +52,7 @@ export default function ContactPage() {
     }
   ];
 
-  const toggleFaq = (index) => {
+  const toggleFaq = (index: number) => {
     setOpenFaq(openFaq === index ? null : index);
   };
 
@@ -124,7 +125,7 @@ export default function ContactPage() {
             <div>
               <label className="block text-sm font-semibold text-slate-500 mb-2">Message</label>
               <textarea
-                rows="5"
+                rows={5}
                 placeholder="Your message here..."
                 {...register("message")}
                 className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition-all resize-none ${

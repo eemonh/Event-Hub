@@ -41,7 +41,7 @@ function HomePage() {
                     className="group overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md">
                     <div className="relative h-48 overflow-hidden">
                       <img src={event.coverImage || 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=1200&auto=format&fit=crop'} alt={event.name} loading="lazy"
-                        onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=1200&auto=format&fit=crop' }}
+                        onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?q=80&w=1200&auto=format&fit=crop' }}
                         className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
                       <div className="absolute left-3 top-3 flex flex-col gap-1">
                         <span className="rounded-md bg-white px-2 py-1 text-xs font-semibold text-violet-700 shadow">{event.category}</span>

@@ -6,6 +6,7 @@ import { User, Mail, Lock, ArrowRight } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 import { loginSchema, registerSchema } from "../utils/authSchemas";
+import type { LoginFormData, RegisterFormData } from "../types";
 import AuthLayout from "../components/auth/AuthLayout";
 import AuthHeader from "../components/auth/AuthHeader";
 import Input from "../components/ui/Input";
@@ -53,19 +54,20 @@ export default function AuthPage() {
 
   const password = watch("password", "");
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: LoginFormData | RegisterFormData) => {
     setIsLoading(true);
     try {
       if (mode === "login") {
         await login(data.email, data.password);
         toast.success("Successfully logged in!");
       } else {
-        await registerUser(data.name, data.email, data.password);
+        const regData = data as RegisterFormData;
+        await registerUser(regData.name, regData.email, regData.password);
         toast.success("Account created successfully!");
       }
       navigate("/dashboard");
     } catch (err) {
-      toast.error(err.message || "Something went wrong. Please try again.");
+      toast.error(err instanceof Error ? err.message : "Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -77,7 +79,7 @@ export default function AuthPage() {
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         {config.showName && (
           <Input label="Name" name="name" placeholder="Full name" icon={User}
-            register={register} error={errors.name} disabled={isLoading} />
+            register={register} error={"name" in errors ? errors.name : undefined} disabled={isLoading} />
         )}
         <Input label="Email Address" name="email" type="email"
           placeholder={config.placeholder.email}
@@ -96,7 +98,7 @@ export default function AuthPage() {
           {config.showPasswordStrength && <PasswordStrengthIndicator password={password} />}
         </div>
         <div className="pt-2">
-          <Button type="submit" loading={isLoading} icon={config.button.icon} fullWidth size="lg">
+          <Button type="submit" loading={isLoading} icon={config.button.icon ?? undefined} fullWidth size="lg">
             {config.button.text}
           </Button>
         </div>

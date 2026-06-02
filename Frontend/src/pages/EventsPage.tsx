@@ -32,19 +32,19 @@ export default function EventsPage() {
   const registeredIds = new Set((myEventsData?.events || []).map((e) => e._id || e.id))
   const savedIds = new Set((savedData?.events || []).map((e) => e._id || e.id))
 
-  const handleSearch = (e) => {
+  const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     setPage(1)
   }
 
-  const handleRegister = async (eventId, e) => {
-    e.stopPropagation()
+  const handleRegister = async (eventId: string, e?: React.MouseEvent<HTMLElement>) => {
+    e?.stopPropagation()
     if (!token) return
     registerMutation.mutate(eventId)
   }
 
-  const handleBookmark = async (eventId, e) => {
-    e.stopPropagation()
+  const handleBookmark = async (eventId: string, e?: React.MouseEvent<HTMLElement>) => {
+    e?.stopPropagation()
     if (!token) return
     if (savedIds.has(eventId)) {
       removeBookmarkMutation.mutate(eventId)
@@ -53,8 +53,9 @@ export default function EventsPage() {
     }
   }
 
-  const isOwner = (event) => {
-    const ownerId = event.organizer?._id ?? event.organizer
+  const isOwner = (event: { organizer?: string | { _id?: string } }) => {
+    const organizerObj = typeof event.organizer === "object" ? event.organizer : null
+    const ownerId = organizerObj?._id ?? event.organizer
     return ownerId?.toString() === user?.id
   }
 

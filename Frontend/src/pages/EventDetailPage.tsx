@@ -3,7 +3,7 @@ import { useState } from "react"
 import {
   CalendarDays, MapPin, Users, Bookmark, ArrowRight,
   ShieldCheck, Code2, Loader2, Ticket, ArrowLeft, User, Clock, Star,
-  ThumbsUp, MessageCircle, Trash2, Send,
+  ThumbsUp, Trash2, Send,
 } from "lucide-react"
 import toast from "react-hot-toast"
 import { useAuth } from "../context/AuthContext"
@@ -46,7 +46,8 @@ export default function EventDetailPage() {
   const myEventIds = new Set((myEventsData?.events || []).map((e) => e._id || e.id))
   const savedEventIds = new Set((savedData?.events || []).map((e) => e._id || e.id))
 
-  const isOwner = event?.organizer?._id === user?.id
+  const organizerUser = typeof event?.organizer === "object" ? event.organizer : null
+  const isOwner = organizerUser?._id === user?.id
   const isRegistered = myEventIds.has(eventId)
   const isSaved = savedEventIds.has(eventId)
   const isUpvoted = event?.userUpvoted
@@ -54,6 +55,7 @@ export default function EventDetailPage() {
 
   const handleRegister = async () => {
     if (!token) return toast.error("Please log in to register")
+    if (!eventId) return
     registerMutation.mutate(eventId, {
       onSuccess: () => toast.success("Registered successfully!"),
       onError: (err) => toast.error(err.message),
@@ -62,6 +64,7 @@ export default function EventDetailPage() {
 
   const handleBookmark = async () => {
     if (!token) return toast.error("Please log in to bookmark")
+    if (!eventId) return
     if (isSaved) {
       removeBookmarkMutation.mutate(eventId, {
         onSuccess: () => toast.success("Bookmark removed"),
@@ -77,14 +80,16 @@ export default function EventDetailPage() {
 
   const handleUpvote = () => {
     if (!token) return toast.error("Please log in to upvote")
+    if (!eventId) return
     upvoteMutation.mutate(eventId, {
       onError: (err) => toast.error(err.message),
     })
   }
 
-  const handleAddComment = (e) => {
+  const handleAddComment = (e: React.FormEvent) => {
     e.preventDefault()
     if (!token) return toast.error("Please log in to comment")
+    if (!eventId) return
     if (!commentText.trim()) return toast.error("Comment cannot be empty")
     addCommentMutation.mutate(
       { eventId, text: commentText.trim() },
@@ -98,14 +103,15 @@ export default function EventDetailPage() {
     )
   }
 
-  const handleDeleteComment = (commentId) => {
+  const handleDeleteComment = (commentId: string) => {
+    if (!eventId) return
     deleteCommentMutation.mutate(
       { eventId, commentId },
       { onError: (err) => toast.error(err.message) },
     )
   }
 
-  const formatDate = (dateStr) =>
+  const formatDate = (dateStr: string) =>
     new Date(dateStr).toLocaleDateString("en-US", {
       weekday: "short", year: "numeric", month: "short", day: "numeric",
     })
@@ -148,8 +154,8 @@ export default function EventDetailPage() {
             <img
               src={event.coverImage || "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1600&auto=format&fit=crop"}
               alt={event.name}
-              onError={(e) => {
-                e.target.src = "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1600&auto=format&fit=crop"
+                onError={(e) => {
+                (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1600&auto=format&fit=crop"
               }}
               className="h-full w-full object-cover"
             />
@@ -231,7 +237,7 @@ export default function EventDetailPage() {
               ) : (
                 <ThumbsUp size={15} className={isUpvoted ? "fill-primary" : ""} />
               )}
-              Upvote {event.upvoteCount > 0 && `(${event.upvoteCount})`}
+              Upvote {(event.upvoteCount ?? 0) > 0 && `(${event.upvoteCount ?? 0})`}
             </button>
 
             <button
@@ -286,11 +292,11 @@ export default function EventDetailPage() {
               </>
             )}
 
-            {event.schedule?.length > 0 && (
+            {(event.schedule?.length ?? 0) > 0 && (
               <section className="mt-20">
                 <h2 className="text-[36px] font-bold tracking-[-1px] text-[#141B2A]">Schedule Highlights</h2>
                 <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2">
-                  {event.schedule.map((item, i) => {
+                  {event.schedule!.map((item, i) => {
                     const iconIndex = i % 8
                     const iconConfig = SCHEDULE_ICONS[iconIndex]
                     const IconComponent = iconConfig.icon
@@ -327,8 +333,8 @@ export default function EventDetailPage() {
                     <User size={28} className="text-primary" />
                   </div>
                   <div>
-                    <h3 className="text-[20px] font-bold text-[#1B2233]">{event.organizer.name}</h3>
-                    <p className="mt-1 text-[14px] text-[#707789]">{event.organizer.email || "Event organizer"}</p>
+                    <h3 className="text-[20px] font-bold text-[#1B2233]">{(typeof event.organizer === "object" ? event.organizer : null)?.name || "Unknown"}</h3>
+                    <p className="mt-1 text-[14px] text-[#707789]">{(typeof event.organizer === "object" ? event.organizer : null)?.email || "Event organizer"}</p>
                   </div>
                 </div>
               </section>
@@ -337,8 +343,8 @@ export default function EventDetailPage() {
             <section className="mt-14 pb-20">
               <div className="flex items-center gap-2">
                 <h2 className="text-[36px] font-bold tracking-[-1px] text-[#141B2A]">Comments</h2>
-                {event.commentCount > 0 && (
-                  <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">{event.commentCount}</span>
+                {(event.commentCount ?? 0) > 0 && (
+                  <span className="rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">{event.commentCount ?? 0}</span>
                 )}
               </div>
 
@@ -377,15 +383,15 @@ export default function EventDetailPage() {
                               <User size={14} className="text-primary" />
                             </div>
                             <div>
-                              <p className="text-[13px] font-semibold text-[#1A2233]">{comment.user?.name || "Anonymous"}</p>
+                              <p className="text-[13px] font-semibold text-[#1A2233]">{(typeof comment.user === "object" ? comment.user.name : null) || "Anonymous"}</p>
                               <p className="text-[11px] text-[#8B90A0]">
-                                {new Date(comment.createdAt).toLocaleDateString("en-US", {
+                                {new Date(comment.createdAt ?? "").toLocaleDateString("en-US", {
                                   month: "short", day: "numeric", hour: "2-digit", minute: "2-digit",
                                 })}
                               </p>
                             </div>
                           </div>
-                          {user?.id === comment.user?._id && (
+                          {user?.id === (typeof comment.user === "object" ? comment.user?._id : null) && (
                             <button
                               onClick={() => handleDeleteComment(comment._id)}
                               className="text-[#8B90A0] transition hover:text-red-500"
