@@ -56,9 +56,9 @@ export default function CategoryDistribution() {
   }
 
   const statusData: { name: string; value: number; color: string }[] = (data?.byStatus || []).map((s) => ({
-    name: s.status.charAt(0).toUpperCase() + s.status.slice(1),
+    name: s._id.charAt(0).toUpperCase() + s._id.slice(1),
     value: s.count,
-    color: STATUS_COLORS[s.status as keyof typeof STATUS_COLORS] || "#9CA3AF",
+    color: STATUS_COLORS[s._id as keyof typeof STATUS_COLORS] || "#9CA3AF",
   }))
 
   return (
@@ -72,7 +72,7 @@ export default function CategoryDistribution() {
             <XAxis type="number" tick={{ fontSize: 11, fill: "#9CA3AF" }} tickLine={false} axisLine={{ stroke: "#f0f0f0" }} allowDecimals={false} />
             <YAxis
               type="category"
-              dataKey="category"
+              dataKey="_id"
               tick={{ fontSize: 11, fill: "#6B7280" }}
               tickLine={false}
               axisLine={false}
@@ -81,7 +81,7 @@ export default function CategoryDistribution() {
             <Tooltip content={<CategoryTooltip />} />
             <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={20}>
               {(data?.byCategory || []).map((entry, idx) => (
-                <Cell key={entry.category} fill={CATEGORY_COLORS[idx % CATEGORY_COLORS.length]} />
+                <Cell key={entry._id} fill={CATEGORY_COLORS[idx % CATEGORY_COLORS.length]} />
               ))}
             </Bar>
           </BarChart>

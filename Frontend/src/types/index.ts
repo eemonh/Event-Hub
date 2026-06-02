@@ -128,19 +128,13 @@ export interface UsersResponse {
 }
 
 // Analytics
+export interface StatCardData {
+  value: number | string;
+  trend: number;
+}
+
 export interface AnalyticsOverview {
-  totalEvents: number;
-  totalUsers: number;
-  totalRegistrations: number;
-  upcomingEvents: number;
-  publishedEvents?: number;
-  draftEvents?: number;
-  cancelledEvents?: number;
-  registrationGrowth?: number;
-  eventGrowth?: number;
-  userGrowth?: number;
-  revenue?: number;
-  revenueGrowth?: number;
+  stats: Record<string, StatCardData>;
 }
 
 export interface RegistrationTrend {
@@ -149,13 +143,13 @@ export interface RegistrationTrend {
 }
 
 export interface CategoryBreakdown {
-  category: string;
+  _id: string;
   count: number;
 }
 
 export interface CategoryBreakdownResponse {
   byCategory: CategoryBreakdown[];
-  byStatus: { status: string; count: number }[];
+  byStatus: CategoryBreakdown[];
 }
 
 export interface EventPerformance {
