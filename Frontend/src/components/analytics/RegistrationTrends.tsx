@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts"
+import type { TooltipProps } from "recharts"
 import { useRegistrationTrends } from "../../hooks/queries/useAnalytics"
 import { SkeletonBlock } from "../ui/Skeletons"
 
@@ -9,7 +10,7 @@ const ranges = [
   { label: "90d", value: 90 },
 ]
 
-function CustomTooltip({ active, payload, label }) {
+function CustomTooltip({ active = false, payload = [], label = "" }: Partial<TooltipProps<number, string>>) {
   if (!active || !payload?.length) return null
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-lg px-4 py-3">

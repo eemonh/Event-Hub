@@ -10,14 +10,14 @@ const cards = [
   { key: "upcomingEvents", title: "UPCOMING EVENTS", icon: Clock, colorClass: "text-cyan-600 bg-cyan-100", gradientClass: "bg-gradient-to-t from-cyan-50 to-white" },
 ]
 
-function formatValue(value, format) {
+function formatValue(value: number, format?: string): string {
   if (format === "currency") {
     return `$${Number(value).toLocaleString()}`
   }
   return String(value ?? 0)
 }
 
-export default function StatCards({ stats, isLoading }) {
+export default function StatCards({ stats, isLoading }: { stats: Record<string, { value: number; trend: number }> | undefined; isLoading: boolean }) {
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">

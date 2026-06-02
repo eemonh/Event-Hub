@@ -59,7 +59,7 @@ export default function TopEventsTable() {
                   <td className="px-6 py-4">
                     <div className="text-sm font-bold text-gray-900">{event.name}</div>
                     <div className="text-xs text-gray-400">
-                      {new Date(event.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      {event.startDate ? new Date(event.startDate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "N/A"}
                     </div>
                   </td>
                   <td className="px-6 py-4 text-right">
@@ -73,20 +73,20 @@ export default function TopEventsTable() {
                       <div className="w-16 bg-gray-200 rounded-full h-2 overflow-hidden">
                         <div
                           className={`h-full rounded-full transition-all ${
-                            event.fillRate >= 80
+                            event.fillRate != null && event.fillRate >= 80
                               ? "bg-emerald-500"
-                              : event.fillRate >= 50
+                              : event.fillRate != null && event.fillRate >= 50
                               ? "bg-amber-500"
                               : "bg-red-500"
                           }`}
-                          style={{ width: `${Math.min(event.fillRate, 100)}%` }}
+                          style={{ width: `${Math.min(event.fillRate ?? 0, 100)}%` }}
                         />
                       </div>
-                      <span className="text-sm font-semibold text-gray-700 min-w-[3ch]">{event.fillRate}%</span>
+                      <span className="text-sm font-semibold text-gray-700 min-w-[3ch]">{event.fillRate ?? 0}%</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 text-right hidden lg:table-cell">
-                    <span className="text-sm text-gray-600">{event.bookmarkCount}</span>
+                    <span className="text-sm text-gray-600">{event.bookmarkCount ?? 0}</span>
                   </td>
                 </tr>
               ))

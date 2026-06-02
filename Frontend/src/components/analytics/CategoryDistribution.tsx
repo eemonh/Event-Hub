@@ -1,6 +1,9 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell, PieChart, Pie } from "recharts"
+import type { TooltipProps } from "recharts"
 import { useCategoryBreakdown } from "../../hooks/queries/useAnalytics"
 import { SkeletonBlock } from "../ui/Skeletons"
+
+type RechartsTooltip = TooltipProps<number, string>
 
 const STATUS_COLORS = {
   published: "#6200ea",
@@ -14,7 +17,7 @@ const CATEGORY_COLORS = [
   "#6366f1", "#14b8a6",
 ]
 
-function CategoryTooltip({ active, payload, label }) {
+function CategoryTooltip({ active = false, payload = [], label = "" }: Partial<RechartsTooltip>) {
   if (!active || !payload?.length) return null
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-lg px-4 py-3">
@@ -24,7 +27,7 @@ function CategoryTooltip({ active, payload, label }) {
   )
 }
 
-function StatusTooltip({ active, payload }) {
+function StatusTooltip({ active = false, payload = [] }: Partial<TooltipProps<number, string>>) {
   if (!active || !payload?.length) return null
   const data = payload[0].payload
   return (
@@ -55,10 +58,10 @@ export default function CategoryDistribution() {
     )
   }
 
-  const statusData = (data?.byStatus || []).map((s) => ({
-    name: s._id.charAt(0).toUpperCase() + s._id.slice(1),
+  const statusData: { name: string; value: number; color: string }[] = (data?.byStatus || []).map((s) => ({
+    name: s.status.charAt(0).toUpperCase() + s.status.slice(1),
     value: s.count,
-    color: STATUS_COLORS[s._id] || "#9CA3AF",
+    color: STATUS_COLORS[s.status as keyof typeof STATUS_COLORS] || "#9CA3AF",
   }))
 
   return (
@@ -72,7 +75,7 @@ export default function CategoryDistribution() {
             <XAxis type="number" tick={{ fontSize: 11, fill: "#9CA3AF" }} tickLine={false} axisLine={{ stroke: "#f0f0f0" }} allowDecimals={false} />
             <YAxis
               type="category"
-              dataKey="_id"
+              dataKey="category"
               tick={{ fontSize: 11, fill: "#6B7280" }}
               tickLine={false}
               axisLine={false}
@@ -81,7 +84,7 @@ export default function CategoryDistribution() {
             <Tooltip content={<CategoryTooltip />} />
             <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={20}>
               {(data?.byCategory || []).map((entry, idx) => (
-                <Cell key={entry._id} fill={CATEGORY_COLORS[idx % CATEGORY_COLORS.length]} />
+                <Cell key={entry.category} fill={CATEGORY_COLORS[idx % CATEGORY_COLORS.length]} />
               ))}
             </Bar>
           </BarChart>
