@@ -1,6 +1,5 @@
 import { useState } from "react"
 import { XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Area, AreaChart } from "recharts"
-import type { TooltipProps } from "recharts"
 import { useUserGrowth } from "../../hooks/queries/useAnalytics"
 import { SkeletonBlock } from "../ui/Skeletons"
 
@@ -10,7 +9,7 @@ const ranges = [
   { label: "90d", value: 90 },
 ]
 
-function CustomTooltip({ active = false, payload = [], label = "" }: Partial<TooltipProps<number, string>>) {
+function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number }>; label?: string }) {
   if (!active || !payload?.length) return null
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-lg px-4 py-3">

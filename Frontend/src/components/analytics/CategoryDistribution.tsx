@@ -1,9 +1,6 @@
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Cell, PieChart, Pie } from "recharts"
-import type { TooltipProps } from "recharts"
 import { useCategoryBreakdown } from "../../hooks/queries/useAnalytics"
 import { SkeletonBlock } from "../ui/Skeletons"
-
-type RechartsTooltip = TooltipProps<number, string>
 
 const STATUS_COLORS = {
   published: "#6200ea",
@@ -17,7 +14,7 @@ const CATEGORY_COLORS = [
   "#6366f1", "#14b8a6",
 ]
 
-function CategoryTooltip({ active = false, payload = [], label = "" }: Partial<RechartsTooltip>) {
+function CategoryTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number }>; label?: string }) {
   if (!active || !payload?.length) return null
   return (
     <div className="bg-white border border-gray-200 rounded-xl shadow-lg px-4 py-3">
@@ -27,7 +24,7 @@ function CategoryTooltip({ active = false, payload = [], label = "" }: Partial<R
   )
 }
 
-function StatusTooltip({ active = false, payload = [] }: Partial<TooltipProps<number, string>>) {
+function StatusTooltip({ active, payload }: { active?: boolean; payload?: Array<{ payload: { name: string; value: number } }> }) {
   if (!active || !payload?.length) return null
   const data = payload[0].payload
   return (
