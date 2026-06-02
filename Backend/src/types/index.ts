@@ -35,7 +35,7 @@ export interface IEvent extends Document {
   capacity: number;
   price: number;
   status: "draft" | "published" | "cancelled";
-  organizer: Types.ObjectId | any;
+  organizer: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -47,8 +47,8 @@ export interface IBookmark extends Document {
 }
 
 export interface IComment extends Document {
-  user: Types.ObjectId | any;
-  event: Types.ObjectId | any;
+  user: Types.ObjectId;
+  event: Types.ObjectId;
   text: string;
   createdAt: Date;
 }
@@ -63,8 +63,8 @@ export interface IContact extends Document {
 }
 
 export interface IRegistration extends Document {
-  user: Types.ObjectId | any;
-  event: Types.ObjectId | any;
+  user: Types.ObjectId;
+  event: Types.ObjectId;
   registeredAt: Date;
 }
 
@@ -76,16 +76,23 @@ export interface IToken extends Document {
 }
 
 export interface IUpvote extends Document {
-  user: Types.ObjectId | any;
-  event: Types.ObjectId | any;
+  user: Types.ObjectId;
+  event: Types.ObjectId;
   upvotedAt: Date;
+}
+
+export interface IPopulatedUser {
+  _id: Types.ObjectId;
+  name: string;
+  email: string;
+  avatar?: string;
 }
 
 // Extend Express Request namespace globally to support req.user
 declare global {
   namespace Express {
     interface Request {
-      user?: any; // To allow assigning typed IUser document
+      user?: IUser;
     }
   }
 }
