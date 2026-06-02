@@ -15,21 +15,12 @@ interface ListEventsQuery {
   limit?: string;
 }
 
-interface ListEventsQuery {
-  category?: string;
-  search?: string;
-  sort?: string;
-  dateFilter?: string;
-  page?: string;
-  limit?: string;
-}
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 export async function listEvents(req: Request, res: Response) {
   try {
     const { category, search, sort = "date_asc", dateFilter, page = "1", limit = "20" } = req.query as ListEventsQuery;
-    const filter: any = { status: "published" };
+    const filter: Record<string, unknown> = { status: "published" };
     if (category && CATEGORIES.includes(category)) filter.category = category;
     if (search) {
       filter.$or = [
