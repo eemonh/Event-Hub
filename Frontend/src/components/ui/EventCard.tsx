@@ -1,5 +1,21 @@
 import { MapPin } from "lucide-react"
 
+interface EventCardProps {
+  image?: string;
+  title?: string;
+  category?: string;
+  format?: string;
+  location?: string;
+  time?: string;
+  date?: string;
+  price?: string;
+  recommendationReason?: string;
+  variant?: "overlay" | "stacked";
+  featured?: boolean;
+  large?: boolean;
+  className?: string;
+}
+
 export default function EventCard({
   image,
   title,
@@ -14,7 +30,7 @@ export default function EventCard({
   featured = false,
   large = false,
   className = "",
-}) {
+}: EventCardProps) {
   if (variant === "stacked") {
     return (
       <div

@@ -2,9 +2,6 @@ import { useState, type ReactNode } from "react";
 import { Eye, EyeOff, type LucideIcon } from "lucide-react";
 import type { UseFormRegister, RegisterOptions, FieldError } from "react-hook-form";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type AnyRecord = Record<string, any>;
-
 interface InputProps {
   label?: string;
   name: string;
@@ -13,7 +10,7 @@ interface InputProps {
   icon?: LucideIcon;
   error?: FieldError | string;
   hint?: string;
-  register?: UseFormRegister<AnyRecord>;
+  register?: UseFormRegister<any>;
   registerOptions?: RegisterOptions;
   value?: string;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;

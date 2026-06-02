@@ -34,8 +34,8 @@ const testimonials = [
 ]
 
 export default function Testimonials() {
-  const scrollContainerRef = useRef(null)
-  const cardRefs = useRef([])
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null)
+  const cardRefs = useRef<(HTMLElement | null)[]>([])
   const { activeIndex, scrollTo } = useCarousel({
     items: testimonials,
     containerRef: scrollContainerRef,

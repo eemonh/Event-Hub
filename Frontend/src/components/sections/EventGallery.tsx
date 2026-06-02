@@ -89,13 +89,13 @@ const FALLBACK_GALLERY_ITEMS = [
 
 export default function EventGallery() {
   const { data } = useEvents({ limit: 6 })
-  const [activeItemId, setActiveItemId] = useState(null)
-  const closeButtonRef = useRef(null)
-  const previouslyFocusedElement = useRef(null)
+  const [activeItemId, setActiveItemId] = useState<string | null>(null)
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null)
+  const previouslyFocusedElement = useRef<HTMLElement | null>(null)
 
   const galleryItems = useMemo(() => {
-    if (data?.events?.length > 0) {
-      return data.events.map((event, index) => ({
+    if (data?.events && data.events.length > 0) {
+      return data.events.map((event: any, index: number) => ({
         id: event._id || event.id,
         title: event.name,
         category: event.category,
@@ -114,8 +114,8 @@ export default function EventGallery() {
   const activeIndex = visibleItems.findIndex((item) => item.id === activeItemId)
   const activeItem = activeIndex >= 0 ? visibleItems[activeIndex] : null
 
-  const openLightbox = (itemId) => {
-    previouslyFocusedElement.current = document.activeElement
+  const openLightbox = (itemId: string) => {
+    previouslyFocusedElement.current = document.activeElement as HTMLElement | null
     setActiveItemId(itemId)
   }
 
@@ -127,13 +127,13 @@ export default function EventGallery() {
   const showPreviousItem = useCallback(() => {
     if (activeIndex < 0) return
     const previousIndex = activeIndex === 0 ? visibleItems.length - 1 : activeIndex - 1
-    setActiveItemId(visibleItems[previousIndex].id)
+    setActiveItemId(visibleItems[previousIndex].id ?? null)
   }, [activeIndex, visibleItems])
 
   const showNextItem = useCallback(() => {
     if (activeIndex < 0) return
     const nextIndex = activeIndex === visibleItems.length - 1 ? 0 : activeIndex + 1
-    setActiveItemId(visibleItems[nextIndex].id)
+    setActiveItemId(visibleItems[nextIndex].id ?? null)
   }, [activeIndex, visibleItems])
 
   useEffect(() => {
@@ -142,7 +142,7 @@ export default function EventGallery() {
     document.body.style.overflow = "hidden"
     closeButtonRef.current?.focus()
 
-    const handleKeyDown = (event) => {
+    const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") closeLightbox()
       if (event.key === "ArrowLeft") showPreviousItem()
       if (event.key === "ArrowRight") showNextItem()
@@ -230,7 +230,9 @@ export default function EventGallery() {
   )
 }
 
-const StandardGalleryGrid = ({ items, onOpen, className = "" }) => {
+const StandardGalleryGrid = ({ items, onOpen, className = "" }: {
+  items: any[]; onOpen: (id: string) => void; className?: string
+}) => {
   return (
     <div className={`mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:auto-rows-[230px] lg:grid-cols-3 ${className}`}>
       {items.map((item, index) => (
@@ -240,7 +242,9 @@ const StandardGalleryGrid = ({ items, onOpen, className = "" }) => {
   )
 }
 
-const DesktopCollage = ({ items, onOpen }) => {
+const DesktopCollage = ({ items, onOpen }: {
+  items: any[]; onOpen: (id: string) => void
+}) => {
   const collageItems = items.slice(0, 6)
   const [leftTop, leftBottom, rightTop, rightMiddleLeft, rightMiddleRight, rightBottom] = collageItems
 
@@ -262,7 +266,9 @@ const DesktopCollage = ({ items, onOpen }) => {
   )
 }
 
-const GalleryCard = ({ item, isFeatured = false, onOpen, priority, variant = "grid" }) => {
+const GalleryCard = ({ item, isFeatured = false, onOpen, priority, variant = "grid" }: {
+  item: any; isFeatured?: boolean; onOpen: () => void; priority: number; variant?: "grid" | "collage"
+}) => {
   const isCollage = variant === "collage"
 
   return (

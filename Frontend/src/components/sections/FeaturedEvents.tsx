@@ -116,7 +116,7 @@ const mockUserSignals = {
 const categoryToSlug = (category = "") =>
   category.toLowerCase().replace(/&/g, "").replace(/\s+/g, "-")
 
-const eventMatchesFilter = (event, selectedFilter) => {
+const eventMatchesFilter = (event: typeof featuredEvents[0], selectedFilter: string) => {
   if (selectedFilter === "for-you" || selectedFilter === "all") {
     return true
   }
@@ -134,7 +134,7 @@ const eventMatchesFilter = (event, selectedFilter) => {
   )
 }
 
-const getRecommendationScore = (event, userSignals) => {
+const getRecommendationScore = (event: typeof featuredEvents[0], userSignals: typeof mockUserSignals) => {
   const eventTags = event.tags ?? []
   const eventAudience = event.audience ?? []
   let score = event.popularity ?? 0
@@ -166,21 +166,25 @@ const getRankedFeaturedEvents = ({
   events,
   selectedFilter,
   userSignals = mockUserSignals,
+}: {
+  events: typeof featuredEvents;
+  selectedFilter: string;
+  userSignals?: typeof mockUserSignals;
 }) => {
-  const matchingEvents = events.filter((event) =>
+  const matchingEvents = events.filter((event: typeof featuredEvents[0]) =>
     eventMatchesFilter(event, selectedFilter)
   )
   const sourceEvents = matchingEvents.length > 0 ? matchingEvents : events
 
   return sourceEvents
-    .map((event, index) => ({
+    .map((event: typeof featuredEvents[0], index: number) => ({
       ...event,
       score:
         selectedFilter === "for-you"
           ? getRecommendationScore(event, userSignals)
           : (event.popularity ?? 0) - index,
     }))
-    .sort((first, second) => second.score - first.score)
+    .sort((first: { score: number }, second: { score: number }) => second.score - first.score)
 }
 
 const FeaturedEvents = () => {

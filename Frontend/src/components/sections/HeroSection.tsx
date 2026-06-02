@@ -32,8 +32,8 @@ const HeroSection = () => {
     return featuredIndex >= 0 ? featuredIndex : 0
   }, [])
 
-  const scrollContainerRef = useRef(null)
-  const cardRefs = useRef([])
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null)
+  const cardRefs = useRef<(HTMLElement | null)[]>([])
   const { activeIndex } = useCarousel({
     items: heroEvents,
     containerRef: scrollContainerRef,

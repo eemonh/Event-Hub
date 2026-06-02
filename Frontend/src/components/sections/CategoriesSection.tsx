@@ -146,17 +146,17 @@ const MOBILE_PAGE_SIZE = 1
 const TABLET_PAGE_SIZE = 2
 const DESKTOP_PAGE_SIZE = 3
 
-const chunkCategories = (items, pageSize) => {
+const chunkCategories = (items: any[], pageSize: number) => {
   return Array.from({ length: Math.ceil(items.length / pageSize) }, (_, index) =>
     items.slice(index * pageSize, index * pageSize + pageSize)
   )
 }
 
 const CategoriesSection = () => {
-  const mobileScrollRef = useRef(null)
-  const tabletScrollRef = useRef(null)
-  const mobilePageRefs = useRef([])
-  const tabletPageRefs = useRef([])
+  const mobileScrollRef = useRef<HTMLDivElement | null>(null)
+  const tabletScrollRef = useRef<HTMLDivElement | null>(null)
+  const mobilePageRefs = useRef<(HTMLElement | null)[]>([])
+  const tabletPageRefs = useRef<(HTMLElement | null)[]>([])
   const [activeDesktopPage, setActiveDesktopPage] = useState(0)
 
   const mobilePages = useMemo(
@@ -193,7 +193,7 @@ const CategoriesSection = () => {
     itemRefs: tabletPageRefs,
   })
 
-  const goToDesktopPage = (pageIndex) => {
+  const goToDesktopPage = (pageIndex: number) => {
     setActiveDesktopPage(
       Math.min(Math.max(pageIndex, 0), desktopPages.length - 1)
     )
@@ -309,6 +309,8 @@ const PaginationDots = ({
   activePage,
   onPageChange,
   className = "",
+}: {
+  pages: any[]; activePage: number; onPageChange: (page: number) => void; className?: string
 }) => {
   return (
     <div
@@ -332,7 +334,9 @@ const PaginationDots = ({
   )
 }
 
-const CategoryCard = ({ item, className = "", refCallback }) => {
+const CategoryCard = ({ item, className = "", refCallback }: {
+  item: any; className?: string; refCallback?: React.Ref<HTMLAnchorElement>
+}) => {
   return (
     <Link
       ref={refCallback}
@@ -345,7 +349,7 @@ const CategoryCard = ({ item, className = "", refCallback }) => {
           <div
             className={`flex h-12 w-12 items-center justify-center rounded-lg transition-transform duration-300 group-hover:-translate-y-1 ${item.iconBg}`}
           >
-            {iconMap[item.iconName]}
+            {iconMap[item.iconName as keyof typeof iconMap]}
           </div>
 
           <span

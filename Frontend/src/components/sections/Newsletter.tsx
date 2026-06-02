@@ -5,20 +5,25 @@ import Button from "../ui/Button"
 import Input from "../ui/Input"
 import SectionHeading from "../ui/SectionHeading"
 
+interface NewsletterForm {
+  email: string;
+  interest: string;
+}
+
 export default function Newsletter() {
   const [isSuccess, setIsSuccess] = useState(false)
   const {
     register,
     handleSubmit,
     formState: { isSubmitting, errors },
-  } = useForm({
+  } = useForm<NewsletterForm>({
     defaultValues: {
       email: "",
       interest: "",
     },
   })
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: NewsletterForm) => {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1500))
     console.log("Newsletter submission:", data)
