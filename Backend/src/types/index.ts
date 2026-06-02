@@ -81,13 +81,6 @@ export interface IUpvote extends Document {
   upvotedAt: Date;
 }
 
-export interface IPopulatedUser {
-  _id: Types.ObjectId;
-  name: string;
-  email: string;
-  avatar?: string;
-}
-
 // Extend Express Request namespace globally to support req.user
 declare global {
   namespace Express {
