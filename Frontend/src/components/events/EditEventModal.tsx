@@ -29,23 +29,25 @@ export default function EditEventModal({ eventId, isOpen, onClose }: EditEventMo
 
   const event = data?.event
   const showForm = isOpen && !!event
-  const formInitialData = event ? {
-    name: event.name || "",
-    type: event.type || "",
-    category: event.category || "",
-    startDate: event.startDate?.slice(0, 10) || "",
-    startTime: event.startTime || "",
-    endDate: event.endDate?.slice(0, 10) || "",
-    endTime: event.endTime || "",
-    venue: event.venue || "",
-    coverImage: event.coverImage || "",
-    description: event.description || "",
-    capacity: event.capacity?.toString() || "",
-    price: event.price?.toString() || "0",
-    status: (event.status as "draft" | "published" | "cancelled") || "published",
-    subtitle: event.subtitle || "",
-    schedule: event.schedule || [],
-  } : undefined
+  const formInitialData = event
+    ? {
+        name: event.name || "",
+        type: event.type || "",
+        category: event.category || "",
+        startDate: event.startDate?.slice(0, 10) || "",
+        startTime: event.startTime || "",
+        endDate: event.endDate?.slice(0, 10) || "",
+        endTime: event.endTime || "",
+        venue: event.venue || "",
+        coverImage: event.coverImage || "",
+        description: event.description || "",
+        capacity: event.capacity,
+        price: event.price,
+        status: (event.status as "draft" | "published" | "cancelled") || "published",
+        subtitle: event.subtitle || "",
+        schedule: event.schedule || [],
+      }
+    : undefined;
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg">

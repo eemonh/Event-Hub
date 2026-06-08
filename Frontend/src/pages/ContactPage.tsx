@@ -4,8 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { submitContact } from "../services/contact";
 import toast from "react-hot-toast";
-import { Send, Loader2 } from "lucide-react";
 import type { ContactFormData } from "../types";
+import Input from "../components/ui/Input";
+import Textarea from "../components/ui/Textarea";
+import Button from "../components/ui/Button";
 
 export default function ContactPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -38,18 +40,9 @@ export default function ContactPage() {
   };
 
   const faqs = [
-    {
-      question: "How quickly do you respond to support requests?",
-      answer: "We aim to respond to all inquiries within 24 hours during normal business days. For urgent matters regarding an ongoing event, please use our emergency contact line provided in your organizer dashboard."
-    },
-    {
-      question: "Can I update my event details after publishing?",
-      answer: "Yes, you can edit most event details at any time from your dashboard. Changes will reflect instantly on the public event page."
-    },
-    {
-      question: "Do you offer custom enterprise solutions?",
-      answer: "Absolutely. We offer tailored packages for large-scale organizations, including dedicated support, custom integrations, and volume pricing."
-    }
+    { question: "How quickly do you respond to support requests?", answer: "We aim to respond to all inquiries within 24 hours during normal business days. For urgent matters regarding an ongoing event, please use our emergency contact line provided in your organizer dashboard." },
+    { question: "Can I update my event details after publishing?", answer: "Yes, you can edit most event details at any time from your dashboard. Changes will reflect instantly on the public event page." },
+    { question: "Do you offer custom enterprise solutions?", answer: "Absolutely. We offer tailored packages for large-scale organizations, including dedicated support, custom integrations, and volume pricing." },
   ];
 
   const toggleFaq = (index: number) => {
@@ -58,113 +51,64 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans px-4 py-10 sm:py-16 sm:px-6 lg:px-8">
-      {/* Header Section */}
       <div className="max-w-3xl mx-auto text-center mb-16">
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-primary tracking-tight mb-4">
-          Get in Touch
-        </h1>
-        <p className="text-base text-slate-500 font-medium">
-          We'd love to hear from you. Please fill out this form or use our contact details below.
-        </p>
+        <h1 className="text-4xl sm:text-5xl font-extrabold text-primary tracking-tight mb-4">Get in Touch</h1>
+        <p className="text-base text-slate-500 font-medium">We'd love to hear from you. Please fill out this form or use our contact details below.</p>
       </div>
 
-      {/* Main Grid Layout */}
       <div className="max-w-6xl mx-auto grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-[2fr_1fr] lg:gap-6 mb-24">
-        
-        {/* Contact Form Card */}
         <div className="bg-white p-8 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100">
           <h2 className="text-xl font-bold text-slate-900 mb-6">Send us a Message</h2>
-          
+
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-semibold text-slate-500 mb-2">Name</label>
-                <input
-                  type="text"
-                  placeholder="Your Name"
-                  {...register("name")}
-                  className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition-all ${
-                    errors.name ? "border-red-400 ring-1 ring-red-400" : "border-slate-200"
-                  }`}
-                />
-                {errors.name && (
-                  <p className="mt-1.5 text-sm text-red-500 font-medium">{errors.name.message}</p>
-                )}
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-slate-500 mb-2">Email</label>
-                <input
-                  type="email"
-                  placeholder="your@email.com"
-                  {...register("email")}
-                  className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition-all ${
-                    errors.email ? "border-red-400 ring-1 ring-red-400" : "border-slate-200"
-                  }`}
-                />
-                {errors.email && (
-                  <p className="mt-1.5 text-sm text-red-500 font-medium">{errors.email.message}</p>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-slate-500 mb-2">Subject</label>
-              <input
-                type="text"
-                placeholder="How can we help?"
-                {...register("subject")}
-                className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition-all ${
-                  errors.subject ? "border-red-400 ring-1 ring-red-400" : "border-slate-200"
-                }`}
+              <Input
+                label="Name"
+                name="name"
+                placeholder="Your Name"
+                error={errors.name}
+                register={register}
+                fullWidth
               />
-              {errors.subject && (
-                <p className="mt-1.5 text-sm text-red-500 font-medium">{errors.subject.message}</p>
-              )}
+              <Input
+                label="Email"
+                name="email"
+                type="email"
+                placeholder="your@email.com"
+                error={errors.email}
+                register={register}
+                fullWidth
+              />
             </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-slate-500 mb-2">Message</label>
-              <textarea
-                rows={5}
-                placeholder="Your message here..."
-                {...register("message")}
-                className={`w-full px-4 py-3 bg-slate-50 border rounded-xl text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent transition-all resize-none ${
-                  errors.message ? "border-red-400 ring-1 ring-red-400" : "border-slate-200"
-                }`}
-              ></textarea>
-              {errors.message && (
-                <p className="mt-1.5 text-sm text-red-500 font-medium">{errors.message.message}</p>
-              )}
-            </div>
+            <Input
+              label="Subject"
+              name="subject"
+              placeholder="How can we help?"
+              error={errors.subject}
+              register={register}
+              fullWidth
+            />
 
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="inline-flex items-center justify-center bg-primary hover:bg-primary-hover disabled:opacity-60 disabled:cursor-not-allowed text-white font-semibold py-3.5 px-6 rounded-xl transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary w-full sm:w-auto"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Sending...
-                </>
-              ) : (
-                <>
-                  Send Message
-                  <Send className="w-4 h-4 ml-2" />
-                </>
-              )}
-            </button>
+            <Textarea
+              label="Message"
+              name="message"
+              placeholder="Your message here..."
+              rows={5}
+              error={errors.message}
+              register={register}
+              fullWidth
+            />
+
+            <Button type="submit" size="lg" loading={isSubmitting} showTextWhileLoading fullWidth={false}>Send Message</Button>
           </form>
         </div>
 
-        {/* Right Side Column (Info + Map) */}
         <div className="flex flex-col gap-5 lg:gap-6">
-          {/* Contact Information */}
           <div className="bg-white p-8 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100">
             <h2 className="text-xl font-bold text-slate-900 mb-6">Contact Information</h2>
-            
+
             <div className="space-y-6">
-              {/* Email */}
               <div className="flex items-start space-x-4">
                 <div className="flex-shrink-0 p-3 bg-primary/10 rounded-xl text-primary">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -177,7 +121,6 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              {/* Phone */}
               <div className="flex items-start space-x-4">
                 <div className="flex-shrink-0 p-3 bg-primary/10 rounded-xl text-primary">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -190,7 +133,6 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              {/* Office */}
               <div className="flex items-start space-x-4">
                 <div className="flex-shrink-0 p-3 bg-primary/10 rounded-xl text-primary">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -208,7 +150,6 @@ export default function ContactPage() {
             </div>
           </div>
 
-          {/* Map Mockup Card */}
           <div className="bg-white p-8 rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.03)] border border-slate-100">
             <h2 className="text-xl font-bold text-slate-900 mb-6">Our Location</h2>
             <div className="relative overflow-hidden rounded-xl bg-[#E8ECEF] h-[200px]">
@@ -227,21 +168,17 @@ export default function ContactPage() {
             </div>
           </div>
         </div>
-
       </div>
 
-      {/* FAQ Section */}
       <div className="max-w-3xl mx-auto">
-        <h2 className="text-3xl font-extrabold text-center text-slate-900 mb-10">
-          Frequently Asked Questions
-        </h2>
-        
+        <h2 className="text-3xl font-extrabold text-center text-slate-900 mb-10">Frequently Asked Questions</h2>
+
         <div className="space-y-4">
           {faqs.map((faq, index) => {
             const isOpen = openFaq === index;
             return (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className="bg-white border border-slate-100 rounded-xl shadow-[0_2px_12px_rgba(0,0,0,0.015)] overflow-hidden transition-all duration-200"
               >
                 <button
@@ -249,17 +186,17 @@ export default function ContactPage() {
                   className="w-full flex items-center justify-between text-left p-6 font-bold text-slate-800 hover:text-slate-900 focus:outline-none transition-colors"
                 >
                   <span className="pr-4">{faq.question}</span>
-                  <svg 
-                    className={`w-5 h-5 text-slate-400 flex-shrink-0 transform transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 
-                    fill="none" 
-                    stroke="currentColor" 
+                  <svg
+                    className={`w-5 h-5 text-slate-400 flex-shrink-0 transform transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                
-                <div 
+
+                <div
                   className={`transition-all duration-300 ease-in-out overflow-hidden ${
                     isOpen ? 'max-h-40 border-t border-slate-50' : 'max-h-0'
                   }`}

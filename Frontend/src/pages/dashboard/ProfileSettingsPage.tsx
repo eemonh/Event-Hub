@@ -6,6 +6,8 @@ import { useAuth } from "../../context/AuthContext";
 import { useBreadcrumbs } from "../../context/BreadcrumbContext";
 import { updateProfile } from "../../services/auth";
 import { changePassword } from "../../services/auth";
+import Input from "./Input";
+import Button from "./Button";
 
 const CATEGORIES = [
   "Technology", "Design", "Business", "Startup", "Music",
@@ -93,23 +95,21 @@ export default function ProfileSettingsPage() {
             <h2 className="text-lg font-bold text-gray-900 mb-3">Personal Information</h2>
             <hr className="border-gray-100 mb-6" />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6 max-w-3xl">
-              <div>
-                <label className="block text-xs font-bold text-gray-800 mb-2">Full Name</label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/50 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-violet-700/50 focus:border-violet-700 transition-all"
-                />
-              </div>
+              <Input
+                label="Full Name"
+                name="fullName"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                register={undefined}
+                fullWidth
+              />
               <div>
                 <label className="block text-xs font-bold text-gray-800 mb-2">Email Address</label>
                 <input
                   type="email"
                   value={user?.email || ""}
-                  readOnly
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white text-gray-600 text-sm focus:outline-none cursor-default"
+                  disabled
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/50 text-gray-600 text-sm focus:outline-none cursor-not-allowed disabled:opacity-60"
                 />
                 <div className="flex items-center text-xs text-gray-500 mt-2">
                   <Info className="w-3.5 h-3.5 mr-1.5" />
@@ -125,30 +125,22 @@ export default function ProfileSettingsPage() {
             <p className="text-sm text-gray-500 mb-4">Select categories you're interested in. We'll recommend events based on your choices.</p>
             <div className="flex flex-wrap gap-3 max-w-3xl">
               {CATEGORIES.map((cat) => (
-                <button
+                <Button
                   key={cat}
                   type="button"
+                  variant="tertiary"
+                  size="sm"
                   onClick={() => toggleInterest(cat)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                    interests.includes(cat)
-                      ? "bg-violet-700 text-white shadow-sm"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                  }`}
+                  className="rounded-full"
                 >
                   {cat}
-                </button>
+                </Button>
               ))}
             </div>
           </div>
 
           <div className="border-t border-gray-100 pt-6 flex justify-end">
-            <button
-              type="submit"
-              disabled={saving}
-              className="bg-violet-700 hover:bg-violet-800 text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-colors shadow-sm disabled:opacity-50"
-            >
-              {saving ? "Saving..." : "Save Changes"}
-            </button>
+            <Button type="submit" loading={saving} showTextWhileLoading size="md">Save Changes</Button>
           </div>
         </form>
       </div>
@@ -158,45 +150,36 @@ export default function ProfileSettingsPage() {
           <h2 className="text-lg font-bold text-gray-900 mb-3">Change Password</h2>
           <hr className="border-gray-100 mb-6" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-x-6 gap-y-6 max-w-3xl">
-            <div>
-              <label className="block text-xs font-bold text-gray-800 mb-2">Current Password</label>
-              <input
-                type="password"
-                value={currentPassword}
-                onChange={(e) => setCurrentPassword(e.target.value)}
-                required
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/50 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-violet-700/50 focus:border-violet-700 transition-all"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-gray-800 mb-2">New Password</label>
-              <input
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                required
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/50 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-violet-700/50 focus:border-violet-700 transition-all"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-gray-800 mb-2">Confirm New Password</label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/50 text-gray-900 text-sm focus:outline-none focus:ring-2 focus:ring-violet-700/50 focus:border-violet-700 transition-all"
-              />
-            </div>
+            <Input
+              label="Current Password"
+              name="currentPassword"
+              type="password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              register={undefined}
+              fullWidth
+            />
+            <Input
+              label="New Password"
+              name="newPassword"
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              register={undefined}
+              fullWidth
+            />
+            <Input
+              label="Confirm New Password"
+              name="confirmPassword"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              register={undefined}
+              fullWidth
+            />
           </div>
           <div className="border-t border-gray-100 pt-6 mt-6 flex justify-end">
-            <button
-              type="submit"
-              disabled={changingPassword}
-              className="bg-violet-700 hover:bg-violet-800 text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-colors shadow-sm disabled:opacity-50"
-            >
-              {changingPassword ? "Changing..." : "Update Password"}
-            </button>
+            <Button type="submit" loading={changingPassword} showTextWhileLoading size="md">Update Password</Button>
           </div>
         </form>
       </div>

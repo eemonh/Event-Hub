@@ -1,257 +1,294 @@
-import { useState, type ChangeEvent, type FormEvent } from "react"
-import { ChevronDown, Calendar, MapPin, Plus, Trash2, Loader2 } from "lucide-react"
-import type { EventFormData, ScheduleItem } from "../../types"
+import { useState, useCallback, useMemo } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ChevronDown, MapPin, Plus, Trash2 } from "lucide-react";
+import type { EventFormData, ScheduleItem } from "../../types";
+import Input from "./Input";
+import Textarea from "./Textarea";
+import Button from "./Button";
+import { eventFormSchema, EVENT_TYPE_OPTIONS, CATEGORY_OPTIONS, buildEventPayload, toInitialFormState } from "../../utils/eventSchemas";
+import type { EventFormValues } from "../../utils/eventSchemas";
 
-const CATEGORIES = ["Technology", "Design", "Business", "Startup", "Music", "Arts", "Health", "Sports", "Education", "Food & Drink", "Networking", "Other"]
-
-type EventFormState = Omit<EventFormData, "capacity" | "price" | "schedule"> & {
-  capacity: string
-  price: string
-  schedule: ScheduleItem[]
-}
-
-const defaultForm: EventFormState = {
-  name: "", type: "", category: "", startDate: "", startTime: "",
-  endDate: "", endTime: "", venue: "", coverImage: "", description: "",
-  capacity: "", price: "0", status: "published",
-  subtitle: "", schedule: [],
-}
+const CATEGORIES = CATEGORY_OPTIONS;
 
 interface EventFormProps {
-  initialData?: Partial<EventFormState>
-  onSubmit: (data: EventFormData) => void
-  isSubmitting?: boolean
-  onCancel?: () => void
+  initialData?: Partial<EventFormValues> & { schedule?: ScheduleItem[] };
+  onSubmit: (data: EventFormData) => void;
+  isSubmitting?: boolean;
+  onCancel?: () => void;
 }
 
 export default function EventForm({ initialData, onSubmit, isSubmitting = false, onCancel }: EventFormProps) {
-  const [formData, setFormData] = useState({ ...defaultForm, ...initialData })
+  const [scheduleItems, setScheduleItems] = useState<ScheduleItem[]>(() => initialData?.schedule ?? []);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
-  }
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting: formSubmitting },
+  } = useForm<EventFormValues>({
+    resolver: zodResolver(eventFormSchema),
+    defaultValues: useMemo(() => toInitialFormState(initialData), [initialData]),
+  });
 
-  const handleScheduleChange = (index: number, field: keyof ScheduleItem, value: string) => {
-    setFormData((prev) => {
-      const schedule = [...prev.schedule]
-      schedule[index] = { ...schedule[index], [field]: value }
-      return { ...prev, schedule }
-    })
-  }
+  const submitting = isSubmitting || formSubmitting;
 
-  const addScheduleItem = () => {
-    setFormData((prev) => ({
-      ...prev,
-      schedule: [...prev.schedule, { day: "", time: "", title: "", description: "" }],
-    }))
-  }
+  const handleScheduleChange = useCallback((index: number, field: keyof ScheduleItem, value: string) => {
+    setScheduleItems((prev) => {
+      const next = [...prev];
+      next[index] = { ...next[index], [field]: value };
+      return next;
+    });
+  }, []);
 
-  const removeScheduleItem = (index: number) => {
-    setFormData((prev) => ({
-      ...prev,
-      schedule: prev.schedule.filter((_, i) => i !== index),
-    }))
-  }
+  const addScheduleItem = useCallback(() => {
+    setScheduleItems((prev) => [...prev, { day: "", time: "", title: "", description: "" }]);
+  }, []);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    if (!formData.name || !formData.type || !formData.startDate || !formData.venue || !formData.category || !formData.description) return
-    const payload = {
-      name: formData.name, type: formData.type, category: formData.category,
-      startDate: formData.startDate, endDate: formData.endDate || formData.startDate,
-      startTime: formData.startTime, endTime: formData.endTime,
-      venue: formData.venue, coverImage: formData.coverImage, description: formData.description,
-      capacity: parseInt(formData.capacity) || 100, price: parseFloat(formData.price) || 0,
-      status: formData.status,
-      subtitle: formData.subtitle, schedule: formData.schedule,
-    }
-    onSubmit(payload)
-  }
+  const removeScheduleItem = useCallback((index: number) => {
+    setScheduleItems((prev) => prev.filter((_, i) => i !== index));
+  }, []);
+
+  const handleFormSubmit = useCallback(
+    (values: EventFormValues) => {
+      const payload = buildEventPayload(values, scheduleItems);
+      onSubmit(payload);
+    },
+    [scheduleItems, onSubmit],
+  );
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Input
+          label="Event Name *"
+          name="name"
+          placeholder="Enter event name"
+          error={errors.name}
+          register={register}
+          fullWidth
+        />
         <div>
-          <label className="block text-xs font-bold text-gray-500 mb-2">Event Name *</label>
-          <input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Enter event name" required
-            className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/30 text-gray-900 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-gray-400 transition-all" />
-        </div>
-        <div className="relative">
           <label className="block text-xs font-bold text-gray-500 mb-2">Event Type *</label>
           <div className="relative">
-            <select name="type" value={formData.type} onChange={handleChange} required
-              className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/30 text-gray-900 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 appearance-none transition-all cursor-pointer">
+            <select
+              {...register("type")}
+              className="w-full appearance-none rounded-lg border border-gray-200 bg-gray-50/30 px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all cursor-pointer"
+            >
               <option value="" disabled>Select event type</option>
-              <option value="Conference">Conference</option>
-              <option value="Workshop">Workshop</option>
-              <option value="Meetup">Meetup</option>
-              <option value="Webinar">Webinar</option>
-              <option value="Networking">Networking</option>
-              <option value="Concert">Concert</option>
-              <option value="Exhibition">Exhibition</option>
-              <option value="Festival">Festival</option>
-              <option value="Other">Other</option>
+              {EVENT_TYPE_OPTIONS.map((option) => (
+                <option key={option} value={option}>{option}</option>
+              ))}
             </select>
-            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <ChevronDown className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           </div>
+          {errors.type ? <p className="mt-1.5 text-sm text-red-500">{errors.type.message}</p> : null}
         </div>
       </div>
 
       <div>
         <label className="block text-xs font-bold text-gray-500 mb-2">Category *</label>
         <div className="relative">
-          <select name="category" value={formData.category} onChange={handleChange} required
-            className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/30 text-gray-900 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 appearance-none transition-all cursor-pointer">
+          <select
+            {...register("category")}
+            className="w-full appearance-none rounded-lg border border-gray-200 bg-gray-50/30 px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all cursor-pointer"
+          >
             <option value="" disabled>Select category</option>
-            {CATEGORIES.map((cat) => (<option key={cat} value={cat}>{cat}</option>))}
+            {CATEGORIES.map((cat) => (
+              <option key={cat} value={cat}>{cat}</option>
+            ))}
           </select>
-          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+          <ChevronDown className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         </div>
+        {errors.category ? <p className="mt-1.5 text-sm text-red-500">{errors.category.message}</p> : null}
       </div>
 
-      <div>
-        <label className="block text-xs font-bold text-gray-500 mb-2">Subtitle</label>
-        <input type="text" name="subtitle" value={formData.subtitle} onChange={handleChange} placeholder="A short tagline under the title"
-          className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/30 text-gray-900 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-gray-400 transition-all" />
-      </div>
+      <Input
+        label="Subtitle"
+        name="subtitle"
+        placeholder="A short tagline under the title"
+        error={errors.subtitle}
+        register={register}
+        fullWidth
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label className="block text-xs font-bold text-gray-500 mb-2">Start Date *</label>
-          <div className="relative">
-            <input type="date" name="startDate" value={formData.startDate} onChange={handleChange} required
-              className="w-full px-4 py-3 pr-10 rounded-lg border border-gray-200 bg-gray-50/30 text-gray-900 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all" />
-            <Calendar className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-          </div>
+          <input
+            type="date"
+            {...register("startDate")}
+            className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/30 text-gray-900 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
+          />
+          {errors.startDate ? <p className="mt-1.5 text-sm text-red-500">{errors.startDate.message}</p> : null}
         </div>
-        <div>
-          <label className="block text-xs font-bold text-gray-500 mb-2">Start Time</label>
-          <input type="time" name="startTime" value={formData.startTime} onChange={handleChange}
-            className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/30 text-gray-900 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all" />
-        </div>
+        <Input
+          label="Start Time"
+          name="startTime"
+          type="time"
+          error={errors.startTime}
+          register={register}
+          fullWidth
+        />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-xs font-bold text-gray-500 mb-2">End Date</label>
-          <div className="relative">
-            <input type="date" name="endDate" value={formData.endDate} onChange={handleChange}
-              className="w-full px-4 py-3 pr-10 rounded-lg border border-gray-200 bg-gray-50/30 text-gray-900 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all" />
-            <Calendar className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-          </div>
-        </div>
-        <div>
-          <label className="block text-xs font-bold text-gray-500 mb-2">End Time</label>
-          <input type="time" name="endTime" value={formData.endTime} onChange={handleChange}
-            className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/30 text-gray-900 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all" />
-        </div>
+        <Input
+          label="End Date"
+          name="endDate"
+          type="date"
+          error={errors.endDate}
+          register={register}
+          fullWidth
+        />
+        <Input
+          label="End Time"
+          name="endTime"
+          type="time"
+          error={errors.endTime}
+          register={register}
+          fullWidth
+        />
       </div>
 
       <div>
         <label className="block text-xs font-bold text-gray-500 mb-2">Venue / Location *</label>
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"><MapPin className="w-4 h-4 text-gray-400" /></div>
-          <input type="text" name="venue" value={formData.venue} onChange={handleChange} placeholder="Search for a venue or address" required
-            className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-200 bg-gray-50/30 text-gray-900 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-gray-400 transition-all" />
+          <MapPin className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Input
+            name="venue"
+            placeholder="Search for a venue or address"
+            error={errors.venue}
+            register={register}
+            fullWidth
+            inputClassName="pl-10"
+          />
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div>
-          <label className="block text-xs font-bold text-gray-500 mb-2">Capacity</label>
-          <input type="number" name="capacity" value={formData.capacity} onChange={handleChange} placeholder="e.g. 100" min="1"
-            className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/30 text-gray-900 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-gray-400 transition-all" />
-        </div>
-        <div>
-          <label className="block text-xs font-bold text-gray-500 mb-2">Price ($)</label>
-          <input type="number" name="price" value={formData.price} onChange={handleChange} placeholder="0 = Free" min="0" step="0.01"
-            className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/30 text-gray-900 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-gray-400 transition-all" />
-        </div>
+        <Input
+          label="Capacity"
+          name="capacity"
+          type="number"
+          placeholder="e.g. 100"
+          error={errors.capacity}
+          register={register}
+          registerOptions={{ valueAsNumber: true }}
+          fullWidth
+        />
+        <Input
+          label="Price ($)"
+          name="price"
+          type="number"
+          placeholder="0 = Free"
+          error={errors.price}
+          register={register}
+          registerOptions={{ valueAsNumber: true }}
+          fullWidth
+        />
         <div>
           <label className="block text-xs font-bold text-gray-500 mb-2">Status</label>
           <div className="relative">
-            <select name="status" value={formData.status} onChange={handleChange}
-              className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/30 text-gray-900 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 appearance-none transition-all cursor-pointer">
+            <select
+              {...register("status")}
+              className="w-full appearance-none rounded-lg border border-gray-200 bg-gray-50/30 px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all cursor-pointer"
+            >
               <option value="published">Published</option>
               <option value="draft">Draft</option>
             </select>
-            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <ChevronDown className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           </div>
         </div>
       </div>
 
-      <div>
-        <label className="block text-xs font-bold text-gray-500 mb-2">Cover Image URL</label>
-        <input type="text" name="coverImage" value={formData.coverImage} onChange={handleChange} placeholder="https://example.com/image.jpg"
-          className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/30 text-gray-900 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-gray-400 transition-all" />
-      </div>
+      <Input
+        label="Cover Image URL"
+        name="coverImage"
+        placeholder="https://example.com/image.jpg"
+        error={errors.coverImage}
+        register={register}
+        fullWidth
+      />
 
-      <div>
-        <label className="block text-xs font-bold text-gray-500 mb-2">Event Description</label>
-        <textarea name="description" value={formData.description} onChange={handleChange} rows={4} placeholder="Provide details about your event..." required
-          className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/30 text-gray-900 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-gray-400 transition-all resize-y"></textarea>
-      </div>
+      <Textarea
+        label="Event Description"
+        name="description"
+        placeholder="Provide details about your event..."
+        rows={4}
+        error={errors.description}
+        register={register}
+        fullWidth
+      />
 
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <label className="block text-xs font-bold text-gray-500">Schedule Highlights</label>
-          <button type="button" onClick={addScheduleItem}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-purple-200 px-3 py-1.5 text-xs font-semibold text-purple-700 hover:bg-purple-50 transition-colors">
-            <Plus size={14} /> Add Item
-          </button>
+          <Button type="button" variant="secondary" size="sm" icon={Plus} onClick={addScheduleItem}>Add Item</Button>
         </div>
-        {formData.schedule.map((item, i) => (
+        {scheduleItems.map((item, i) => (
           <div key={i} className="relative rounded-lg border border-gray-200 bg-gray-50/30 p-4 space-y-3">
-            <button type="button" onClick={() => removeScheduleItem(i)}
-              className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors">
+            <button
+              type="button"
+              onClick={() => removeScheduleItem(i)}
+              className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors"
+            >
               <Trash2 size={16} />
             </button>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-[11px] font-semibold text-gray-400 mb-1">Day</label>
-                <input type="text" value={item.day} onChange={(e) => handleScheduleChange(i, "day", e.target.value)} placeholder="e.g. Day 1"
-                  className="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-gray-400 transition-all" />
+                <input
+                  type="text"
+                  value={item.day}
+                  onChange={(e) => handleScheduleChange(i, "day", e.target.value)}
+                  placeholder="e.g. Day 1"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-gray-400 transition-all"
+                />
               </div>
               <div>
                 <label className="block text-[11px] font-semibold text-gray-400 mb-1">Time</label>
-                <input type="text" value={item.time} onChange={(e) => handleScheduleChange(i, "time", e.target.value)} placeholder="e.g. 09:00 AM"
-                  className="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-gray-400 transition-all" />
+                <input
+                  type="text"
+                  value={item.time}
+                  onChange={(e) => handleScheduleChange(i, "time", e.target.value)}
+                  placeholder="e.g. 09:00 AM"
+                  className="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-gray-400 transition-all"
+                />
               </div>
             </div>
             <div>
               <label className="block text-[11px] font-semibold text-gray-400 mb-1">Title</label>
-              <input type="text" value={item.title} onChange={(e) => handleScheduleChange(i, "title", e.target.value)} placeholder="Session title"
-                className="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-gray-400 transition-all" />
+              <input
+                type="text"
+                value={item.title}
+                onChange={(e) => handleScheduleChange(i, "title", e.target.value)}
+                placeholder="Session title"
+                className="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-gray-400 transition-all"
+              />
             </div>
             <div>
               <label className="block text-[11px] font-semibold text-gray-400 mb-1">Description</label>
-              <textarea value={item.description} onChange={(e) => handleScheduleChange(i, "description", e.target.value)} rows={2} placeholder="Session description"
-                className="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-gray-400 transition-all resize-y"></textarea>
+              <textarea
+                value={item.description}
+                onChange={(e) => handleScheduleChange(i, "description", e.target.value)}
+                rows={2}
+                placeholder="Session description"
+                className="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-gray-400 transition-all resize-y"
+              />
             </div>
           </div>
         ))}
-        {formData.schedule.length === 0 && (
+        {scheduleItems.length === 0 && (
           <p className="text-xs text-gray-400 italic">No schedule items added yet.</p>
         )}
       </div>
 
       {onCancel && (
         <div className="flex justify-end gap-4 border-t border-gray-100 pt-6">
-          {onCancel && (
-            <button type="button" onClick={onCancel}
-              className="px-6 py-2.5 rounded-lg text-sm font-bold text-gray-600 bg-white border border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-colors shadow-sm">
-              Cancel
-            </button>
-          )}
-          <button type="submit" disabled={isSubmitting}
-            className="px-6 py-2.5 rounded-lg text-sm font-bold text-white bg-violet-700 hover:bg-violet-800 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">
-            {isSubmitting ? (
-              <span className="inline-flex items-center gap-2"><Loader2 size={16} className="animate-spin" />Saving...</span>
-            ) : "Save Changes"}
-          </button>
+          <Button type="button" variant="secondary" onClick={onCancel}>Cancel</Button>
+          <Button type="submit" loading={submitting} showTextWhileLoading fullWidth size="lg">Save Changes</Button>
         </div>
       )}
     </form>
-  )
+  );
 }

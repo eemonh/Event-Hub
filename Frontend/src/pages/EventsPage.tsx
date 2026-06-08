@@ -1,11 +1,14 @@
-import { useState } from "react"
+import { useState, type FormEvent } from "react"
 import { useNavigate } from "react-router-dom"
-import { CalendarDays, Search, Loader2 } from "lucide-react"
+import { CalendarDays, Search } from "lucide-react"
 import { useAuth } from "../context/AuthContext"
 import { useEvents, useMyEvents, useSavedEvents } from "../hooks/queries/useEvents"
 import { useRegisterForEvent, useBookmarkEvent, useRemoveBookmark } from "../hooks/mutations/useEventMutations"
 import EventCard from "../components/events/EventCard"
 import { EventGridSkeleton } from "../components/ui/Skeletons"
+import Input from "../components/ui/Input"
+import Button from "../components/ui/Button"
+import { ChevronDown } from "lucide-react"
 
 const CATEGORIES = ["All", "Technology", "Design", "Business", "Startup", "Music", "Arts", "Health", "Sports", "Education", "Food & Drink", "Networking", "Other"]
 
@@ -32,7 +35,7 @@ export default function EventsPage() {
   const registeredIds = new Set((myEventsData?.events || []).map((e) => e._id || e.id))
   const savedIds = new Set((savedData?.events || []).map((e) => e._id || e.id))
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = (e: FormEvent) => {
     e.preventDefault()
     setPage(1)
   }
@@ -78,14 +81,19 @@ export default function EventsPage() {
         </div>
 
         <div className="mb-10 flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-3 shadow-[0_2px_10px_rgba(0,0,0,0.02)] md:flex-row">
-          <form onSubmit={handleSearch}           className="flex flex-grow items-center rounded-xl border border-slate-100 bg-slate-50 px-4 py-2 transition-all focus-within:border-transparent focus-within:ring-2 focus-within:ring-primary">
+          <form onSubmit={handleSearch} className="flex flex-grow items-center rounded-xl border border-slate-100 bg-slate-50 px-4 py-2 transition-all focus-within:border-transparent focus-within:ring-2 focus-within:ring-primary">
             <Search className="mr-3 h-5 w-5 flex-shrink-0 text-slate-400" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+            <Input
+              name="search"
               placeholder="Search events..."
-              className="w-full bg-transparent text-sm text-slate-700 outline-none placeholder:text-slate-400"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value)
+                setPage(1)
+              }}
+              fullWidth={false}
+              inputClassName="border-0 bg-transparent shadow-none focus:ring-0"
+              className="border-0 bg-transparent shadow-none focus-within:ring-0"
             />
           </form>
 
@@ -102,7 +110,7 @@ export default function EventsPage() {
                 ))}
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                <ChevronDown className="h-4 w-4" />
               </div>
             </div>
 
@@ -116,7 +124,7 @@ export default function EventsPage() {
                 <option value="date_desc">Date (Latest)</option>
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                <ChevronDown className="h-4 w-4" />
               </div>
             </div>
 
@@ -131,7 +139,7 @@ export default function EventsPage() {
                 <option value="past">Past</option>
               </select>
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
-                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" /></svg>
+                <ChevronDown className="h-4 w-4" />
               </div>
             </div>
           </div>
@@ -166,14 +174,7 @@ export default function EventsPage() {
 
         {totalPages > 1 && page < totalPages && (
           <div className="flex justify-center">
-            <button
-              onClick={() => setPage((p) => p + 1)}
-              disabled={isFetching}
-              className="inline-flex items-center gap-2 rounded-xl border-2 border-primary bg-transparent px-8 py-3 font-bold text-primary shadow-sm transition-colors hover:bg-primary/5 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {isFetching ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-              Load More Events
-            </button>
+            <Button variant="tertiary" onClick={() => setPage((p) => p + 1)} loading={isFetching}>Load More Events</Button>
           </div>
         )}
       </div>

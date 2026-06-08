@@ -1,10 +1,16 @@
-import { useCallback } from "react";
-import type { FC, ReactNode, MouseEvent } from "react";
+import { useCallback, isValidElement } from "react";
+import type { ReactNode, MouseEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import type { LucideIcon } from "lucide-react";
 import { Button as UntitledButton } from "@/components/base/buttons/button";
 import type { CommonProps } from "@/components/base/buttons/button";
 import { cx } from "@/utils/cx";
+import { isReactComponent } from "@/utils/is-react-component";
+
+/**
+ * Button accepts `to` (React Router navigation) or `href` (anchor navigation).
+ * If both are provided, `to` takes precedence and `href` is ignored.
+ */
 
 type Variant = "primary" | "secondary" | "ghost" | "icon" | "danger";
 type Size = "sm" | "md" | "lg";
@@ -68,8 +74,8 @@ export default function Button({
     [to, isDisabled, navigate, onClick],
   );
 
-  const iconLeading = Icon && iconPosition === "left" ? (Icon as FC<{ className?: string }>) : undefined;
-  const iconTrailing = Icon && iconPosition === "right" ? (Icon as FC<{ className?: string }>) : undefined;
+  const iconLeading = Icon && iconPosition !== "right" && (isValidElement(Icon) || isReactComponent(Icon)) ? Icon : undefined;
+  const iconTrailing = Icon && iconPosition === "right" && (isValidElement(Icon) || isReactComponent(Icon)) ? Icon : undefined;
 
   const combinedClassName = cx(
     variantClassMap[variant],
@@ -90,8 +96,10 @@ export default function Button({
   } satisfies Partial<CommonProps>;
 
   if (href && !to) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return <UntitledButton href={href} onClick={onClick} {...commonProps} {...(nativeProps as any)} />;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return <UntitledButton onClick={handleClick} {...commonProps} {...(nativeProps as any)} />;
 }

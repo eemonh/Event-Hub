@@ -8,6 +8,7 @@ import { useDeleteEvent } from "../../hooks/mutations/useEventMutations"
 import EditEventModal from "../../components/events/EditEventModal"
 import StatusBadge from "../../components/ui/StatusBadge"
 import { DashboardTableSkeleton } from "../../components/ui/Skeletons"
+import Button from "../../components/ui/Button"
 
 const icons = [Briefcase, Globe, Rocket, Users]
 
@@ -77,9 +78,15 @@ export default function ManageEventsPage() {
                   <div className="px-5 py-4 border-t border-gray-100 flex items-center justify-between">
                     <StatusBadge status={displayStatus} />
                     <div className="flex items-center gap-1">
-                      <button onClick={() => navigate('/events/' + (event._id || event.id || ""))} className="p-1.5 rounded-md text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors" title="View"><Eye className="w-4 h-4" /></button>
-                      <button onClick={() => setEditEventId(event._id || event.id || null)} className="p-1.5 rounded-md text-gray-400 hover:text-violet-600 hover:bg-violet-50 transition-colors" title="Edit"><Pencil className="w-4 h-4" /></button>
-                      <button onClick={() => handleDelete(event._id || event.id || "")} className="p-1.5 rounded-md text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors" title="Delete"><Trash2 className="w-4 h-4" /></button>
+                      <Button variant="tertiary" size="icon" onClick={() => navigate('/events/' + (event._id || event.id || ""))} className="size-9 hover:text-blue-600 hover:bg-blue-50">
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                      <Button variant="tertiary" size="icon" onClick={() => setEditEventId(event._id || event.id || null)} className="size-9 hover:text-violet-600 hover:bg-violet-50">
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                      <Button variant="tertiary" size="icon" onClick={() => handleDelete(event._id || event.id || "")} className="size-9 hover:text-red-600 hover:bg-red-50">
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </div>
                   </div>
                 </div>

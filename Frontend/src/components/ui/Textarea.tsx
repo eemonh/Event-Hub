@@ -1,56 +1,50 @@
-import { useCallback, isValidElement, type ChangeEvent, type FocusEvent, type ReactNode } from "react";
+import { useCallback, type ChangeEvent, type FocusEvent } from "react";
 import type { FieldError, UseFormRegister, RegisterOptions } from "react-hook-form";
-import type { LucideIcon } from "lucide-react";
-import { Input as UntitledInput } from "@/components/base/input/input";
 import { Label } from "@/components/base/input/label";
+import { HintText } from "@/components/base/input/hint-text";
 import { cx } from "@/utils/cx";
-import { isReactComponent } from "@/utils/is-react-component";
 
-interface InputProps {
+interface TextareaProps {
   label?: string;
   name: string;
-  type?: string;
+  rows?: number;
   placeholder?: string;
-  icon?: LucideIcon;
   error?: FieldError | string;
   hint?: string;
   register?: UseFormRegister<Record<string, unknown>>;
   registerOptions?: RegisterOptions;
   value?: string;
-  onChange?: React.ChangeEventHandler<HTMLInputElement>;
-  rightElement?: ReactNode;
+  onChange?: React.ChangeEventHandler<HTMLTextAreaElement>;
   disabled?: boolean;
   fullWidth?: boolean;
   className?: string;
   inputClassName?: string;
 }
 
-function buildChangeEvent(value: string, name: string): ChangeEvent<HTMLInputElement> {
-  return { target: { value, name } } as ChangeEvent<HTMLInputElement>;
+function buildChangeEvent(value: string, name: string): ChangeEvent<HTMLTextAreaElement> {
+  return { target: { value, name } } as ChangeEvent<HTMLTextAreaElement>;
 }
 
-function buildBlurEvent(name: string): FocusEvent<HTMLInputElement> {
-  return { target: { name } } as FocusEvent<HTMLInputElement>;
+function buildBlurEvent(name: string): FocusEvent<HTMLTextAreaElement> {
+  return { target: { name } } as FocusEvent<HTMLTextAreaElement>;
 }
 
-export default function Input({
+export default function Textarea({
   label,
   name,
-  type = "text",
+  rows = 4,
   placeholder,
-  icon: Icon,
   error,
   hint,
   register: registerFn,
   registerOptions,
   value,
   onChange: externalOnChange,
-  rightElement,
   disabled = false,
   fullWidth = true,
   className = "",
   inputClassName = "",
-}: InputProps) {
+}: TextareaProps) {
   const isInvalid = !!error;
   const errorMessage = typeof error === "string" ? error : error?.message;
 
@@ -81,26 +75,25 @@ export default function Input({
       fullWidth && "w-full",
       className,
     )}>
-      {(label || rightElement) && (
-        <div className="mb-1.5 flex items-center justify-between">
-          {label && <Label isInvalid={isInvalid}>{label}</Label>}
-          {rightElement}
-        </div>
-      )}
-      <UntitledInput
+      {label && <Label isInvalid={isInvalid}>{label}</Label>}
+      <textarea
         name={registerResult?.name || name}
-        type={type}
+        rows={rows}
         placeholder={placeholder}
-        icon={Icon && (isValidElement(Icon) || isReactComponent(Icon)) ? Icon : undefined}
-        isInvalid={isInvalid}
-        isDisabled={disabled}
-        hint={errorMessage || hint}
+        disabled={disabled}
+        value={registerResult ? undefined : value}
         onChange={handleChange}
         onBlur={handleBlur}
         aria-label={label || placeholder}
-        inputClassName={cx(inputClassName, "text-secondary")}
-        value={registerResult ? undefined : value}
+        className={cx(
+          "w-full rounded-lg border border-gray-200 bg-gray-50/30 px-4 py-3 text-sm text-gray-900",
+          "focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500",
+          "placeholder:text-gray-400 transition-all resize-y",
+          "disabled:cursor-not-allowed disabled:opacity-50",
+          inputClassName,
+        )}
       />
+      <HintText isInvalid={isInvalid}>{errorMessage || hint}</HintText>
     </div>
   );
 }
