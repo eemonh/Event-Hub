@@ -1,6 +1,15 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
+@import "./src/styles/theme.css";
 
+@plugin "tailwindcss-animate";
+@plugin "tailwindcss-react-aria-components";
+
+@utility shadow-xs-skeuomorphic {
+  box-shadow: var(--shadow-xs);
+}
+
+/* Backward-compatible tokens used by existing components */
 @theme {
   --color-primary: #6200ea;
   --color-primary-hover: #5200c3;
