@@ -1,26 +1,30 @@
-import type { ReactNode } from "react";
-import { Link } from "react-router-dom";
-import { Loader2, type LucideIcon } from "lucide-react";
+import { useCallback } from "react";
+import type { FC, ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
+import type { LucideIcon } from "lucide-react";
+import { Button as UntitledButton } from "@/components/base/buttons/button";
+import type { CommonProps } from "@/components/base/buttons/button";
+import { cx } from "@/utils/cx";
 
 type Variant = "primary" | "secondary" | "ghost" | "icon" | "danger";
 type Size = "sm" | "md" | "lg";
 
-const variantStyles: Record<Variant, string> = {
-  primary:
-    "bg-primary text-white shadow-sm hover:bg-primary-hover focus-visible:ring-2 focus-visible:ring-primary/50",
-  secondary:
-    "bg-white text-text-primary border border-border-light shadow-sm hover:bg-gray-50 focus-visible:ring-2 focus-visible:ring-primary/50",
-  ghost:
-    "text-text-muted hover:text-text-primary hover:bg-gray-50 focus-visible:ring-2 focus-visible:ring-primary/50",
-  icon: "text-text-muted hover:text-text-primary focus-visible:ring-2 focus-visible:ring-primary/50",
-  danger:
-    "bg-red-600 text-white shadow-sm hover:bg-red-700 focus-visible:ring-2 focus-visible:ring-red-500/50",
+const colorMap: Record<Variant, CommonProps["color"]> = {
+  primary: "primary",
+  secondary: "secondary",
+  ghost: "tertiary",
+  danger: "primary-destructive",
+  icon: "tertiary",
 };
 
-const sizeStyles: Record<Size, string> = {
-  sm: "h-9 px-3 text-sm gap-1.5",
-  md: "h-11 px-5 text-base gap-2",
-  lg: "h-[50px] px-6 md:px-8 text-base gap-2",
+const sizeMap: Record<Size, NonNullable<CommonProps["size"]>> = {
+  sm: "sm",
+  md: "md",
+  lg: "lg",
+};
+
+const variantClassMap: Partial<Record<Variant, string>> = {
+  secondary: "[--color-primary:#f3f4f6] [--color-primary_hover:#e5e7eb]",
 };
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -48,51 +52,63 @@ export default function Button({
   to,
   href,
   disabled,
-  ...props
+  onClick,
+  ...nativeProps
 }: ButtonProps) {
-  const base =
-    "inline-flex items-center justify-center gap-2 rounded-lg font-medium leading-6 transition-all outline-none";
+  const navigate = useNavigate();
   const isDisabled = disabled || loading;
 
-  const classes = [
-    base,
-    variantStyles[variant],
-    sizeStyles[size],
-    fullWidth && "w-full",
-    isDisabled && "opacity-70 cursor-not-allowed",
-    className,
-  ]
-    .filter(Boolean)
-    .join(" ");
-
-  const content = (
-    <>
-      {loading && <Loader2 size={20} className="animate-spin" />}
-      {!loading && Icon && iconPosition === "left" && <Icon size={16} />}
-      {children}
-      {!loading && Icon && iconPosition === "right" && <Icon size={16} />}
-    </>
+  const handleClick = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      if (to && !isDisabled) {
+        navigate(to);
+      }
+      onClick?.(e);
+    },
+    [to, isDisabled, navigate, onClick],
   );
 
-  if (to) {
-    return (
-      <Link to={to} className={classes}>
-        {content}
-      </Link>
-    );
-  }
+  const iconLeading = Icon && iconPosition === "left" ? (Icon as unknown as FC<{ className?: string }>) : undefined;
+  const iconTrailing = Icon && iconPosition === "right" ? (Icon as unknown as FC<{ className?: string }>) : undefined;
 
-  if (href) {
+  const combinedClassName = cx(
+    variantClassMap[variant],
+    fullWidth && "w-full",
+    className,
+  );
+
+  if (href && !to) {
     return (
-      <a href={href} className={classes}>
-        {content}
-      </a>
+      <UntitledButton
+        color={colorMap[variant]}
+        size={sizeMap[size]}
+        isLoading={loading}
+        isDisabled={isDisabled}
+        iconLeading={iconLeading}
+        iconTrailing={iconTrailing}
+        className={combinedClassName}
+        href={href}
+        onClick={onClick}
+        {...(nativeProps as Record<string, unknown>)}
+      >
+        {children}
+      </UntitledButton>
     );
   }
 
   return (
-    <button className={classes} disabled={isDisabled} {...props}>
-      {content}
-    </button>
+    <UntitledButton
+      color={colorMap[variant]}
+      size={sizeMap[size]}
+      isLoading={loading}
+      isDisabled={isDisabled}
+      iconLeading={iconLeading}
+      iconTrailing={iconTrailing}
+      className={combinedClassName}
+      onClick={handleClick}
+      {...(nativeProps as Record<string, unknown>)}
+    >
+      {children}
+    </UntitledButton>
   );
 }
