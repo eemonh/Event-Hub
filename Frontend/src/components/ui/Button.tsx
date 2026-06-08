@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import type { FC, ReactNode } from "react";
+import type { FC, ReactNode, MouseEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import type { LucideIcon } from "lucide-react";
 import { Button as UntitledButton } from "@/components/base/buttons/button";
@@ -9,7 +9,7 @@ import { cx } from "@/utils/cx";
 type Variant = "primary" | "secondary" | "ghost" | "icon" | "danger";
 type Size = "sm" | "md" | "lg";
 
-const colorMap: Record<Variant, CommonProps["color"]> = {
+const colorMap: Record<Variant, NonNullable<CommonProps["color"]>> = {
   primary: "primary",
   secondary: "secondary",
   ghost: "tertiary",
@@ -59,7 +59,7 @@ export default function Button({
   const isDisabled = disabled || loading;
 
   const handleClick = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
+    (e: MouseEvent<HTMLButtonElement>): void => {
       if (to && !isDisabled) {
         navigate(to);
       }
@@ -68,8 +68,8 @@ export default function Button({
     [to, isDisabled, navigate, onClick],
   );
 
-  const iconLeading = Icon && iconPosition === "left" ? (Icon as unknown as FC<{ className?: string }>) : undefined;
-  const iconTrailing = Icon && iconPosition === "right" ? (Icon as unknown as FC<{ className?: string }>) : undefined;
+  const iconLeading = Icon && iconPosition === "left" ? (Icon as FC<{ className?: string }>) : undefined;
+  const iconTrailing = Icon && iconPosition === "right" ? (Icon as FC<{ className?: string }>) : undefined;
 
   const combinedClassName = cx(
     variantClassMap[variant],
@@ -78,38 +78,20 @@ export default function Button({
     className,
   );
 
+  const commonProps = {
+    color: colorMap[variant] as "primary" | "secondary" | "tertiary" | "link-color" | "link-gray" | "primary-destructive" | "secondary-destructive" | "tertiary-destructive" | "link-destructive",
+    size: sizeMap[size] as "xs" | "sm" | "md" | "lg" | "xl",
+    isLoading: loading,
+    isDisabled,
+    iconLeading,
+    iconTrailing,
+    className: combinedClassName,
+    children,
+  } satisfies Partial<CommonProps>;
+
   if (href && !to) {
-    return (
-      <UntitledButton
-        color={colorMap[variant]}
-        size={sizeMap[size]}
-        isLoading={loading}
-        isDisabled={isDisabled}
-        iconLeading={iconLeading}
-        iconTrailing={iconTrailing}
-        className={combinedClassName}
-        href={href}
-        onClick={onClick}
-        {...nativeProps}
-      >
-        {children}
-      </UntitledButton>
-    );
+    return <UntitledButton href={href} onClick={onClick} {...commonProps} {...(nativeProps as any)} />;
   }
 
-  return (
-    <UntitledButton
-      color={colorMap[variant]}
-      size={sizeMap[size]}
-      isLoading={loading}
-      isDisabled={isDisabled}
-      iconLeading={iconLeading}
-      iconTrailing={iconTrailing}
-      className={combinedClassName}
-      onClick={handleClick}
-      {...nativeProps}
-    >
-      {children}
-    </UntitledButton>
-  );
+  return <UntitledButton onClick={handleClick} {...commonProps} {...(nativeProps as any)} />;
 }
