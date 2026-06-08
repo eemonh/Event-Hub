@@ -74,6 +74,7 @@ export default function Button({
   const combinedClassName = cx(
     variantClassMap[variant],
     fullWidth && "w-full",
+    "[&_[data-icon]]:size-4",
     className,
   );
 
@@ -89,7 +90,7 @@ export default function Button({
         className={combinedClassName}
         href={href}
         onClick={onClick}
-        {...(nativeProps as Record<string, unknown>)}
+        {...nativeProps}
       >
         {children}
       </UntitledButton>
@@ -106,7 +107,7 @@ export default function Button({
       iconTrailing={iconTrailing}
       className={combinedClassName}
       onClick={handleClick}
-      {...(nativeProps as Record<string, unknown>)}
+      {...nativeProps}
     >
       {children}
     </UntitledButton>
