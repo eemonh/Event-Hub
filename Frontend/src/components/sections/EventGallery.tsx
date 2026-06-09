@@ -5,6 +5,7 @@ import {
   MapPin,
   X,
 } from "lucide-react"
+import Button from "../ui/Button"
 import SectionHeading from "../ui/SectionHeading"
 import { useEvents } from "../../hooks/queries/useEvents"
 import type { Event } from "../../types"
@@ -204,14 +205,8 @@ export default function EventGallery() {
               />
               {visibleItems.length > 1 && (
                 <div className="absolute inset-0 z-10 flex items-center justify-between px-4 pointer-events-none">
-                  <button type="button" onClick={showPreviousItem} aria-label="Show previous hosted event"
-                    className="pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-text-primary shadow-lg outline-none transition hover:bg-white focus-visible:ring-4 focus-visible:ring-primary/40">
-                    <ChevronLeft className="h-5 w-5" aria-hidden="true" />
-                  </button>
-                  <button type="button" onClick={showNextItem} aria-label="Show next hosted event"
-                    className="pointer-events-auto flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-text-primary shadow-lg outline-none transition hover:bg-white focus-visible:ring-4 focus-visible:ring-primary/40">
-                    <ChevronRight className="h-5 w-5" aria-hidden="true" />
-                  </button>
+                  <Button variant="ghost" size="icon" onClick={showPreviousItem} icon={ChevronLeft} className="pointer-events-auto !rounded-full !bg-white/90 !shadow-lg" aria-label="Show previous hosted event" />
+                  <Button variant="ghost" size="icon" onClick={showNextItem} icon={ChevronRight} className="pointer-events-auto !rounded-full !bg-white/90 !shadow-lg" aria-label="Show next hosted event" />
                 </div>
               )}
             </div>

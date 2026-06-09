@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react"
 import { useNavigate } from "react-router-dom"
 import { Calendar, Clock, MapPin, Ticket, XCircle, X } from "lucide-react"
+import Button from "../../components/ui/Button"
 import toast from "react-hot-toast"
 import QRCode from "qrcode"
 import { useAuth } from "../../context/AuthContext"
@@ -88,7 +89,7 @@ export default function TicketsPage() {
           <Ticket size={48} className="text-slate-300" />
           <p className="mt-4 text-lg font-medium text-slate-500">No {showUpcoming ? "upcoming" : "past"} tickets</p>
           <p className="text-sm text-slate-400">{showUpcoming ? "Register for events to see your tickets here." : "Past tickets will appear here."}</p>
-          {showUpcoming && <button onClick={() => navigate("/dashboard/events")} className="mt-4 px-6 py-2.5 rounded-lg text-sm font-bold text-white bg-violet-700 hover:bg-violet-800 transition-colors">Browse Events</button>}
+          {showUpcoming && <Button onClick={() => navigate("/dashboard/events")}>Browse Events</Button>}
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -120,10 +121,7 @@ export default function TicketsPage() {
                     <div className="flex items-center gap-2"><MapPin size={14} />{event.venue || event.location}</div>
                   </div>
                   {!isPast && (
-                    <button onClick={() => handleCancel(eventId)}
-                      className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-50">
-                      <XCircle size={15} /> Cancel Registration
-                    </button>
+                    <Button variant="outline-destructive" onClick={() => handleCancel(eventId)} fullWidth icon={XCircle}>Cancel Registration</Button>
                   )}
                 </div>
               </div>
@@ -136,10 +134,7 @@ export default function TicketsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 backdrop-blur-sm"
           onClick={() => { setSelectedQr(null); setSelectedQrEvent(null) }}>
           <div className="relative max-w-[calc(100vw-2rem)] sm:max-w-md rounded-2xl bg-white p-6 sm:p-8 shadow-2xl" onClick={(e) => e.stopPropagation()}>
-            <button onClick={() => { setSelectedQr(null); setSelectedQrEvent(null) }}
-              className="absolute right-4 top-4 rounded-full bg-gray-100 p-2 text-gray-500 hover:bg-gray-200 transition-colors">
-              <X size={18} />
-            </button>
+            <Button variant="ghost" size="icon" onClick={() => { setSelectedQr(null); setSelectedQrEvent(null) }} icon={X} className="absolute right-4 top-4" />
             <img src={selectedQr} alt="Event QR Code" className="h-64 w-64 object-contain" />
             {selectedQrEvent && (
               <p className="mt-4 text-center text-sm sm:text-lg md:text-xl font-semibold text-gray-700">{selectedQrEvent.title || selectedQrEvent.name}</p>

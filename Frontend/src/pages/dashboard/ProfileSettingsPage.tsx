@@ -1,6 +1,5 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect } from "react";
-import { Info } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
 import { useBreadcrumbs } from "../../context/BreadcrumbContext";
@@ -103,19 +102,7 @@ export default function ProfileSettingsPage() {
                 register={undefined}
                 fullWidth
               />
-              <div>
-                <label className="block text-xs font-bold text-gray-800 mb-2">Email Address</label>
-                <input
-                  type="email"
-                  value={user?.email || ""}
-                  disabled
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/50 text-gray-600 text-sm focus:outline-none cursor-not-allowed disabled:opacity-60"
-                />
-                <div className="flex items-center text-xs text-gray-500 mt-2">
-                  <Info className="w-3.5 h-3.5 mr-1.5" />
-                  <span>Email cannot be changed here. Contact support.</span>
-                </div>
-              </div>
+              <Input label="Email Address" name="email" type="email" value={user?.email || ""} disabled fullWidth hint="Email address cannot be changed" />
             </div>
           </div>
 

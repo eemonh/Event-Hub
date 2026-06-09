@@ -1,10 +1,12 @@
 import { useParams, useNavigate } from "react-router-dom"
 import { useState } from "react"
 import {
-  CalendarDays, MapPin, Users, Bookmark, ArrowRight,
-  ShieldCheck, Code2, Loader2, Ticket, ArrowLeft, User, Clock, Star,
+  CalendarDays, MapPin, Users, Bookmark,
+  ShieldCheck, Code2, Loader2, ArrowLeft, User, Clock, Star,
   ThumbsUp, Trash2, Send,
 } from "lucide-react"
+import Button from "../components/ui/Button"
+import Input from "../components/ui/Input"
 import toast from "react-hot-toast"
 import { useAuth } from "../context/AuthContext"
 import { useEvent, useMyEvents, useSavedEvents, useComments } from "../hooks/queries/useEvents"
@@ -124,12 +126,7 @@ export default function EventDetailPage() {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-[#F6F1F7] gap-4 px-4">
         <p className="text-lg font-medium text-[#5D6475]">{error?.message || "Event not found"}</p>
-        <button
-          onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white hover:bg-primary-hover"
-        >
-          <ArrowLeft size={16} /> Go Back
-        </button>
+        <Button icon={ArrowLeft} iconPosition="left" onClick={() => navigate(-1)}>Go Back</Button>
       </div>
     )
   }
@@ -142,12 +139,7 @@ export default function EventDetailPage() {
   return (
     <div className="min-h-screen bg-[#F6F1F7] px-4 py-8 md:px-8">
       <div className="mx-auto max-w-[1180px]">
-        <button
-          onClick={() => navigate(-1)}
-          className="mb-6 inline-flex cursor-pointer items-center gap-2 text-sm font-medium text-primary hover:text-primary-hover"
-        >
-          <ArrowLeft size={16} /> Back
-        </button>
+        <Button variant="link" onClick={() => navigate(-1)} className="mb-6">Back</Button>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_340px]">
           <div className="overflow-hidden rounded-[14px] border border-[#DAD4DD] bg-black shadow-sm h-[400px]">
@@ -205,22 +197,11 @@ export default function EventDetailPage() {
             </div>
 
             {isOwner ? (
-              <button disabled className="mt-7 flex h-[50px] w-full items-center justify-center gap-2 rounded-[10px] bg-slate-100 text-[15px] font-semibold text-slate-500">
-                <User size={16} /> You are the organizer
-              </button>
+              <span className="flex h-[50px] w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl bg-[#EDE5F7] py-3 text-sm font-semibold text-[#6941C6] select-none">You are the organizer</span>
             ) : isRegistered ? (
-              <button disabled className="mt-7 flex h-[50px] w-full items-center justify-center gap-2 rounded-[10px] bg-emerald-100 text-[15px] font-semibold text-emerald-700">
-                <Ticket size={16} /> Registered
-              </button>
+              <span className="flex h-[50px] w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl bg-emerald-100 py-3 text-sm font-semibold text-emerald-700 select-none">Registered</span>
             ) : (
-              <button
-                onClick={handleRegister}
-                disabled={actionLoading === "register"}
-                className="mt-7 flex h-[50px] w-full items-center justify-center gap-2 rounded-[10px] bg-primary text-[15px] font-semibold text-white transition hover:bg-primary-hover disabled:opacity-60"
-              >
-                {actionLoading === "register" ? <Loader2 size={16} className="animate-spin" /> : <ArrowRight size={16} />}
-                Register Now
-              </button>
+              <Button onClick={handleRegister} loading={actionLoading === "register"} fullWidth className="h-[50px]">Register Now</Button>
             )}
 
             <button
@@ -351,21 +332,8 @@ export default function EventDetailPage() {
               <div className="mt-8 space-y-4">
                 {token ? (
                   <form onSubmit={handleAddComment} className="flex gap-3">
-                    <input
-                      type="text"
-                      value={commentText}
-                      onChange={(e) => setCommentText(e.target.value)}
-                      placeholder="Write a comment..."
-                      maxLength={1000}
-                      className="flex-1 rounded-[10px] border border-[#E6E1E9] bg-white px-4 py-3 text-sm text-[#31394C] placeholder-[#9CA3AF] outline-none focus:border-primary/50 focus:ring-2 focus:ring-primary/10"
-                    />
-                    <button
-                      type="submit"
-                      disabled={addCommentMutation.isPending || !commentText.trim()}
-                      className="flex h-[46px] w-[46px] items-center justify-center rounded-[10px] bg-primary text-white transition hover:bg-primary-hover disabled:opacity-50"
-                    >
-                      {addCommentMutation.isPending ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
-                    </button>
+                    <Input name="comment" value={commentText} onChange={(e) => setCommentText(e.target.value)} placeholder="Write a comment..." className="flex-1" />
+                    <Button type="submit" disabled={addCommentMutation.isPending || !commentText.trim()} icon={Send} size="icon" className="h-[46px] w-[46px]" />
                   </form>
                 ) : (
                   <p className="text-sm text-[#8B90A0]">Please log in to leave a comment.</p>
@@ -392,12 +360,7 @@ export default function EventDetailPage() {
                             </div>
                           </div>
                           {user?.id === (typeof comment.user === "object" ? comment.user?._id : null) && (
-                            <button
-                              onClick={() => handleDeleteComment(comment._id)}
-                              className="text-[#8B90A0] transition hover:text-red-500"
-                            >
-                              <Trash2 size={14} />
-                            </button>
+                            <Button variant="ghost" size="icon" onClick={() => handleDeleteComment(comment._id)} icon={Trash2} className="text-gray-400 hover:text-red-500" />
                           )}
                         </div>
                         <p className="mt-3 text-[14px] leading-6 text-[#5D6475]">{comment.text}</p>

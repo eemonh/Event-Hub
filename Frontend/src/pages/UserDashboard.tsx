@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 import {
   CalendarDays, Clock3, MapPin, Bookmark, Ticket, ChevronRight, XCircle, Clock,
 } from "lucide-react"
+import Button from "../components/ui/Button"
 import toast from "react-hot-toast"
 import { useAuth } from "../context/AuthContext"
 import { useBreadcrumbs } from "../context/BreadcrumbContext"
@@ -119,17 +120,13 @@ export default function UserDashboard() {
       <section className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
         <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50/70 px-6 py-5">
           <h2 className="font-[Poppins] text-3xl font-semibold">Your Upcoming Events</h2>
-          <button onClick={() => navigate("/dashboard/events/my")} className="cursor-pointer flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-violet-700">
-            View All <ChevronRight size={14} />
-          </button>
+          <Button variant="link" size="sm" onClick={() => navigate("/dashboard/events/my")} icon={ChevronRight} iconPosition="right">View All</Button>
         </div>
         <div>
           {upcomingEvents.length === 0 ? (
             <div className="px-6 py-10 text-center text-slate-500">
               <p>No upcoming events. Browse events to register!</p>
-              <button onClick={() => navigate("/dashboard/events")} className="mt-3 px-5 py-2 rounded-lg text-sm font-semibold text-white bg-violet-700 hover:bg-violet-800 transition-colors">
-                Browse Events
-              </button>
+              <Button onClick={() => navigate("/dashboard/events")} size="sm">Browse Events</Button>
             </div>
           ) : (
             upcomingEvents.slice(0, 3).map((event, index) => {
@@ -160,15 +157,8 @@ export default function UserDashboard() {
                   </div>
                   {!isOwner && (
                     <div className="flex items-center gap-2 lg:shrink-0">
-                      <button className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-5 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
-                        <Ticket size={15} />View Ticket
-                      </button>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); handleCancel(event._id) }}
-                        className="inline-flex items-center gap-1.5 rounded-full border border-red-200 px-4 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50"
-                      >
-                        <XCircle size={15} />Cancel
-                      </button>
+                      <Button variant="outline" size="sm" icon={Ticket}>View Ticket</Button>
+                      <Button variant="outline-destructive" size="sm" icon={XCircle} onClick={(e) => { e.stopPropagation(); handleCancel(event._id) }}>Cancel</Button>
                     </div>
                   )}
                 </div>
@@ -215,8 +205,7 @@ export default function UserDashboard() {
                     {isOwner ? (
                       <span className="flex w-full items-center justify-center gap-2 rounded-xl bg-slate-100 py-3 text-sm font-medium text-slate-500"><Ticket size={14} />You are the organizer</span>
                     ) : (
-                      <button onClick={(e) => { e.stopPropagation(); navigate('/events/' + (event._id || event.id)) }}
-                        className="w-full rounded-xl bg-violet-700 py-3 text-sm font-semibold text-white transition hover:bg-violet-800">Register Now</button>
+                      <Button onClick={(e) => { e.stopPropagation(); navigate('/events/' + (event._id || event.id)) }} fullWidth>Register Now</Button>
                     )}
                   </div>
                 </div>

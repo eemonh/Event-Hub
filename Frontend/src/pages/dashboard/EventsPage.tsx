@@ -1,6 +1,8 @@
 import { useState, useEffect, type MouseEvent } from "react"
 import { useNavigate } from "react-router-dom"
 import { CalendarDays, Search } from "lucide-react"
+import Button from "../../components/ui/Button"
+import Input from "../../components/ui/Input"
 import { useAuth } from "../../context/AuthContext"
 import { useBreadcrumbs } from "../../context/BreadcrumbContext"
 import { useEvents, useMyEvents, useSavedEvents } from "../../hooks/queries/useEvents"
@@ -21,7 +23,7 @@ export default function DashboardEvents() {
   const [dateFilter, setDateFilter] = useState("upcoming")
   const [page, setPage] = useState(1)
 
-  const { data, isLoading } = useEvents({ category, search, sort, dateFilter, page, limit: 6 })
+  const { data, isLoading, isFetching } = useEvents({ category, search, sort, dateFilter, page, limit: 6 })
   const { data: myEventsData } = useMyEvents()
   const { data: savedData } = useSavedEvents()
 
@@ -78,14 +80,7 @@ export default function DashboardEvents() {
 
       <div className="mb-8 flex flex-col gap-4 sm:flex-row">
         <div className="relative flex-grow">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1) }}
-            placeholder="Search events..."
-            className="w-full rounded-xl border border-gray-200 bg-white py-3 pl-12 pr-4 text-sm text-gray-900 outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500"
-          />
+          <Input name="search" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1) }} placeholder="Search events..." icon={Search} className="flex-grow" />
         </div>
         <Select
           value={category || "All"}
@@ -148,12 +143,7 @@ export default function DashboardEvents() {
 
       {totalPages > 1 && page < totalPages && (
         <div className="flex justify-center">
-          <button
-            onClick={() => setPage((p) => p + 1)}
-            className="inline-flex items-center gap-2 rounded-xl border-2 border-violet-700 bg-transparent px-8 py-3 font-bold text-violet-700 transition-colors hover:bg-violet-50"
-          >
-            Load More Events
-          </button>
+          <Button variant="outline" onClick={() => setPage((p) => p + 1)} loading={isFetching} className="!text-primary">Load More Events</Button>
         </div>
       )}
     </main>

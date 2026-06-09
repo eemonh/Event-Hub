@@ -1,5 +1,6 @@
 import { Briefcase, ArrowUp } from "lucide-react"
 import { Link } from "react-router-dom"
+import Button from "../components/ui/Button"
 
 export default function Footer() {
   const navLinks = [
@@ -89,13 +90,14 @@ export default function Footer() {
             &copy; 2026 EventHub. All Rights Reserved.
           </p>
 
-          <button
+          <Button
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center hover:bg-primary-hover transition"
+            variant="primary"
+            size="sm"
+            icon={ArrowUp}
+            className="w-8 h-8 !rounded-lg"
             aria-label="Scroll to top"
-          >
-            <ArrowUp size={16} className="text-white" />
-          </button>
+          />
         </div>
       </div>
     </footer>

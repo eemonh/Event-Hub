@@ -1,6 +1,7 @@
 import { memo, type MouseEvent } from "react"
 import { CalendarDays, MapPin, User, Bookmark, Ticket } from "lucide-react"
 import type { Event } from "../../types"
+import Button from "../../components/ui/Button"
 
 type CardMode = "explore" | "my-events" | "saved" | string
 type EventAction = (eventId: string, event?: MouseEvent<HTMLElement>) => void
@@ -122,12 +123,7 @@ function renderExploreActions(
           <Ticket size={14} /> Registered
         </span>
       ) : (
-        <button
-          onClick={(e) => { e.stopPropagation(); onRegister?.(eventId, e) }}
-          className="flex-grow rounded-xl bg-primary py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-hover"
-        >
-          Register
-        </button>
+        <Button onClick={(e) => { e.stopPropagation(); onRegister?.(eventId, e) }} size="sm" className="flex-grow">Register</Button>
       )}
       <button
         onClick={(e) => { e.stopPropagation(); onBookmark?.(eventId, e) }}
@@ -146,22 +142,13 @@ function renderExploreActions(
 function renderMyEventsActions(eventId: string, isPast: boolean, onCancel?: EventAction) {
   if (isPast) {
     return (
-      <button disabled className="flex w-full items-center justify-center gap-2 rounded-xl bg-slate-100 py-2.5 text-sm font-semibold text-slate-400 cursor-not-allowed">
-        <Ticket size={14} /> Event Ended
-      </button>
+      <span className="flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl bg-slate-100 py-2.5 text-sm font-medium text-slate-400 select-none">Event Ended</span>
     )
   }
   return (
     <div className="flex w-full gap-2">
-      <button className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-violet-700 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-violet-800">
-        <Ticket size={14} /> View Ticket
-      </button>
-      <button
-        onClick={(e) => { e.stopPropagation(); onCancel?.(eventId, e) }}
-        className="rounded-xl bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-600 transition-colors hover:bg-red-100"
-      >
-        Cancel
-      </button>
+      <Button className="flex-1 !rounded-xl">View Ticket</Button>
+      <button onClick={(e) => { e.stopPropagation(); onCancel?.(eventId, e) }} className="rounded-xl bg-red-50 px-4 py-2.5 text-sm font-semibold text-red-600 transition-colors hover:bg-red-100">Cancel</button>
     </div>
   )
 }
@@ -185,12 +172,7 @@ function renderSavedActions(
           <Ticket size={14} /> Registered
         </span>
       ) : (
-        <button
-          onClick={(e) => { e.stopPropagation(); onRegister?.(eventId, e) }}
-          className="flex-grow rounded-xl bg-violet-700 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-violet-800"
-        >
-          Register Now
-        </button>
+        <Button size="sm" className="flex-grow" onClick={(e) => { e.stopPropagation(); onRegister?.(eventId, e) }}>Register Now</Button>
       )}
       <button
         onClick={(e) => { e.stopPropagation(); onRemoveBookmark?.(eventId, e) }}

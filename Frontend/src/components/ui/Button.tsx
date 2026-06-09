@@ -12,7 +12,7 @@ import { isReactComponent } from "@/utils/is-react-component";
  * If both are provided, `to` takes precedence and `href` is ignored.
  */
 
-type Variant = "primary" | "secondary" | "ghost" | "tertiary" | "icon" | "danger";
+type Variant = "primary" | "secondary" | "ghost" | "tertiary" | "icon" | "danger" | "outline" | "outline-destructive" | "link";
 type Size = "sm" | "md" | "lg" | "icon";
 
 const colorMap: Record<Variant, NonNullable<CommonProps["color"]>> = {
@@ -22,6 +22,9 @@ const colorMap: Record<Variant, NonNullable<CommonProps["color"]>> = {
   tertiary: "tertiary",
   danger: "primary-destructive",
   icon: "tertiary",
+  outline: "secondary",
+  "outline-destructive": "secondary-destructive",
+  link: "link-color",
 };
 
 const sizeMap: Record<Size, NonNullable<CommonProps["size"]>> = {
@@ -33,6 +36,8 @@ const sizeMap: Record<Size, NonNullable<CommonProps["size"]>> = {
 
 const variantClassMap: Partial<Record<Variant, string>> = {
   secondary: "[--color-primary:#f3f4f6] [--color-primary_hover:#e5e7eb]",
+  outline: "[--color-primary:#ffffff] [--color-primary_hover:#f9fafb] ring-gray-200 shadow-none",
+  "outline-destructive": "[--color-primary:#ffffff] [--color-primary_hover:#fef2f2] ring-red-200 shadow-none",
 };
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {

@@ -1,6 +1,8 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect } from "react";
-import { Search, ChevronLeft, ChevronRight, Trash2, X, Loader2 } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, Trash2, X } from "lucide-react";
+import Button from "../../components/ui/Button";
+import Input from "../../components/ui/Input";
 import Select from "../../components/ui/Select";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
@@ -138,16 +140,7 @@ export default function UsersPage() {
         </div>
         <div className="flex items-center gap-3">
           <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Search className="h-4 w-4 text-gray-400" />
-            </div>
-            <input
-              type="text"
-              placeholder="Search users..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent w-64 shadow-sm"
-            />
+            <Input name="search" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search users..." icon={Search} className="w-64" />
           </div>
           <div className="flex bg-white rounded-lg p-1 border border-gray-200 shadow-sm">
             {["All", "Admin", "User"].map((filter) => (
@@ -184,28 +177,12 @@ export default function UsersPage() {
                   {roleBadge(user.role)}
                   <div className="flex items-center gap-2">
                     {user.role === "user" && (
-                      <button
-                        onClick={() => handleRoleChange(user, "admin")}
-                        className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-violet-50 text-violet-600 hover:bg-violet-100 transition-colors"
-                      >
-                        Promote
-                      </button>
+                      <Button variant="ghost" size="sm" onClick={() => handleRoleChange(user, "admin")} className="!bg-violet-50 !text-violet-600">Promote</Button>
                     )}
                     {user.role === "admin" && (
-                      <button
-                        onClick={() => handleRoleChange(user, "user")}
-                        className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
-                      >
-                        Demote
-                      </button>
+                      <Button variant="ghost" size="sm" onClick={() => handleRoleChange(user, "user")} className="!bg-violet-50 !text-violet-600">Demote</Button>
                     )}
-                    <button
-                      onClick={() => handleDelete(user)}
-                      className="p-1.5 rounded-md text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                      title="Delete user"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    <Button variant="ghost" size="icon" onClick={() => handleDelete(user)} icon={Trash2} className="text-gray-400 hover:text-red-600" />
                   </div>
                 </div>
               </div>
@@ -244,28 +221,12 @@ export default function UsersPage() {
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-2">
                         {user.role === "user" && (
-                          <button
-                            onClick={() => handleRoleChange(user, "admin")}
-                            className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-violet-50 text-violet-600 hover:bg-violet-100 transition-colors"
-                          >
-                            Promote
-                          </button>
+                          <Button variant="ghost" size="sm" onClick={() => handleRoleChange(user, "admin")} className="!bg-violet-50 !text-violet-600">Promote</Button>
                         )}
                         {user.role === "admin" && (
-                          <button
-                            onClick={() => handleRoleChange(user, "user")}
-                            className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
-                          >
-                            Demote
-                          </button>
+                          <Button variant="ghost" size="sm" onClick={() => handleRoleChange(user, "user")} className="!bg-violet-50 !text-violet-600">Demote</Button>
                         )}
-                        <button
-                          onClick={() => handleDelete(user)}
-                          className="p-1.5 rounded-md text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                          title="Delete user"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
+                        <Button variant="ghost" size="icon" onClick={() => handleDelete(user)} icon={Trash2} className="text-gray-400 hover:text-red-600" />
                       </div>
                     </td>
                   </tr>
@@ -306,44 +267,12 @@ export default function UsersPage() {
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 mx-4">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold text-gray-900">Add New User</h2>
-              <button
-                onClick={() => setShowAddModal(false)}
-                className="p-1 rounded-md text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <Button variant="ghost" size="icon" onClick={() => setShowAddModal(false)} icon={X} />
             </div>
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                <input
-                  type="text"
-                  value={addForm.name}
-                  onChange={(e) => setAddForm({ ...addForm, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="John Doe"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input
-                  type="email"
-                  value={addForm.email}
-                  onChange={(e) => setAddForm({ ...addForm, email: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="john@example.com"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                <input
-                  type="password"
-                  value={addForm.password}
-                  onChange={(e) => setAddForm({ ...addForm, password: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                  placeholder="Min. 8 characters"
-                />
-              </div>
+              <Input label="Name" name="addName" value={addForm.name} onChange={(e) => setAddForm({...addForm, name: e.target.value})} placeholder="John Doe" fullWidth />
+              <Input label="Email" name="addEmail" type="email" value={addForm.email} onChange={(e) => setAddForm({...addForm, email: e.target.value})} placeholder="john@example.com" fullWidth />
+              <Input label="Password" name="addPassword" type="password" value={addForm.password} onChange={(e) => setAddForm({...addForm, password: e.target.value})} placeholder="Min. 8 characters" fullWidth />
               <Select
                 label="Role"
                 name="role"
@@ -358,20 +287,8 @@ export default function UsersPage() {
               />
             </div>
             <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-100">
-              <button
-                onClick={() => setShowAddModal(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleAddUser}
-                disabled={submitting}
-                className="px-4 py-2 text-sm font-semibold text-white bg-primary rounded-lg hover:bg-primary-hover disabled:opacity-50 transition-colors flex items-center gap-2"
-              >
-                {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-                Add User
-              </button>
+              <Button variant="secondary" onClick={() => setShowAddModal(false)}>Cancel</Button>
+              <Button onClick={handleAddUser} loading={submitting}>Add User</Button>
             </div>
           </div>
         </div>

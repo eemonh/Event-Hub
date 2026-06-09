@@ -2,7 +2,7 @@ import { useState, useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import type { Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { MapPin, Plus, Trash2 } from "lucide-react";
+import { Calendar, MapPin, Plus, Trash2 } from "lucide-react";
 import type { EventFormData, ScheduleItem } from "../../types";
 import Input from "../ui/Input";
 import Textarea from "../ui/Textarea";
@@ -100,15 +100,15 @@ export default function EventForm({ initialData, onSubmit, isSubmitting = false,
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-xs font-bold text-gray-500 mb-2">Start Date *</label>
-          <input
-            type="date"
-            {...register("startDate")}
-            className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/30 text-gray-900 text-sm focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all"
-          />
-          {errors.startDate ? <p className="mt-1.5 text-sm text-red-500">{errors.startDate.message}</p> : null}
-        </div>
+        <Input
+          type="date"
+          label="Start Date *"
+          name="startDate"
+          icon={Calendar}
+          register={register}
+          error={errors.startDate}
+          fullWidth
+        />
         <Input
           label="Start Time"
           name="startTime"
@@ -214,54 +214,24 @@ export default function EventForm({ initialData, onSubmit, isSubmitting = false,
         </div>
         {scheduleItems.map((item, i) => (
           <div key={i} className="relative rounded-lg border border-gray-200 bg-gray-50/30 p-4 space-y-3">
-            <button
-              type="button"
-              onClick={() => removeScheduleItem(i)}
-              className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors"
-            >
-              <Trash2 size={16} />
-            </button>
+            <Button variant="ghost" size="sm" icon={Trash2} onClick={() => removeScheduleItem(i)} className="absolute top-3 right-3 hover:!text-red-500" />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-[11px] font-semibold text-gray-400 mb-1">Day</label>
-                <input
-                  type="text"
-                  value={item.day}
-                  onChange={(e) => handleScheduleChange(i, "day", e.target.value)}
-                  placeholder="e.g. Day 1"
-                  className="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-gray-400 transition-all"
-                />
+                <Input name="day" value={item.day} onChange={(e) => handleScheduleChange(i, "day", e.target.value)} placeholder="e.g. Day 1" />
               </div>
               <div>
                 <label className="block text-[11px] font-semibold text-gray-400 mb-1">Time</label>
-                <input
-                  type="text"
-                  value={item.time}
-                  onChange={(e) => handleScheduleChange(i, "time", e.target.value)}
-                  placeholder="e.g. 09:00 AM"
-                  className="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-gray-400 transition-all"
-                />
+                <Input name="time" value={item.time} onChange={(e) => handleScheduleChange(i, "time", e.target.value)} placeholder="e.g. 09:00 AM" />
               </div>
             </div>
             <div>
               <label className="block text-[11px] font-semibold text-gray-400 mb-1">Title</label>
-              <input
-                type="text"
-                value={item.title}
-                onChange={(e) => handleScheduleChange(i, "title", e.target.value)}
-                placeholder="Session title"
-                className="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-gray-400 transition-all"
-              />
+              <Input name="title" value={item.title} onChange={(e) => handleScheduleChange(i, "title", e.target.value)} placeholder="Session title" />
             </div>
             <div>
               <label className="block text-[11px] font-semibold text-gray-400 mb-1">Description</label>
-              <textarea
-                value={item.description}
-                onChange={(e) => handleScheduleChange(i, "description", e.target.value)}
-                rows={2}
-                placeholder="Session description"
-                className="w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-900 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 placeholder-gray-400 transition-all resize-y"
-              />
+              <Textarea name="description" value={item.description} onChange={(e) => handleScheduleChange(i, "description", e.target.value)} placeholder="Session description" rows={2} />
             </div>
           </div>
         ))}
@@ -273,7 +243,7 @@ export default function EventForm({ initialData, onSubmit, isSubmitting = false,
       {onCancel && (
         <div className="flex justify-end gap-4 border-t border-gray-100 pt-6">
           <Button type="button" variant="secondary" onClick={onCancel}>Cancel</Button>
-          <Button type="submit" loading={submitting} showTextWhileLoading fullWidth size="lg">Save Changes</Button>
+          <Button type="submit" loading={submitting} showTextWhileLoading size="lg">Save Changes</Button>
         </div>
       )}
     </form>
