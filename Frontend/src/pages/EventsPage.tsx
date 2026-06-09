@@ -81,20 +81,22 @@ export default function EventsPage() {
         </div>
 
         <div className="mb-10 flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-3 shadow-[0_2px_10px_rgba(0,0,0,0.02)] md:flex-row">
-          <form onSubmit={handleSearch} className="flex flex-grow items-center rounded-xl border border-slate-100 bg-slate-50 px-4 py-2 transition-all focus-within:border-transparent focus-within:ring-2 focus-within:ring-primary">
+          <form onSubmit={handleSearch} className="flex flex-grow items-center rounded-xl border border-slate-100 bg-slate-50 px-4 py-2 transition-all focus-within:border-transparent focus-within:ring-2 focus-within:ring-primary min-w-0">
             <Search className="mr-3 h-5 w-5 flex-shrink-0 text-slate-400" />
-            <Input
-              name="search"
-              placeholder="Search events..."
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value)
-                setPage(1)
-              }}
-              fullWidth={false}
-              inputClassName="border-0 bg-transparent shadow-none focus:ring-0"
-              className="border-0 bg-transparent shadow-none focus-within:ring-0"
-            />
+            <div className="flex-1 min-w-0">
+              <Input
+                name="search"
+                placeholder="Search events..."
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value)
+                  setPage(1)
+                }}
+                fullWidth
+                inputClassName="border-0 bg-transparent shadow-none focus:ring-0"
+                className="border-0 bg-transparent shadow-none focus-within:ring-0"
+              />
+            </div>
           </form>
 
           <div className="flex flex-wrap gap-3 sm:flex-nowrap">
