@@ -7,8 +7,8 @@ import { useRegisterForEvent, useBookmarkEvent, useRemoveBookmark } from "../hoo
 import EventCard from "../components/events/EventCard"
 import { EventGridSkeleton } from "../components/ui/Skeletons"
 import Input from "../components/ui/Input"
+import Select from "../components/ui/Select"
 import Button from "../components/ui/Button"
-import { ChevronDown } from "lucide-react"
 
 const CATEGORIES = ["All", "Technology", "Design", "Business", "Startup", "Music", "Arts", "Health", "Sports", "Education", "Food & Drink", "Networking", "Other"]
 
@@ -98,50 +98,36 @@ export default function EventsPage() {
           </form>
 
           <div className="flex flex-wrap gap-3 sm:flex-nowrap">
-            <div className="relative w-full sm:w-auto">
-              <select
-                value={category || "All"}
-                onChange={(e) => { setCategory(e.target.value === "All" ? "" : e.target.value); setPage(1) }}
-                className="w-full cursor-pointer appearance-none rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 pr-10 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-primary sm:w-44"
-              >
-                <option value="All">All Categories</option>
-                {CATEGORIES.filter(c => c !== "All").map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
-                ))}
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
-                <ChevronDown className="h-4 w-4" />
-              </div>
-            </div>
+            <Select
+              value={category || "All"}
+              onChange={(value) => { setCategory(value === "All" ? "" : value); setPage(1) }}
+              options={[
+                { value: "All", label: "All Categories" },
+                ...CATEGORIES.filter(c => c !== "All").map(cat => ({ value: cat, label: cat })),
+              ]}
+              className="sm:w-44"
+            />
 
-            <div className="relative w-full sm:w-auto">
-              <select
-                value={sort}
-                onChange={(e) => { setSort(e.target.value); setPage(1) }}
-                className="w-full cursor-pointer appearance-none rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 pr-10 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-primary sm:w-40"
-              >
-                <option value="date_asc">Date (Earliest)</option>
-                <option value="date_desc">Date (Latest)</option>
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
-                <ChevronDown className="h-4 w-4" />
-              </div>
-            </div>
+            <Select
+              value={sort}
+              onChange={(value) => { setSort(value); setPage(1) }}
+              options={[
+                { value: "date_asc", label: "Date (Earliest)" },
+                { value: "date_desc", label: "Date (Latest)" },
+              ]}
+              className="sm:w-40"
+            />
 
-            <div className="relative w-full sm:w-auto">
-              <select
-                value={dateFilter || "all"}
-                onChange={(e) => { setDateFilter(e.target.value === "all" ? "" : e.target.value); setPage(1) }}
-                className="w-full cursor-pointer appearance-none rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 pr-10 text-sm text-slate-700 outline-none focus:ring-2 focus:ring-primary sm:w-36"
-              >
-                <option value="all">All Dates</option>
-                <option value="upcoming">Upcoming</option>
-                <option value="past">Past</option>
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
-                <ChevronDown className="h-4 w-4" />
-              </div>
-            </div>
+            <Select
+              value={dateFilter || "all"}
+              onChange={(value) => { setDateFilter(value === "all" ? "" : value); setPage(1) }}
+              options={[
+                { value: "all", label: "All Dates" },
+                { value: "upcoming", label: "Upcoming" },
+                { value: "past", label: "Past" },
+              ]}
+              className="sm:w-36"
+            />
           </div>
         </div>
 

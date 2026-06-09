@@ -1,8 +1,9 @@
 import { useState } from "react"
 import { useForm } from "react-hook-form"
-import { ChevronDown, Loader2, CheckCircle2 } from "lucide-react"
+import { Loader2, CheckCircle2 } from "lucide-react"
 import Button from "../ui/Button"
 import Input from "../ui/Input"
+import Select from "../ui/Select"
 import SectionHeading from "../ui/SectionHeading"
 
 interface NewsletterForm {
@@ -82,29 +83,23 @@ export default function Newsletter() {
                     />
                   </div>
 
-                  <div className="flex-1 flex flex-col gap-1">
-                    <div className="relative">
-                      <select
-                        {...register("interest")}
-                        disabled={isSubmitting}
-                        className="appearance-none w-full h-[50px] px-4 rounded-lg border border-gray-200 bg-gray-50 text-base text-text-muted outline-none focus:ring-2 focus:ring-primary/50 disabled:opacity-70"
-                        defaultValue=""
-                      >
-                        <option value="" disabled>
-                          Select Interest
-                        </option>
-                        <option value="technology">Technology</option>
-                        <option value="business">Business</option>
-                        <option value="design">Design</option>
-                        <option value="marketing">Marketing</option>
-                      </select>
-
-                      <ChevronDown
-                        size={20}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none"
-                      />
-                    </div>
-                  </div>
+                  <Select
+                    name="interest"
+                    placeholder="Select Interest"
+                    options={[
+                      { value: "technology", label: "Technology" },
+                      { value: "business", label: "Business" },
+                      { value: "design", label: "Design" },
+                      { value: "marketing", label: "Marketing" },
+                    ]}
+                    register={register}
+                    registerOptions={{
+                      required: "Interest is required",
+                    }}
+                    error={errors.interest}
+                    disabled={isSubmitting}
+                    fullWidth
+                  />
 
                   <Button 
                     type="submit" 

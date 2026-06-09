@@ -17,7 +17,7 @@
 
 | Layer | Technologies |
 |---|---|
-| **Frontend** | React 19, Vite 8, Tailwind CSS 4, TanStack Query, React Router 7, Recharts, Zod |
+| **Frontend** | React 19, Vite 8, Tailwind CSS 4, TanStack Query, React Router 7, Recharts, Zod, Untitled UI (icons + patterns), React Aria Components |
 | **Backend** | Express 4, Mongoose 9, MongoDB Atlas, JWT, Nodemailer |
 | **Dev Tools** | ESLint, Vite HMR, Node `--watch` |
 
@@ -31,6 +31,17 @@ flowchart LR
     API --> Email["Nodemailer<br/>(SMTP)"]
     Browser --> Auth["JWT<br/>Access + Refresh Token"]
 ```
+
+## UI Layer
+
+The frontend uses a two‑layer component architecture:
+
+| Layer | Location | Purpose |
+|-------|----------|---------|
+| **Base** | `src/components/base/` | Untitled UI vendor components (button, input, tags, tooltip) using `@untitledui/icons` + `react-aria-components` |
+| **UI Adapters** | `src/components/ui/` | App‑facing wrappers that bridge base components with `react-hook-form`, `lucide-react` icons, and React Router |
+
+App‑level pages import from `components/ui/` — never directly from `components/base/`.
 
 ## Getting Started
 

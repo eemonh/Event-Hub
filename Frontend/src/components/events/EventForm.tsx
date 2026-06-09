@@ -2,10 +2,11 @@ import { useState, useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import type { Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronDown, MapPin, Plus, Trash2 } from "lucide-react";
+import { MapPin, Plus, Trash2 } from "lucide-react";
 import type { EventFormData, ScheduleItem } from "../../types";
 import Input from "../ui/Input";
 import Textarea from "../ui/Textarea";
+import Select from "../ui/Select";
 import Button from "../ui/Button";
 import { eventFormSchema, EVENT_TYPE_OPTIONS, CATEGORY_OPTIONS, buildEventPayload, toInitialFormState } from "../../utils/eventSchemas";
 import type { EventFormValues } from "../../utils/eventSchemas";
@@ -68,40 +69,26 @@ export default function EventForm({ initialData, onSubmit, isSubmitting = false,
           register={register}
           fullWidth
         />
-        <div>
-          <label className="block text-xs font-bold text-gray-500 mb-2">Event Type *</label>
-          <div className="relative">
-            <select
-              {...register("type")}
-              className="w-full appearance-none rounded-lg border border-gray-200 bg-gray-50/30 px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all cursor-pointer"
-            >
-              <option value="" disabled>Select event type</option>
-              {EVENT_TYPE_OPTIONS.map((option) => (
-                <option key={option} value={option}>{option}</option>
-              ))}
-            </select>
-            <ChevronDown className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          </div>
-          {errors.type ? <p className="mt-1.5 text-sm text-red-500">{errors.type.message}</p> : null}
-        </div>
+        <Select
+          label="Event Type *"
+          name="type"
+          placeholder="Select event type"
+          options={EVENT_TYPE_OPTIONS.map((opt) => ({ value: opt, label: opt }))}
+          error={errors.type}
+          register={register}
+          fullWidth
+        />
       </div>
 
-      <div>
-        <label className="block text-xs font-bold text-gray-500 mb-2">Category *</label>
-        <div className="relative">
-          <select
-            {...register("category")}
-            className="w-full appearance-none rounded-lg border border-gray-200 bg-gray-50/30 px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all cursor-pointer"
-          >
-            <option value="" disabled>Select category</option>
-            {CATEGORIES.map((cat) => (
-              <option key={cat} value={cat}>{cat}</option>
-            ))}
-          </select>
-          <ChevronDown className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-        </div>
-        {errors.category ? <p className="mt-1.5 text-sm text-red-500">{errors.category.message}</p> : null}
-      </div>
+      <Select
+        label="Category *"
+        name="category"
+        placeholder="Select category"
+        options={CATEGORIES.map((opt) => ({ value: opt, label: opt }))}
+        error={errors.category}
+        register={register}
+        fullWidth
+      />
 
       <Input
         label="Subtitle"
@@ -187,19 +174,18 @@ export default function EventForm({ initialData, onSubmit, isSubmitting = false,
           registerOptions={{ valueAsNumber: true }}
           fullWidth
         />
-        <div>
-          <label className="block text-xs font-bold text-gray-500 mb-2">Status</label>
-          <div className="relative">
-            <select
-              {...register("status")}
-              className="w-full appearance-none rounded-lg border border-gray-200 bg-gray-50/30 px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all cursor-pointer"
-            >
-              <option value="published">Published</option>
-              <option value="draft">Draft</option>
-            </select>
-            <ChevronDown className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          </div>
-        </div>
+        <Select
+          label="Status"
+          name="status"
+          placeholder=""
+          options={[
+            { value: "published", label: "Published" },
+            { value: "draft", label: "Draft" },
+          ]}
+          error={errors.status}
+          register={register}
+          fullWidth
+        />
       </div>
 
       <Input

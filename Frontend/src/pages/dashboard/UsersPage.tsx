@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 import { useState, useEffect } from "react";
 import { Search, ChevronLeft, ChevronRight, Trash2, X, Loader2 } from "lucide-react";
+import Select from "../../components/ui/Select";
 import toast from "react-hot-toast";
 import { useAuth } from "../../context/AuthContext";
 import { useBreadcrumbs } from "../../context/BreadcrumbContext";
@@ -343,17 +344,18 @@ export default function UsersPage() {
                   placeholder="Min. 8 characters"
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
-                <select
-                  value={addForm.role}
-                  onChange={(e) => setAddForm({ ...addForm, role: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white"
-                >
-                  <option value="user">User</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </div>
+              <Select
+                label="Role"
+                name="role"
+                placeholder=""
+                value={addForm.role}
+                onChange={(value) => setAddForm({ ...addForm, role: value })}
+                options={[
+                  { value: "user", label: "User" },
+                  { value: "admin", label: "Admin" },
+                ]}
+                fullWidth
+              />
             </div>
             <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-100">
               <button
