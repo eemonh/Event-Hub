@@ -12,13 +12,14 @@ import { isReactComponent } from "@/utils/is-react-component";
  * If both are provided, `to` takes precedence and `href` is ignored.
  */
 
-type Variant = "primary" | "secondary" | "ghost" | "icon" | "danger";
-type Size = "sm" | "md" | "lg";
+type Variant = "primary" | "secondary" | "ghost" | "tertiary" | "icon" | "danger";
+type Size = "sm" | "md" | "lg" | "icon";
 
 const colorMap: Record<Variant, NonNullable<CommonProps["color"]>> = {
   primary: "primary",
   secondary: "secondary",
   ghost: "tertiary",
+  tertiary: "tertiary",
   danger: "primary-destructive",
   icon: "tertiary",
 };
@@ -27,6 +28,7 @@ const sizeMap: Record<Size, NonNullable<CommonProps["size"]>> = {
   sm: "sm",
   md: "md",
   lg: "lg",
+  icon: "sm",
 };
 
 const variantClassMap: Partial<Record<Variant, string>> = {
@@ -37,6 +39,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
   size?: Size;
   loading?: boolean;
+  showTextWhileLoading?: boolean;
   icon?: LucideIcon;
   iconPosition?: "left" | "right";
   fullWidth?: boolean;
@@ -50,6 +53,7 @@ export default function Button({
   variant = "primary",
   size = "md",
   loading = false,
+  showTextWhileLoading,
   icon: Icon,
   iconPosition = "left",
   fullWidth = false,
@@ -80,6 +84,7 @@ export default function Button({
   const combinedClassName = cx(
     variantClassMap[variant],
     fullWidth && "w-full",
+    size === "icon" && "p-0",
     "[&_[data-icon]]:size-4",
     className,
   );
@@ -89,6 +94,7 @@ export default function Button({
     size: sizeMap[size] as "xs" | "sm" | "md" | "lg" | "xl",
     isLoading: loading,
     isDisabled,
+    showTextWhileLoading,
     iconLeading,
     iconTrailing,
     className: combinedClassName,

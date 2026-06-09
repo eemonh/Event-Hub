@@ -1,11 +1,12 @@
 import { useState, useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
+import type { Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronDown, MapPin, Plus, Trash2 } from "lucide-react";
 import type { EventFormData, ScheduleItem } from "../../types";
-import Input from "./Input";
-import Textarea from "./Textarea";
-import Button from "./Button";
+import Input from "../ui/Input";
+import Textarea from "../ui/Textarea";
+import Button from "../ui/Button";
 import { eventFormSchema, EVENT_TYPE_OPTIONS, CATEGORY_OPTIONS, buildEventPayload, toInitialFormState } from "../../utils/eventSchemas";
 import type { EventFormValues } from "../../utils/eventSchemas";
 
@@ -26,7 +27,7 @@ export default function EventForm({ initialData, onSubmit, isSubmitting = false,
     handleSubmit,
     formState: { errors, isSubmitting: formSubmitting },
   } = useForm<EventFormValues>({
-    resolver: zodResolver(eventFormSchema),
+    resolver: zodResolver(eventFormSchema) as Resolver<EventFormValues>,
     defaultValues: useMemo(() => toInitialFormState(initialData), [initialData]),
   });
 

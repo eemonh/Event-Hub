@@ -146,7 +146,11 @@ const MOBILE_PAGE_SIZE = 1
 const TABLET_PAGE_SIZE = 2
 const DESKTOP_PAGE_SIZE = 3
 
-const chunkCategories = (items: any[], pageSize: number) => {
+type CategoryItem = (typeof categories)[number]
+type MoreCategoryItem = { slug: string; isMoreCard: true }
+type CategoryGridItem = CategoryItem | MoreCategoryItem
+
+const chunkCategories = (items: CategoryItem[], pageSize: number) => {
   return Array.from({ length: Math.ceil(items.length / pageSize) }, (_, index) =>
     items.slice(index * pageSize, index * pageSize + pageSize)
   )
@@ -168,7 +172,7 @@ const CategoriesSection = () => {
     []
   )
   const desktopPages = useMemo(() => {
-    const pages = chunkCategories(categories, DESKTOP_PAGE_SIZE)
+    const pages: CategoryGridItem[][] = chunkCategories(categories, DESKTOP_PAGE_SIZE)
     const finalPage = pages[pages.length - 1]
 
     if (finalPage.length < DESKTOP_PAGE_SIZE) {
@@ -277,7 +281,7 @@ const CategoriesSection = () => {
 
           <div className="grid grid-cols-3 gap-8">
             {desktopPages[activeDesktopPage].map((item) =>
-              item.isMoreCard ? (
+              "isMoreCard" in item ? (
                 <MoreEventsCard key={item.slug} />
               ) : (
                 <CategoryCard key={item.slug} item={item} />
@@ -310,7 +314,7 @@ const PaginationDots = ({
   onPageChange,
   className = "",
 }: {
-  pages: any[]; activePage: number; onPageChange: (page: number) => void; className?: string
+  pages: { slug: string }[][]; activePage: number; onPageChange: (page: number) => void; className?: string
 }) => {
   return (
     <div
@@ -335,7 +339,7 @@ const PaginationDots = ({
 }
 
 const CategoryCard = ({ item, className = "", refCallback }: {
-  item: any; className?: string; refCallback?: React.Ref<HTMLAnchorElement>
+  item: CategoryItem; className?: string; refCallback?: React.Ref<HTMLAnchorElement>
 }) => {
   return (
     <Link

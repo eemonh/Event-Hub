@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { EventFormData, ScheduleItem } from "../../types";
+import type { EventFormData, ScheduleItem } from "../types";
 
 export const EVENT_TYPE_OPTIONS = [
   "Conference",

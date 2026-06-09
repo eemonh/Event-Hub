@@ -20,4 +20,12 @@ export default defineConfig([
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
   },
+  {
+    files: ['src/components/base/**/*.{ts,tsx}'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+      'react-hooks/refs': 'off',
+      '@typescript-eslint/no-empty-object-type': 'off',
+    },
+  },
 ])

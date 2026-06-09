@@ -1,18 +1,18 @@
 import { useCallback, type ChangeEvent, type FocusEvent } from "react";
-import type { FieldError, UseFormRegister, RegisterOptions } from "react-hook-form";
+import type { FieldError, FieldValues, Path, RegisterOptions, UseFormRegister } from "react-hook-form";
 import { Label } from "@/components/base/input/label";
 import { HintText } from "@/components/base/input/hint-text";
 import { cx } from "@/utils/cx";
 
-interface TextareaProps {
+interface TextareaProps<TFieldValues extends FieldValues = FieldValues> {
   label?: string;
-  name: string;
+  name: Path<TFieldValues>;
   rows?: number;
   placeholder?: string;
   error?: FieldError | string;
   hint?: string;
-  register?: UseFormRegister<Record<string, unknown>>;
-  registerOptions?: RegisterOptions;
+  register?: UseFormRegister<TFieldValues>;
+  registerOptions?: RegisterOptions<TFieldValues, Path<TFieldValues>>;
   value?: string;
   onChange?: React.ChangeEventHandler<HTMLTextAreaElement>;
   disabled?: boolean;
@@ -29,7 +29,7 @@ function buildBlurEvent(name: string): FocusEvent<HTMLTextAreaElement> {
   return { target: { name } } as FocusEvent<HTMLTextAreaElement>;
 }
 
-export default function Textarea({
+export default function Textarea<TFieldValues extends FieldValues = FieldValues>({
   label,
   name,
   rows = 4,
@@ -44,13 +44,13 @@ export default function Textarea({
   fullWidth = true,
   className = "",
   inputClassName = "",
-}: TextareaProps) {
+}: TextareaProps<TFieldValues>) {
   const isInvalid = !!error;
   const errorMessage = typeof error === "string" ? error : error?.message;
 
   const registerResult = registerFn ? registerFn(name, registerOptions) : null;
 
-  const handleChange = useCallback(
+  const handleValueChange = useCallback(
     (nextValue: string) => {
       const resolvedName = registerResult?.name ?? name;
       if (registerResult) {
@@ -61,6 +61,13 @@ export default function Textarea({
       }
     },
     [registerResult, externalOnChange, name],
+  );
+
+  const handleChange = useCallback(
+    (event: ChangeEvent<HTMLTextAreaElement>) => {
+      handleValueChange(event.target.value);
+    },
+    [handleValueChange],
   );
 
   const handleBlur = useCallback(() => {

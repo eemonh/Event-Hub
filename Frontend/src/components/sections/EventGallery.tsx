@@ -7,6 +7,7 @@ import {
 } from "lucide-react"
 import SectionHeading from "../ui/SectionHeading"
 import { useEvents } from "../../hooks/queries/useEvents"
+import type { Event } from "../../types"
 
 const cloudinaryFetchBase =
   "https://res.cloudinary.com/demo/image/fetch/f_auto,q_auto,w_1400"
@@ -87,6 +88,18 @@ const FALLBACK_GALLERY_ITEMS = [
   },
 ]
 
+type GalleryItem = {
+  id: string;
+  title: string;
+  category?: string;
+  location?: string;
+  date: string;
+  image?: string;
+  alt: string;
+  featured?: boolean;
+  summary: string;
+}
+
 export default function EventGallery() {
   const { data } = useEvents({ limit: 6 })
   const [activeItemId, setActiveItemId] = useState<string | null>(null)
@@ -95,8 +108,8 @@ export default function EventGallery() {
 
   const galleryItems = useMemo(() => {
     if (data?.events && data.events.length > 0) {
-      return data.events.map((event: any, index: number) => ({
-        id: event._id || event.id,
+      return data.events.map((event: Event, index: number): GalleryItem => ({
+        id: event._id || event.id || "",
         title: event.name,
         category: event.category,
         location: event.venue,
@@ -231,7 +244,7 @@ export default function EventGallery() {
 }
 
 const StandardGalleryGrid = ({ items, onOpen, className = "" }: {
-  items: any[]; onOpen: (id: string) => void; className?: string
+  items: GalleryItem[]; onOpen: (id: string) => void; className?: string
 }) => {
   return (
     <div className={`mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:auto-rows-[230px] lg:grid-cols-3 ${className}`}>
@@ -243,7 +256,7 @@ const StandardGalleryGrid = ({ items, onOpen, className = "" }: {
 }
 
 const DesktopCollage = ({ items, onOpen }: {
-  items: any[]; onOpen: (id: string) => void
+  items: GalleryItem[]; onOpen: (id: string) => void
 }) => {
   const collageItems = items.slice(0, 6)
   const [leftTop, leftBottom, rightTop, rightMiddleLeft, rightMiddleRight, rightBottom] = collageItems
@@ -267,7 +280,7 @@ const DesktopCollage = ({ items, onOpen }: {
 }
 
 const GalleryCard = ({ item, isFeatured = false, onOpen, priority, variant = "grid" }: {
-  item: any; isFeatured?: boolean; onOpen: () => void; priority: number; variant?: "grid" | "collage"
+  item: GalleryItem; isFeatured?: boolean; onOpen: () => void; priority: number; variant?: "grid" | "collage"
 }) => {
   const isCollage = variant === "collage"
 

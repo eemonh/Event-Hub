@@ -61,6 +61,8 @@ export const InputNumberBase = ({
     isRequired: _isRequired,
     ...inputProps
 }: Omit<InputNumberBaseProps, "label" | "hint">) => {
+    void _isRequired;
+
     // If the input is inside a `TextFieldContext`, use its context to simplify applying styles
     const context = useContext(NumberFieldContext);
 

@@ -6,8 +6,8 @@ import { useAuth } from "../../context/AuthContext";
 import { useBreadcrumbs } from "../../context/BreadcrumbContext";
 import { updateProfile } from "../../services/auth";
 import { changePassword } from "../../services/auth";
-import Input from "./Input";
-import Button from "./Button";
+import Input from "../../components/ui/Input";
+import Button from "../../components/ui/Button";
 
 const CATEGORIES = [
   "Technology", "Design", "Business", "Startup", "Music",

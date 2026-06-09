@@ -1,21 +1,21 @@
 import { useCallback, isValidElement, type ChangeEvent, type FocusEvent, type ReactNode } from "react";
-import type { FieldError, UseFormRegister, RegisterOptions } from "react-hook-form";
+import type { FieldError, FieldValues, Path, RegisterOptions, UseFormRegister } from "react-hook-form";
 import type { LucideIcon } from "lucide-react";
 import { Input as UntitledInput } from "@/components/base/input/input";
 import { Label } from "@/components/base/input/label";
 import { cx } from "@/utils/cx";
 import { isReactComponent } from "@/utils/is-react-component";
 
-interface InputProps {
+interface InputProps<TFieldValues extends FieldValues = FieldValues> {
   label?: string;
-  name: string;
+  name: Path<TFieldValues>;
   type?: string;
   placeholder?: string;
   icon?: LucideIcon;
   error?: FieldError | string;
   hint?: string;
-  register?: UseFormRegister<Record<string, unknown>>;
-  registerOptions?: RegisterOptions;
+  register?: UseFormRegister<TFieldValues>;
+  registerOptions?: RegisterOptions<TFieldValues, Path<TFieldValues>>;
   value?: string;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   rightElement?: ReactNode;
@@ -33,7 +33,7 @@ function buildBlurEvent(name: string): FocusEvent<HTMLInputElement> {
   return { target: { name } } as FocusEvent<HTMLInputElement>;
 }
 
-export default function Input({
+export default function Input<TFieldValues extends FieldValues = FieldValues>({
   label,
   name,
   type = "text",
@@ -50,7 +50,7 @@ export default function Input({
   fullWidth = true,
   className = "",
   inputClassName = "",
-}: InputProps) {
+}: InputProps<TFieldValues>) {
   const isInvalid = !!error;
   const errorMessage = typeof error === "string" ? error : error?.message;
 
