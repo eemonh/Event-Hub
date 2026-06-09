@@ -64,10 +64,11 @@ export default function Newsletter() {
                   onSubmit={handleSubmit(onSubmit)}
                   className="w-full max-w-[672px] pt-4 flex flex-col md:flex-row gap-3"
                 >
-                  <div className="flex-1">
+                  <div className="flex-1 min-w-0">
                     <Input
                       name="email"
                       type="email"
+                      size="lg"
                       placeholder="Enter your email"
                       register={register}
                       registerOptions={{
@@ -83,23 +84,25 @@ export default function Newsletter() {
                     />
                   </div>
 
-                  <Select
-                    name="interest"
-                    placeholder="Select Interest"
-                    options={[
-                      { value: "technology", label: "Technology" },
-                      { value: "business", label: "Business" },
-                      { value: "design", label: "Design" },
-                      { value: "marketing", label: "Marketing" },
-                    ]}
-                    register={register}
-                    registerOptions={{
-                      required: "Interest is required",
-                    }}
-                    error={errors.interest}
-                    disabled={isSubmitting}
-                    fullWidth
-                  />
+                  <div className="flex-1 min-w-0">
+                    <Select
+                      name="interest"
+                      placeholder="Select Interest"
+                      options={[
+                        { value: "technology", label: "Technology" },
+                        { value: "business", label: "Business" },
+                        { value: "design", label: "Design" },
+                        { value: "marketing", label: "Marketing" },
+                      ]}
+                      register={register}
+                      registerOptions={{
+                        required: "Interest is required",
+                      }}
+                      error={errors.interest}
+                      disabled={isSubmitting}
+                      fullWidth
+                    />
+                  </div>
 
                   <Button 
                     type="submit" 

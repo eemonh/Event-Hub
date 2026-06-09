@@ -12,6 +12,7 @@ interface InputProps<TFieldValues extends FieldValues = FieldValues> {
   type?: string;
   placeholder?: string;
   icon?: LucideIcon;
+  size?: "sm" | "md" | "lg";
   error?: FieldError | string;
   hint?: string;
   register?: UseFormRegister<TFieldValues>;
@@ -39,6 +40,7 @@ export default function Input<TFieldValues extends FieldValues = FieldValues>({
   type = "text",
   placeholder,
   icon: Icon,
+  size = "md",
   error,
   hint,
   register: registerFn,
@@ -90,6 +92,7 @@ export default function Input<TFieldValues extends FieldValues = FieldValues>({
       <UntitledInput
         name={registerResult?.name || name}
         type={type}
+        size={size}
         placeholder={placeholder}
         icon={Icon && (isValidElement(Icon) || isReactComponent(Icon)) ? Icon : undefined}
         isInvalid={isInvalid}
