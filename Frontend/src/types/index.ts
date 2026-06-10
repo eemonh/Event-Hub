@@ -158,11 +158,12 @@ export interface EventPerformance {
   name: string;
   title?: string;
   startDate?: string;
+  status?: string;
   capacity?: number;
+  price?: number;
   registrationCount?: number;
-  registrations: number;
-  upvotes: number;
-  bookmarks: number;
+  bookmarkCount?: number;
+  fillRate?: number;
 }
 
 export interface EventPerformanceResponse {
@@ -183,12 +184,13 @@ export interface TopEvent {
   name: string;
   title?: string;
   startDate?: string;
+  category?: string;
   capacity?: number;
+  price?: number;
   registrationCount?: number;
-  registrations: number;
-  upvotes: number;
-  fillRate?: number;
   bookmarkCount?: number;
+  fillRate?: number;
+  estimatedRevenue?: number;
 }
 
 // Event filters
